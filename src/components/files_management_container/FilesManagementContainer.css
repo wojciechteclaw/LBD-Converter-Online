@@ -1,0 +1,8 @@
+#file-management-container{
+    background-color: antiquewhite;
+    width: 20vw;
+    height: 80vh;
+    margin: 2%;
+    display: block;
+    max-width: 350px;
+}

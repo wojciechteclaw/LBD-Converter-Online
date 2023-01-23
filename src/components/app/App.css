@@ -1,0 +1,9 @@
+body{
+    background-color: gray;
+    margin: 0;
+}
+
+#app-container{
+    height: 100vh;
+    position: relative
+}
