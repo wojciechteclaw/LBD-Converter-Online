@@ -1,13 +1,12 @@
 {
+    "extends": "./tsconfig.paths.json",
     "compilerOptions": {
         "target": "ES5",
         "module": "ESNext",
         "strictNullChecks": true,
         "esModuleInterop": true,
         "jsx": "react-jsx",
-        "paths": {
-            "comlink": ["./node_modules/comlink/dist/esm/comlink"]
-        }
+        "moduleResolution": "node",
     },
     "include": [
         "src"

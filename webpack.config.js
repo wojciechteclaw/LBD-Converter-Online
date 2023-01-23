@@ -1,10 +1,10 @@
-const HTMLWebpackPlugin = require('html-webpack-plugin');
-
+const HTMLWebpackPlugin = require("html-webpack-plugin");
+const path = require("path");
 module.exports = {
     plugins: [
         new HTMLWebpackPlugin({
-            template: './src/index.html'
-        })
+            template: "./src/index.html",
+        }),
     ],
     module: {
         rules: [
@@ -12,23 +12,26 @@ module.exports = {
                 test: /.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader',
-                }
+                    loader: "babel-loader",
+                },
             },
             {
                 test: /.(ts|tsx)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'ts-loader',
-                }
+                    loader: "ts-loader",
+                },
             },
             {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"],
-              },
-        ]
+            },
+        ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.jsx', '.js']
-    }
-}
+        alias: {
+            "@components": path.resolve(process.cwd(), './src/components/'),
+          },
+        extensions: [".tsx", ".ts", ".jsx", ".js"],
+    },
+};
