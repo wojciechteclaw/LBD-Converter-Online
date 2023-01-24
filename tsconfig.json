@@ -1,14 +1,15 @@
-{
-    "extends": "./tsconfig.paths.json",
-    "compilerOptions": {
-        "target": "ES5",
-        "module": "ESNext",
-        "strictNullChecks": true,
-        "esModuleInterop": true,
-        "jsx": "react-jsx",
-        "moduleResolution": "node",
-    },
-    "include": [
-        "src"
-    ]
-}
+        {
+            "extends": "./tsconfig.paths.json",
+            "compilerOptions": {
+                "target": "ES5",
+                "module": "ESNext",
+                "strictNullChecks": true,
+                "esModuleInterop": true,
+                "skipDefaultLibCheck": true,
+                "jsx": "react-jsx",
+                "moduleResolution": "node",
+            },
+            "include": [
+                "src"
+            ]
+        }

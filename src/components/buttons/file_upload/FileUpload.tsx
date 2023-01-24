@@ -1,10 +1,22 @@
-import React from 'react'
+import { FC } from "react";
 
-const FileUpload = () => {
-  return (
-    <div>
-    </div>
-  )
+interface DragAndDropProps {
+    onFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default FileUpload
+const FileUpload: FC<DragAndDropProps> = ({ onFileUpload }) => {
+    return (
+        <div>
+            <input
+                type="file"
+                id="ui-button-drag-and-drop"
+                multiple={true}
+                onChange={(e) => {
+                    onFileUpload(e);
+                }}
+            />
+        </div>
+    );
+};
+
+export { FileUpload };

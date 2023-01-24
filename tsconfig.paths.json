@@ -8,7 +8,9 @@
             "@components/*": [
                 "src/components/*"
             ],
-            "comlink": ["./node_modules/comlink/dist/esm/comlink"],
+            "@services/*": [
+                "src/services/*"
+            ],            
         }
     }
 }
