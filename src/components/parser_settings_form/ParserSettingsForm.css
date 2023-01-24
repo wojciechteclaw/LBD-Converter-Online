@@ -1,0 +1,29 @@
+.ifc-file-parser-section-title {
+    margin-top: 2% !important;
+    margin-bottom: 4% !important;
+    width: 100%;
+    border-bottom: 1px solid #618685;
+    text-align: center;
+    letter-spacing: 1px;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #618685;
+    font-weight: 700;
+}
+
+.ifc-file-parser-section-title:first-of-type {
+    margin-top: 8% !important;
+}
+
+.ui.toggle.checkbox input[type="checkbox"]:checked ~ label::before,
+.ui.toggle.checkbox input[type="checkbox"]:checked:focus ~ label::before {
+    background: #618685 !important;
+}
+
+.checkbox label {
+    text-transform: uppercase;
+}
+
+.parse-settings-form-buttons{
+    margin-top: 15%;
+}

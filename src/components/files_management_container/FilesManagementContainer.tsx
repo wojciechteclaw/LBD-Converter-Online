@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { FileUpload } from "@components/buttons/file_upload/FileUpload";
 import "./FilesManagementContainer.css";
-import { IfcFile } from "../ifc_file/IfcFile";
+import { LoadedFile } from "../loaded_file/LoadedFile";
 import { ParserSettings, SerializationFormat } from "ifc-lbd";
 import { MergeFilesButton } from "../buttons/convert_files/MergeFilesButton";
 
@@ -25,12 +25,12 @@ const FilesManagementContainer: FC = () => {
     const defaultParserSettings: ParserSettings = {
         namespace: "http://www.w3.org/2000/svg",
         subsets: {
-            BOT: false,
+            BOT: true,
             FSO: false,
-            PRODUCTS: false,
+            PRODUCTS: true,
             PROPERTIES: false,
         },
-        outputFormat: SerializationFormat.NQuads,
+        outputFormat: SerializationFormat.JSONLD,
         normalizeToSIUnits: true,
         verbose: true,
     };
@@ -49,7 +49,7 @@ const FilesManagementContainer: FC = () => {
             <div className="file-management-ifc-files-wrapper">
                 {loadedFiles.map((file, index) => {
                     return (
-                        <IfcFile
+                        <LoadedFile
                             key={index}
                             fileName={file.name}
                             index={index}
