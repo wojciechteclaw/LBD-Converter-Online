@@ -28,12 +28,14 @@
 }
 
 .ifc-file-name {
-    width: 60%;
+    width: 70%;
     text-align: left;
-    margin-left: 10px;
+    margin-left: 5px;
     overflow-y: hidden;
     overflow-x: hidden;
     white-space: nowrap;
+    color: #618685;
+    font-weight: 600;
 }
 
 /* modal */
@@ -62,4 +64,8 @@
     height: 10%;
     width: 35%;
     font-size: 16px !important;
+}
+
+.ifc-file-buttons > button:first-of-type {
+    margin-right: 10% !important;
 }

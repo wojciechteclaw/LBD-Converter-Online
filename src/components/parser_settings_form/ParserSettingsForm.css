@@ -27,3 +27,12 @@
 .parse-settings-form-buttons{
     margin-top: 15%;
 }
+
+.field{
+    color: #618685;
+}
+
+input[type="text"]{
+    color: #618685 !important;
+    font-weight: 700;
+}
