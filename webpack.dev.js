@@ -8,5 +8,8 @@
             port: 3001,
             open: true,
             hot: true,
+            client: {
+                overlay: false
+            }
         },
     });

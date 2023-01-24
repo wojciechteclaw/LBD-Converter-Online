@@ -1,0 +1,25 @@
+.merge-files-container {
+    margin: auto;
+    background-color: #618685;
+    bottom: 20px;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    border-top: 1px solid #5EA8A6;
+    font-weight: 600;
+}
+
+.merge-button {
+    margin: auto;
+    text-align: center;
+    color: white;
+    font-size: 22px;
+    padding: 20px;
+    width: 100%;
+}
+
+.merge-button:hover {
+    background-color: #5EA8A6;
+    cursor: pointer;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+}

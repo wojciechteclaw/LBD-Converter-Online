@@ -1,10 +1,13 @@
 #footer-container{
     position: absolute;
     width: 100vw;
-    height: 6vh;
-    max-height: 40px;
-    min-height: 30px;
+    height: 3vh;
     margin: 0;
     bottom: 0;
-    background-color: aquamarine;
+    background-color: #618685;
+    text-align: center;
+    padding: 0.8vh;
+    font-size: 1vh;
+    color: white;
+    font-weight: 600;
 }

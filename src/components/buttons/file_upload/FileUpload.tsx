@@ -1,20 +1,17 @@
 import { FC } from "react";
+import "./FileUpload.css";
 
-interface DragAndDropProps {
+interface FileUploadProps {
     onFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const FileUpload: FC<DragAndDropProps> = ({ onFileUpload }) => {
+const FileUpload: FC<FileUploadProps> = ({ onFileUpload }) => {
     return (
-        <div>
-            <input
-                type="file"
-                id="ui-button-drag-and-drop"
-                multiple={true}
-                onChange={(e) => {
-                    onFileUpload(e);
-                }}
-            />
+        <div className="file-upload-container">
+            <input type="file" id="file-upload" onChange={onFileUpload} style={{ display: "none" }} />
+            <label htmlFor="file-upload" className="green-button">
+                <p>Upload IFC File</p>
+            </label>
         </div>
     );
 };
