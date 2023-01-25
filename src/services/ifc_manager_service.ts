@@ -1,11 +1,14 @@
 import { Color, IfcAPI, IfcConnectionGeometry, IfcGeometry, IFCSPACE, PlacedGeometry } from "web-ifc";
 import * as THREE from "three";
 import { FilesService } from "./files_service";
-import { ExpressIdSpacesGeometry } from "@/types/expressId_spaces_geometry";
+import { GeometryService } from "./geometry_service";
+import { ModelIDExpressIDSpacesMap } from "@/types/expressId_spaces_geometry";
+import { ExpressIDSpacesMap } from "@/types/guid_spaces_map";
 
 class IfcManagerService {
     private ifcAPI: IfcAPI = new IfcAPI();
-    private ifcSpacesGeometry: ExpressIdSpacesGeometry = new Map();
+    private ifcSpacesGeometry: ModelIDExpressIDSpacesMap = new Map();
+    private ifcModelExpressIdGuidsMap: Map<number, Map<number | string, number | string>> = new Map();
 
     constructor() {
         this.configureIfcAPI();
@@ -21,67 +24,34 @@ class IfcManagerService {
         let fileBuffer = await FilesService.readInputFile(file).then((e) => e);
         let parsedBuffer = new Uint8Array(fileBuffer);
         let modelID = this.ifcAPI.OpenModel(parsedBuffer);
+        await this.appendExpressIdGuidMap(modelID);
+        await this.appendSpacesGeometryMap(modelID);
         return modelID;
     }
 
-    public async appendSpacesGeometryMap(modelID): Promise<void> {
-        //
+    private async appendSpacesGeometryMap(modelID): Promise<void> {
+        let spacesGeometryMap = await GeometryService.getSpacesGeometry(modelID, this.ifcAPI).then((e) => e);
+        this.ifcSpacesGeometry.set(modelID, spacesGeometryMap);
     }
 
-    public async removeFileFromIfcAPI(modelID: number) {
+    private async appendExpressIdGuidMap(modelID: number): Promise<void> {
+        this.ifcAPI.CreateIfcGuidToExpressIdMapping(modelID);
+        let mapping = this.ifcAPI.ifcGuidMap.get(modelID);
+        if (mapping) {
+            this.ifcModelExpressIdGuidsMap.set(modelID, mapping);
+        }
+    }
+
+    public async removeFileFromIfcAPI(modelID: number): Promise<void> {
         this.ifcAPI.CloseModel(modelID);
+        await this.removeExpressIdGuidMap(modelID);
     }
 
-    public async removeSpacesGeometryMap(modelID: number) {
-        //
+    private async removeExpressIdGuidMap(modelID: number): Promise<void> {
+        this.ifcModelExpressIdGuidsMap.delete(modelID);
     }
 
-    private convertIfcGeometryToThreeMesh(modelId: number, ifcMeshGeometry: PlacedGeometry) {
-        const geometry = this.ifcAPI.GetGeometry(modelId, ifcMeshGeometry.geometryExpressID);
-        const vertices = this.ifcAPI.GetVertexArray(geometry.GetVertexData(), geometry.GetVertexDataSize());
-        const indices = this.ifcAPI.GetIndexArray(geometry.GetIndexData(), geometry.GetIndexDataSize());
-        const bufferGeometry = IfcManagerService.buildThreeGeometry(vertices, indices);
-        const material = IfcManagerService.buildMeshMaterial(ifcMeshGeometry.color);
-        const mesh = new THREE.Mesh(bufferGeometry, material);
-        const matrix = new THREE.Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
-        mesh.matrix = matrix;
-        mesh.matrixAutoUpdate = false;
-        return mesh;
-    }
-
-    private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): THREE.BufferGeometry {
-        const geometry = new THREE.BufferGeometry();
-        const positionNormalBuffer = new THREE.InterleavedBuffer(vertices, 6);
-        geometry.setAttribute("position", new THREE.InterleavedBufferAttribute(positionNormalBuffer, 3, 0));
-        geometry.setAttribute("normal", new THREE.InterleavedBufferAttribute(positionNormalBuffer, 3, 3));
-        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-        return geometry;
-    }
-
-    private static buildMeshMaterial(ifcColor: Color): THREE.Material {
-        const threeColor = new THREE.Color(ifcColor.x, ifcColor.y, ifcColor.z);
-        const material = new THREE.MeshPhongMaterial({
-            color: threeColor,
-            side: THREE.DoubleSide,
-        });
-        material.transparent = ifcColor.w !== 1;
-        if (material.transparent) {
-            material.opacity = ifcColor.w;
-        }
-        return material;
-    }
-
-    public getSpacesGeometry(modelID: number) {
-        const results = new Array<THREE.BufferGeometry>();
-        const allSpaces = this.ifcAPI.GetLineIDsWithType(0, IFCSPACE);
-        for (let i = 0; i < allSpaces.size(); i++) {
-            const expressID = allSpaces.get(i);
-            let flatMesh = this.ifcAPI.GetFlatMesh(modelID, expressID);
-            let placedGeometry = flatMesh.geometries.get(0);
-            let mesh = this.convertIfcGeometryToThreeMesh(modelID, placedGeometry);
-            console.log(mesh.geometry);
-        }
-    }
+    private async removeSpacesGeometryMap(modelID: number): Promise<void> {}
 }
 
 export { IfcManagerService };

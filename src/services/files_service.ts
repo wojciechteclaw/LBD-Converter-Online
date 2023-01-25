@@ -21,6 +21,7 @@ class FilesService {
     public async addFile(file: File, parserSettings: ParserSettings = this.defaultParserSettings): Promise<void> {
         let modelID = await ifcManagerService.appendFileToIfcAPI(file).then((e) => e);
         this.fileObjects.push({ file, parserSettings, modelID });
+        console.log('added file')
     }
 
     public async removeFile(fileIndex: number): Promise<void> {

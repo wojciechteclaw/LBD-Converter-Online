@@ -1,3 +1,3 @@
-import { BufferGeometry } from "three";
+import { ExpressIDSpacesMap } from "./guid_spaces_map";
 
-export type ExpressIdSpacesGeometry = Map<number, Map<number, BufferGeometry>>;
+export type ModelIDExpressIDSpacesMap = Map<number, ExpressIDSpacesMap>;
