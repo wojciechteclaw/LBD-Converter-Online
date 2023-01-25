@@ -9,10 +9,12 @@ const FilesManagementContainer: FC = () => {
     const [loadedFileComponents, setLoadedFileComponents] = useState<JSX.Element[]>([]);
 
     const onFileLoad = async (e) => {
-        if (e.target.files != null) {
-            await filesService.addFile(e.target.files[0] as File);
-            generateLoadedFileComponents();
+        if (e.target.files.length === 0) return;
+        let files = e.target.files as File[];
+        for (let i = 0; i < files.length; i++) {
+            await filesService.addFile(files[i]);
         }
+        generateLoadedFileComponents();
     };
 
     const onRemoveFile = (index: number) => {
@@ -40,7 +42,7 @@ const FilesManagementContainer: FC = () => {
 
     return (
         <div id="file-management-container">
-            <FileUpload onFileUpload={onFileLoad} />
+            <FileUpload onFileUpload={async (e) => onFileLoad(e)} />
             <div className="file-management-ifc-files-wrapper">{loadedFileComponents}</div>
             <MergeFilesButton onClick={mergeFiles} />
         </div>
