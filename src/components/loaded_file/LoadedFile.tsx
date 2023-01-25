@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { ParserSettings } from "ifc-lbd";
 import "./LoadedFile.css";
 import { Modal } from "../modal/Modal";
 import { useModal } from "@hooks/useModal";

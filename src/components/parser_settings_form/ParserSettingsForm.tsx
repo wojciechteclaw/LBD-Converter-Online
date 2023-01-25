@@ -1,5 +1,5 @@
 import { ParserSettings, SerializationFormat } from "ifc-lbd";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { Checkbox } from "../buttons/checkbox/Checkbox";
 import { filesService } from "@services/dependency_injection";
 import "./ParserSettingsForm.css";
@@ -42,7 +42,6 @@ const ParserSettingsForm: FC<ParserSettingsProps> = ({ visibilityToggle, index }
         defaultParserSettings = newSettings;
         filesService.overrideParserSettings(index, newSettings);
         visibilityToggle();
-        console.log(filesService.getParserSettings(index));
     };
 
     const restoreDefaultConfig = () => {

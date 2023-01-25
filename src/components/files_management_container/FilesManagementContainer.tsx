@@ -1,10 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { FileUpload } from "@components/buttons/file_upload/FileUpload";
 import "./FilesManagementContainer.css";
 import { LoadedFile } from "../loaded_file/LoadedFile";
 import { MergeFilesButton } from "../buttons/convert_files/MergeFilesButton";
 import { filesService } from "@services/dependency_injection";
-import { ParserSettings } from "ifc-lbd";
 
 const FilesManagementContainer: FC = () => {
     const [loadedFileComponents, setLoadedFileComponents] = useState<JSX.Element[]>([]);
@@ -22,6 +21,11 @@ const FilesManagementContainer: FC = () => {
         }
     };
 
+    const onRemoveFile = (index: number) => {
+        filesService.removeFile(index);
+        generateLoadedFileComponents();
+    };
+
     const generateLoadedFileComponents = () => {
         const newComponents = filesService.getAllFileObjects().map((parsingObject, fileIndex) => {
             return (
@@ -29,7 +33,7 @@ const FilesManagementContainer: FC = () => {
                     key={fileIndex}
                     fileName={parsingObject.file.name}
                     index={fileIndex}
-                    onRemoveFile={() => filesService.removeFile(fileIndex)}
+                    onRemoveFile={onRemoveFile}
                 />
             );
         });

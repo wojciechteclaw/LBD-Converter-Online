@@ -22,7 +22,7 @@ class FilesService {
     }
 
     public removeFile(fileIndex: number): void {
-        this.fileObjects.filter((_, index) => index !== fileIndex);
+        this.fileObjects.splice(fileIndex, 1);
     }
 
     public getAllFileObjects(): ParsingObject[] {
