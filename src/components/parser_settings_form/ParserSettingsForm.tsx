@@ -1,22 +1,29 @@
 import { ParserSettings, SerializationFormat } from "ifc-lbd";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Checkbox } from "../buttons/checkbox/Checkbox";
+import { filesService } from "@services/dependency_injection";
 import "./ParserSettingsForm.css";
 
 interface ParserSettingsProps {
-    parserSettings: ParserSettings;
-    onParserSettingsChange: (parserSettings: ParserSettings) => void;
     visibilityToggle: () => void;
+    index: number;
 }
 
-const ParserSettingsForm: FC<ParserSettingsProps> = ({ parserSettings, onParserSettingsChange, visibilityToggle }) => {
-    const [bot, setBot] = useState<boolean>(parserSettings.subsets.BOT);
-    const [fso, setFso] = useState<boolean>(parserSettings.subsets.FSO);
-    const [products, setProducts] = useState<boolean>(parserSettings.subsets.PRODUCTS);
-    const [properties, setProperties] = useState<boolean>(parserSettings.subsets.PROPERTIES);
-    const [normalizeToSIUnits, setNormalizeToSIUnits] = useState<boolean>(parserSettings.normalizeToSIUnits);
-    const [verbose, setVerbose] = useState<boolean>(parserSettings.verbose);
-    const [namespace, setNamespace] = useState<string>(parserSettings.namespace);
+const ParserSettingsForm: FC<ParserSettingsProps> = ({ visibilityToggle, index }) => {
+    let defaultParserSettings = filesService.getParserSettings(index);
+
+    const [bot, setBot] = useState<boolean>(defaultParserSettings.subsets.BOT);
+    const [fso, setFso] = useState<boolean>(defaultParserSettings.subsets.FSO);
+    const [products, setProducts] = useState<boolean>(defaultParserSettings.subsets.PRODUCTS);
+    const [properties, setProperties] = useState<boolean>(defaultParserSettings.subsets.PROPERTIES);
+    const [normalizeToSIUnits, setNormalizeToSIUnits] = useState<boolean>(defaultParserSettings.normalizeToSIUnits);
+    const [verbose, setVerbose] = useState<boolean>(defaultParserSettings.verbose);
+    const [namespace, setNamespace] = useState<string>(defaultParserSettings.namespace);
+
+    const onParserSettingsChange = (index: number, newParserSettings: ParserSettings) => {
+        console.log("new parser settings", newParserSettings);
+        filesService.overrideParserSettings(index, newParserSettings);
+    };
 
     const getParserSettings = () => {
         let newSettings: ParserSettings = {
@@ -37,18 +44,20 @@ const ParserSettingsForm: FC<ParserSettingsProps> = ({ parserSettings, onParserS
     const onSubmit = (e: any) => {
         e.preventDefault();
         let newSettings: ParserSettings = getParserSettings();
-        onParserSettingsChange(newSettings);
+        defaultParserSettings = newSettings;
+        filesService.overrideParserSettings(index, newSettings);
         visibilityToggle();
+        console.log(filesService.getParserSettings(index));
     };
 
     const restoreDefaultConfig = () => {
-        setBot(parserSettings.subsets.BOT);
-        setFso(parserSettings.subsets.FSO);
-        setProducts(parserSettings.subsets.PRODUCTS);
-        setProperties(parserSettings.subsets.PROPERTIES);
-        setNormalizeToSIUnits(parserSettings.normalizeToSIUnits);
-        setVerbose(parserSettings.verbose);
-        setNamespace(parserSettings.namespace);
+        setBot(defaultParserSettings.subsets.BOT);
+        setFso(defaultParserSettings.subsets.FSO);
+        setProducts(defaultParserSettings.subsets.PRODUCTS);
+        setProperties(defaultParserSettings.subsets.PROPERTIES);
+        setNormalizeToSIUnits(defaultParserSettings.normalizeToSIUnits);
+        setVerbose(defaultParserSettings.verbose);
+        setNamespace(defaultParserSettings.namespace);
         visibilityToggle();
     };
 

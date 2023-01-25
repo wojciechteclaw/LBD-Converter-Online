@@ -7,18 +7,13 @@ import { ParserSettingsForm } from "../parser_settings_form/ParserSettingsForm";
 
 interface LoadedFileProps {
     fileName: string;
-    parserSettings: ParserSettings;
     index: number;
     onRemoveFile: (fileIndex: number) => void;
 }
 
-const LoadedFile: FC<LoadedFileProps> = ({ fileName, parserSettings, index, onRemoveFile }) => {
+const LoadedFile: FC<LoadedFileProps> = ({ fileName, index, onRemoveFile }) => {
     const editModal = useModal(false);
     const removeModal = useModal(false);
-
-    const onParserSettingsChange = (parserSettings: ParserSettings) => {
-        console.log(parserSettings);
-    };
 
     return (
         <div className="ifc-file-container">
@@ -31,11 +26,7 @@ const LoadedFile: FC<LoadedFileProps> = ({ fileName, parserSettings, index, onRe
                     <p className="ifc-file-modal-message">
                         Modify setting for <b>{fileName}</b>
                     </p>
-                    <ParserSettingsForm
-                        parserSettings={parserSettings}
-                        onParserSettingsChange={onParserSettingsChange}
-                        visibilityToggle={editModal.toggle}
-                    />
+                    <ParserSettingsForm index={index} visibilityToggle={editModal.toggle} />
                 </div>
             </Modal>
             <Modal isOpen={removeModal.isOpen} toggle={removeModal.toggle} key={`${index}.2`}>
