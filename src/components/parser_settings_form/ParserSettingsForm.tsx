@@ -20,11 +20,6 @@ const ParserSettingsForm: FC<ParserSettingsProps> = ({ visibilityToggle, index }
     const [verbose, setVerbose] = useState<boolean>(defaultParserSettings.verbose);
     const [namespace, setNamespace] = useState<string>(defaultParserSettings.namespace);
 
-    const onParserSettingsChange = (index: number, newParserSettings: ParserSettings) => {
-        console.log("new parser settings", newParserSettings);
-        filesService.overrideParserSettings(index, newParserSettings);
-    };
-
     const getParserSettings = () => {
         let newSettings: ParserSettings = {
             namespace: namespace,
