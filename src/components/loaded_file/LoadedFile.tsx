@@ -44,7 +44,13 @@ const LoadedFile: FC<LoadedFileProps> = ({ fileName, parserSettings, index, onRe
                     Are you sure you want to delete the file: <b>{fileName}</b>?
                 </p>
                 <div className="ifc-file-buttons">
-                    <button className="ui green button" onClick={() => onRemoveFile(index)}>
+                    <button
+                        className="ui green button"
+                        onClick={() => {
+                            onRemoveFile(index);
+                            removeModal.toggle();
+                        }}
+                    >
                         Continue
                     </button>
                     <button className="ui red button" onClick={removeModal.toggle}>
