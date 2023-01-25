@@ -1,0 +1,18 @@
+#file-management-container {
+    background-color: #CED9D9;
+    width: 20vw;
+    height: 100%;
+    display: flex;
+    margin-top: 2.5vh;
+    margin-bottom: 2.5vh;
+    margin-left: 30px;
+    display: block;
+    max-width: 350px;
+    border-radius: 20px;
+
+}
+
+.file-management-ifc-files-wrapper{
+    margin-top: 4vh;
+    height: 70vh;
+}
