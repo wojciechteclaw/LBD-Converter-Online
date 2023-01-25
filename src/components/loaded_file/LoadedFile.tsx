@@ -3,7 +3,7 @@ import "./LoadedFile.css";
 import { Modal } from "../modal/Modal";
 import { useModal } from "@hooks/useModal";
 import { ParserSettingsForm } from "../parser_settings_form/ParserSettingsForm";
-import { IfcManagerService } from "@services/dependency_injection";
+import { ifcManagerService } from "@services/dependency_injection";
 
 interface LoadedFileProps {
     fileName: string;
@@ -39,7 +39,7 @@ const LoadedFile: FC<LoadedFileProps> = ({ fileName, index, onRemoveFile }) => {
                         className="ui green button"
                         onClick={() => {
                             onRemoveFile(index);
-                            IfcManagerService.removeFileFromIfcAPI(index);
+                            ifcManagerService.removeFileFromIfcAPI(index);
                             removeModal.toggle();
                         }}
                     >
