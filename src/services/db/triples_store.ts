@@ -1,29 +1,29 @@
-// import init, * as oxigraph from "oxigraph/web.js";
+import init, * as oxigraph from "oxigraph/web";
 
-// class TriplesStore {
-//     private store: oxigraph.Store | undefined;
+class TriplesStore {
+    private store: oxigraph.Store | undefined;
 
-//     constructor() {
-//         this.initStore();
-//     }
+    constructor() {
+        this.initStore();
+    }
 
-//     private initStore() {
-//         console.time("store initialized");
-//         init();
-//         this.store = new oxigraph.Store();
-//         console.timeEnd("store initialized");
-//     }
+    private initStore() {
+        console.time("store initialized");
+        init();
+        this.store = new oxigraph.Store();
+        console.timeEnd("store initialized");
+    }
 
-//     public addTriples(triples: oxigraph.Quad[]) {
-//         triples.forEach((triple) => {
-//             this.store!.add(triple);
-//         });
-//         this.report();
-//     }
+    public addTriples(triples: oxigraph.Quad[]) {
+        triples.forEach((triple) => {
+            this.store!.add(triple);
+        });
+        this.report();
+    }
 
-//     public report() {
-//         console.log(this.store!.size);
-//     }
-// }
+    public report() {
+        console.log(this.store!.size);
+    }
+}
 
-// export { TriplesStore };
+export { TriplesStore };
