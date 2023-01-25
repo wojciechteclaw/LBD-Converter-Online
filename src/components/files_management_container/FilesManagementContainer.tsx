@@ -25,7 +25,7 @@ const FilesManagementContainer: FC = () => {
             return (
                 <LoadedFile
                     key={fileIndex}
-                    fileName={parsingObject.file.name}
+                    fileName={parsingObject.fileName}
                     index={parsingObject.modelID}
                     onRemoveFile={onRemoveFile}
                 />

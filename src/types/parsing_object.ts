@@ -1,7 +1,7 @@
 import { ParserSettings } from "ifc-lbd";
 
 export type ParsingObject = {
-    file: File;
+    fileName: string;
     parserSettings: ParserSettings;
     modelID: number
 };

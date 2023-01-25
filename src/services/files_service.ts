@@ -20,8 +20,7 @@ class FilesService {
 
     public async addFile(file: File, parserSettings: ParserSettings = this.defaultParserSettings): Promise<void> {
         let modelID = await ifcManagerService.appendFileToIfcAPI(file).then((e) => e);
-        this.fileObjects.push({ file, parserSettings, modelID });
-        console.log('added file')
+        this.fileObjects.push({ fileName:file.name, parserSettings, modelID });
     }
 
     public async removeFile(fileIndex: number): Promise<void> {
@@ -31,10 +30,6 @@ class FilesService {
 
     public getAllFileObjects(): ParsingObject[] {
         return this.fileObjects;
-    }
-
-    public getFile(index: number): File {
-        return this.fileObjects[index].file;
     }
 
     public overrideParserSettings(index: number, parserSettings: ParserSettings): void {
