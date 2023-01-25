@@ -1,8 +1,11 @@
-import { Color, IfcAPI, IfcGeometry, IFCSPACE, PlacedGeometry } from "web-ifc";
+import { Color, IfcAPI, IfcConnectionGeometry, IfcGeometry, IFCSPACE, PlacedGeometry } from "web-ifc";
 import * as THREE from "three";
+import { FilesService } from "./files_service";
+import { ExpressIdSpacesGeometry } from "@/types/expressId_spaces_geometry";
 
-class GeometryService {
+class IfcManagerService {
     private ifcAPI: IfcAPI = new IfcAPI();
+    private ifcSpacesGeometry: ExpressIdSpacesGeometry = new Map();
 
     constructor() {
         this.configureIfcAPI();
@@ -14,30 +17,31 @@ class GeometryService {
         this.ifcAPI.Init();
     }
 
-    public async appendFileToIfcAPI(file: File) {
-        let fileBuffer = await this.readInputFile(file).then((e) => e as ArrayBufferLike);
+    public async appendFileToIfcAPI(file: File): Promise<number> {
+        let fileBuffer = await FilesService.readInputFile(file).then((e) => e);
         let parsedBuffer = new Uint8Array(fileBuffer);
-        this.ifcAPI.OpenModel(parsedBuffer);
-        console.log(file);
+        let modelID = this.ifcAPI.OpenModel(parsedBuffer);
+        return modelID;
     }
 
-    private readInputFile(file: File) {
-        return new Promise((resolve, reject) => {
-            let reader = new FileReader();
-            reader.addEventListener("loadend", (e) => resolve((e.target as FileReader).result));
-            reader.addEventListener("error", reject);
-            reader.readAsArrayBuffer(file);
-        });
+    public async appendSpacesGeometryMap(modelID): Promise<void> {
+        //
     }
 
-    // https://github.com/IFCjs/web-ifc/issues/123
+    public async removeFileFromIfcAPI(modelID: number) {
+        this.ifcAPI.CloseModel(modelID);
+    }
+
+    public async removeSpacesGeometryMap(modelID: number) {
+        //
+    }
 
     private convertIfcGeometryToThreeMesh(modelId: number, ifcMeshGeometry: PlacedGeometry) {
         const geometry = this.ifcAPI.GetGeometry(modelId, ifcMeshGeometry.geometryExpressID);
         const vertices = this.ifcAPI.GetVertexArray(geometry.GetVertexData(), geometry.GetVertexDataSize());
         const indices = this.ifcAPI.GetIndexArray(geometry.GetIndexData(), geometry.GetIndexDataSize());
-        const bufferGeometry = this.buildThreeGeometry(vertices, indices);
-        const material = this.buildMeshMaterial(ifcMeshGeometry.color);
+        const bufferGeometry = IfcManagerService.buildThreeGeometry(vertices, indices);
+        const material = IfcManagerService.buildMeshMaterial(ifcMeshGeometry.color);
         const mesh = new THREE.Mesh(bufferGeometry, material);
         const matrix = new THREE.Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
         mesh.matrix = matrix;
@@ -45,7 +49,7 @@ class GeometryService {
         return mesh;
     }
 
-    private buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): THREE.BufferGeometry {
+    private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): THREE.BufferGeometry {
         const geometry = new THREE.BufferGeometry();
         const positionNormalBuffer = new THREE.InterleavedBuffer(vertices, 6);
         geometry.setAttribute("position", new THREE.InterleavedBufferAttribute(positionNormalBuffer, 3, 0));
@@ -54,7 +58,7 @@ class GeometryService {
         return geometry;
     }
 
-    private buildMeshMaterial(ifcColor: Color): THREE.Material {
+    private static buildMeshMaterial(ifcColor: Color): THREE.Material {
         const threeColor = new THREE.Color(ifcColor.x, ifcColor.y, ifcColor.z);
         const material = new THREE.MeshPhongMaterial({
             color: threeColor,
@@ -72,10 +76,12 @@ class GeometryService {
         const allSpaces = this.ifcAPI.GetLineIDsWithType(0, IFCSPACE);
         for (let i = 0; i < allSpaces.size(); i++) {
             const expressID = allSpaces.get(i);
-            const geometry: IfcGeometry = this.ifcAPI.GetGeometry(modelID, expressID);
-            console.log(geometry);
+            let flatMesh = this.ifcAPI.GetFlatMesh(modelID, expressID);
+            let placedGeometry = flatMesh.geometries.get(0);
+            let mesh = this.convertIfcGeometryToThreeMesh(modelID, placedGeometry);
+            console.log(mesh.geometry);
         }
     }
 }
 
-export { GeometryService };
+export { IfcManagerService };

@@ -1,5 +1,6 @@
 import { ParsingObject } from "@/types/parsing_object";
 import { ParserSettings, SerializationFormat } from "ifc-lbd";
+import { ifcManagerService } from "./dependency_injection";
 
 class FilesService {
     private fileObjects: Array<ParsingObject> = [];
@@ -17,11 +18,13 @@ class FilesService {
         verbose: true,
     };
 
-    public addFile(file: File, parserSettings: ParserSettings = this.defaultParserSettings): void {
-        this.fileObjects.push({ file, parserSettings });
+    public async addFile(file: File, parserSettings: ParserSettings = this.defaultParserSettings): Promise<void> {
+        let modelID = await ifcManagerService.appendFileToIfcAPI(file).then((e) => e);
+        this.fileObjects.push({ file, parserSettings, modelID });
     }
 
-    public removeFile(fileIndex: number): void {
+    public async removeFile(fileIndex: number): Promise<void> {
+        ifcManagerService.removeFileFromIfcAPI(fileIndex);
         this.fileObjects.splice(fileIndex, 1);
     }
 
@@ -39,6 +42,15 @@ class FilesService {
 
     public getParserSettings(index: number): ParserSettings {
         return this.fileObjects[index].parserSettings;
+    }
+
+    public static async readInputFile(file: File): Promise<ArrayBuffer> {
+        return new Promise((resolve, reject) => {
+            let reader = new FileReader();
+            reader.onloadend = (e) => resolve((e.target as FileReader).result as ArrayBuffer);
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
     }
 }
 

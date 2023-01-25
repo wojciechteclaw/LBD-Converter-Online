@@ -13,7 +13,7 @@ const FileUpload: FC<FileUploadProps> = ({ onFileUpload }) => {
                 id="file-upload"
                 onChange={onFileUpload}
                 style={{ display: "none" }}
-                multiple={true}
+                multiple={false}
                 accept=".ifc"
             />
             <label htmlFor="file-upload" className="green-button">

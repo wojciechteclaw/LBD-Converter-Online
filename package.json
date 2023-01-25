@@ -11,14 +11,14 @@
         "Linked Data"
     ],
     "scripts": {
-        "start": "webpack-dev-server --config webpack.dev.js",
+        "start": "webpack-dev-server --config webpack.dev.js --stats-error-details",
         "build": "webpack --config webpack.prod.js"
     },
     "license": "ISC",
     "dependencies": {
         "ifc-lbd": "^0.3.4",
         "jsonld": "^8.1.0",
-        "oxigraph": "^0.3.10",
+        "oxigraph": "^0.3.11",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "three": "^0.130.1",

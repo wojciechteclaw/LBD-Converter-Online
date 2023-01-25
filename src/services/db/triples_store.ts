@@ -1,4 +1,4 @@
-import init, * as oxigraph from "oxigraph/web";
+import init, * as oxigraph from "oxigraph/web.js";
 
 class TriplesStore {
     private store: oxigraph.Store | undefined;
@@ -9,8 +9,8 @@ class TriplesStore {
 
     private initStore() {
         console.time("store initialized");
-        init();
-        this.store = new oxigraph.Store();
+        // init("./node_modules/web/web_bg.wasm").then((e) => console.log(e));
+        // new oxigraph.Store();
         console.timeEnd("store initialized");
     }
 

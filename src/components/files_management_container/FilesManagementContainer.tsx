@@ -8,15 +8,9 @@ import { filesService } from "@services/dependency_injection";
 const FilesManagementContainer: FC = () => {
     const [loadedFileComponents, setLoadedFileComponents] = useState<JSX.Element[]>([]);
 
-    const onFileLoad = (e) => {
+    const onFileLoad = async (e) => {
         if (e.target.files != null) {
-            if (e.target.files.length > 1) {
-                for (let i = 0; i < e.target.files.length; i++) {
-                    filesService.addFile(e.target.files[i] as File);
-                }
-            } else {
-                filesService.addFile(e.target.files[0] as File);
-            }
+            await filesService.addFile(e.target.files[0] as File);
             generateLoadedFileComponents();
         }
     };
@@ -32,7 +26,7 @@ const FilesManagementContainer: FC = () => {
                 <LoadedFile
                     key={fileIndex}
                     fileName={parsingObject.file.name}
-                    index={fileIndex}
+                    index={parsingObject.modelID}
                     onRemoveFile={onRemoveFile}
                 />
             );
