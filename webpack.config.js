@@ -1,5 +1,6 @@
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
+
 module.exports = {
     plugins: [
         new HTMLWebpackPlugin({
@@ -30,8 +31,10 @@ module.exports = {
     },
     resolve: {
         alias: {
-            "@components": path.resolve(process.cwd(), './src/components/'),
-          },
+            "@components": path.resolve(process.cwd(), "./src/components/"),
+            "@services": path.resolve(process.cwd(), "./src/services/"),
+            "@hooks": path.resolve(process.cwd(), "./src/hooks/"),
+        },
         extensions: [".tsx", ".ts", ".jsx", ".js"],
     },
 };

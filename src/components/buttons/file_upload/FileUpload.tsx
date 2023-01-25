@@ -1,10 +1,26 @@
-import React from 'react'
+import { FC } from "react";
+import "./FileUpload.css";
 
-const FileUpload = () => {
-  return (
-    <div>
-    </div>
-  )
+interface FileUploadProps {
+    onFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default FileUpload
+const FileUpload: FC<FileUploadProps> = ({ onFileUpload }) => {
+    return (
+        <div className="file-upload-container">
+            <input
+                type="file"
+                id="file-upload"
+                onChange={onFileUpload}
+                style={{ display: "none" }}
+                multiple={true}
+                accept=".ifc"
+            />
+            <label htmlFor="file-upload" className="green-button">
+                <p>Upload IFC File</p>
+            </label>
+        </div>
+    );
+};
+
+export { FileUpload };

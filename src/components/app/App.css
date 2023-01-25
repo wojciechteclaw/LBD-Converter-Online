@@ -1,9 +1,9 @@
-body{
-    background-color: gray;
+body {
+    background-color: #F1F2F2;
     margin: 0;
 }
 
-#app-container{
+#app-container {
     height: 100vh;
-    position: relative
+    position: relative;
 }
