@@ -6,4 +6,4 @@ const dbDataController = new DBDataController();
 const filesService = new FilesService();
 const ifcManagerService = new IfcManagerService();
 
-export { filesService, ifcManagerService };
+export { filesService, ifcManagerService, dbDataController };

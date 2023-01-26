@@ -4,21 +4,26 @@ class TriplesStore {
     private store: oxigraph.Store;
 
     constructor() {
-        Promise.resolve(async () => {
+        (async () => {
             await init();
             this.store = new oxigraph.Store();
-        });
+            console.log("Store initialized");
+            console.log(this.store);
+        })();
     }
 
-    addTriples(triples: oxigraph.Quad[]) {
+    public addTriples(triples: oxigraph.Quad[]) {
         triples.forEach((triple: oxigraph.Quad) => {
             this.store.add(triple);
         });
-        this.report();
     }
 
-    report() {
+    public report(): void {
         console.log(this.store.size);
+    }
+
+    public dump(): string {
+        return this.store.dump("text/turtle", undefined);
     }
 }
 

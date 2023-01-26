@@ -6,16 +6,16 @@ class FilesService {
     private fileObjects: Array<ParsingObject> = [];
 
     private defaultParserSettings: ParserSettings = {
-        namespace: "http://www.w3.org/2000/svg",
+        namespace: "http://www.w3.org/",
         subsets: {
             BOT: true,
-            FSO: false,
-            PRODUCTS: true,
+            FSO: true,
+            PRODUCTS: false,
             PROPERTIES: false,
         },
         outputFormat: SerializationFormat.JSONLD,
-        normalizeToSIUnits: true,
-        verbose: true,
+        normalizeToSIUnits: false,
+        verbose: false,
     };
 
     public async addFile(file: File, parserSettings: ParserSettings = this.defaultParserSettings): Promise<void> {

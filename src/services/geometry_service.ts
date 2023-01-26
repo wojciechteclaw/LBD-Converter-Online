@@ -1,3 +1,4 @@
+import { ModelIDExpressIDSpacesMap } from "@/types/expressId_spaces_geometry";
 import { ExpressIDSpacesMap } from "@/types/guid_spaces_map";
 import { GeometryConversionWorkerType } from "@/workers/geometry_conversion_worker";
 import { wrap } from "comlink";
@@ -16,52 +17,35 @@ import {
 import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry } from "web-ifc";
 
 class GeometryService {
-    public static async getSpacesGeometry(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDSpacesMap> {
+    public static async getSpacesGeometryForModelID(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDSpacesMap> {
         let result: ExpressIDSpacesMap = new Map();
-        const spacesGeometryPromises: Array<Promise<BufferGeometry>> = [];
-        const expressIDs: number[] = [];
-        const allSpaces = ifcAPI.GetLineIDsWithType(0, IFCSPACE);
-        const worker = new Worker(new URL("../workers/geometry_conversion_worker.ts", import.meta.url), {
-            type: "module",
-            name: "geometry_conversion_worker",
-        });
-        const { geometryConversionWorker } = wrap<GeometryConversionWorkerType>(worker);
-        for (let i = 0; i < allSpaces.size(); i++) {
-            const expressID = allSpaces.get(i);
-            let flatMesh: FlatMesh = ifcAPI.GetFlatMesh(modelID, expressID);
+        ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], (flatMesh: FlatMesh) => {
             let placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
-            let [vertices, indices] = await this.transformIfcGeometryToAtoms(ifcAPI, modelID, placedGeometry).then(
-                (e) => e
-            );
-            spacesGeometryPromises.push(geometryConversionWorker(placedGeometry, vertices, indices).then((e) => e));
-            expressIDs.push(expressID);
-        }
-        await Promise.all(spacesGeometryPromises).then((e) =>
-            e.forEach((spaceGeometry, index) => {
-                result.set(expressIDs[index], spaceGeometry);
-            })
-        );
+            let [vertices, indices] = GeometryService.transformIfcGeometryToAtoms(ifcAPI, modelID, placedGeometry);
+            let spaceGeometry = GeometryService.convertIfcGeometryToThreeMesh(placedGeometry, vertices, indices);
+            result.set(flatMesh.expressID, spaceGeometry);
+        });
         return result;
     }
 
-    private static async transformIfcGeometryToAtoms(
+    private static transformIfcGeometryToAtoms(
         ifcAPI: IfcAPI,
         modelID: number,
         placedGeometry: PlacedGeometry
-    ): Promise<[Float32Array, Uint32Array]> {
+    ): [Float32Array, Uint32Array] {
         let geometry: IfcGeometry = ifcAPI.GetGeometry(modelID, placedGeometry.geometryExpressID);
         let vertices: Float32Array = ifcAPI.GetVertexArray(geometry.GetVertexData(), geometry.GetVertexDataSize());
         let indices = ifcAPI.GetIndexArray(geometry.GetIndexData(), geometry.GetIndexDataSize());
         return [vertices, indices];
     }
 
-    public static async convertIfcGeometryToThreeMesh(
+    public static convertIfcGeometryToThreeMesh(
         ifcMeshGeometry: PlacedGeometry,
         vertices: Float32Array,
         indices: Uint32Array
-    ): Promise<BufferGeometry> {
-        const bufferGeometry = await GeometryService.buildThreeGeometry(vertices, indices).then((e) => e);
-        const material = await GeometryService.buildMeshMaterial(ifcMeshGeometry.color).then((e) => e);
+    ): BufferGeometry {
+        const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
+        const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
         const mesh = new Mesh(bufferGeometry, material);
         const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
         mesh.matrix = matrix;
@@ -69,7 +53,27 @@ class GeometryService {
         return mesh.geometry;
     }
 
-    private static async buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): Promise<BufferGeometry> {
+    public static async compareGeometriesWorker(
+        modelIDsExpressGeometry: ModelIDExpressIDSpacesMap,
+        ifcModelExpressIdGuidsMap: ModelIDExpressIDSpacesMap
+    ) {}
+
+    private static async convertIfcGeometryToThreeMeshByWorkers(
+        ifcMeshGeometry: PlacedGeometry,
+        vertices: Float32Array,
+        indices: Uint32Array
+    ): Promise<BufferGeometry> {
+        const worker = new Worker(new URL("../workers/geometry_conversion_worker.ts", import.meta.url), {
+            type: "module",
+            name: "geometry_conversion_worker",
+        });
+        const { geometryConversionWorker } = wrap<GeometryConversionWorkerType>(worker);
+        let result = await geometryConversionWorker(ifcMeshGeometry, vertices, indices).then((e) => e);
+        worker.terminate();
+        return result;
+    }
+
+    private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {
         const geometry = new BufferGeometry();
         const positionNormalBuffer = new InterleavedBuffer(vertices, 6);
         geometry.setAttribute("position", new InterleavedBufferAttribute(positionNormalBuffer, 3, 0));
@@ -78,7 +82,7 @@ class GeometryService {
         return geometry;
     }
 
-    private static async buildMeshMaterial(ifcColor: Color): Promise<Material> {
+    private static buildMeshMaterial(ifcColor: Color): Material {
         const threeColor = new ThreeColor(ifcColor.x, ifcColor.y, ifcColor.z);
         const material = new MeshPhongMaterial({
             color: threeColor,

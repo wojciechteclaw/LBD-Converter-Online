@@ -7,9 +7,8 @@ const geometryConversionWorker = async (
     vertices: Float32Array,
     indices: Uint32Array
 ) => {
-    return await GeometryService.convertIfcGeometryToThreeMesh(ifcMeshGeometry, vertices, indices).then((e) => e);
+    return GeometryService.convertIfcGeometryToThreeMesh(ifcMeshGeometry, vertices, indices);
 };
-
 const worker = {
     geometryConversionWorker,
 };
