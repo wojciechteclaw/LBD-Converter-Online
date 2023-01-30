@@ -31,7 +31,7 @@ class IfcManagerService {
             });
         }
         alert("Files merged");
-        this.joinModels();
+        await this.joinModels();
         await dbDataController.saveStoreData();
     }
 
@@ -63,6 +63,7 @@ class IfcManagerService {
 
     public joinModels() {
         let modelsToCompare = DBDataController.getModelIdForComparison(this.modelIDsExpressStringGuid);
+        console.log(this.modelIDsExpressStringGuid);
         for (let modelPair of modelsToCompare) {
             this.compareTwoModels(modelPair[0], modelPair[1]);
         }
@@ -71,12 +72,15 @@ class IfcManagerService {
     }
 
     public compareTwoModels(model1ID, model2ID) {
-        let model1Elements = this.modelIDsExpressStringGuid.get(model1ID);
-        let model2Elements = this.modelIDsExpressStringGuid.get(model2ID);
+        let i = 0;
+        const model1Elements = this.modelIDsExpressStringGuid.get(model1ID);
+        const model2Elements = this.modelIDsExpressStringGuid.get(model2ID);
         if (model1Elements && model2Elements) {
-            for (let [expressID1, contextBasedGuid1] of model1Elements) {
-                for (let [expressID2, contextBasedGuid2] of model2Elements) {
+            for (const [expressID1, contextBasedGuid1] of model1Elements) {
+                for (const [expressID2, contextBasedGuid2] of model2Elements) {
                     if (contextBasedGuid1 === contextBasedGuid2) {
+                        console.log(contextBasedGuid1, contextBasedGuid2);
+                        i++;
                         this.addConnection(model1ID, expressID1, model2ID, expressID2, Connection.SAME_AS);
                     }
                 }
