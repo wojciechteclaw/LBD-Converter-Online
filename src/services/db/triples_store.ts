@@ -1,3 +1,4 @@
+import { NewSemanticConnection } from "@/types/new_semantic_connection";
 import init, * as oxigraph from "oxigraph/web";
 
 class TriplesStore {
@@ -24,6 +25,21 @@ class TriplesStore {
 
     public dump(): string {
         return this.store.dump("text/turtle", undefined);
+    }
+
+    private getTriplple(connection: NewSemanticConnection): oxigraph.Quad {
+        return oxigraph.triple(
+            oxigraph.namedNode(connection.subject),
+            oxigraph.namedNode(connection.predicate),
+            oxigraph.namedNode(connection.object)
+        );
+    }
+
+    public addConnections(connections: NewSemanticConnection[]) {
+        for (let connection of connections) {
+            let quad = this.getTriplple(connection);
+            this.store.add(quad);
+        }
     }
 }
 

@@ -2,6 +2,8 @@ import { JSONLD } from "ifc-lbd";
 import { quad, Quad } from "oxigraph/web";
 import { TriplesStore } from "./triples_store";
 import * as jsonld from "jsonld";
+import { ModelIDExpressContextBasedGuid } from "@/types/expressId_spaces_geometry";
+import { NewSemanticConnection } from "@/types/new_semantic_connection";
 
 class DBDataController {
     private store: TriplesStore = new TriplesStore();
@@ -45,13 +47,33 @@ class DBDataController {
         return result;
     }
 
+    public static getModelIdForComparison(
+        modelIDsExpressGeometry: ModelIDExpressContextBasedGuid
+    ): Array<Array<number>> {
+        let result = new Array<Array<number>>();
+        let set = new Set();
+        let modelIDs = Array.from(modelIDsExpressGeometry.keys());
+        for (let i = 0; i < modelIDs.length; i++) {
+            for (let j = 0; j < modelIDs.length; j++) {
+                if (i != j && !set.has(i + "," + j) && !set.has(j + "," + i)) {
+                    set.add(i + "," + j);
+                    result.push([modelIDs[i], modelIDs[j]]);
+                }
+            }
+        }
+        return result;
+    }
+
+    public addConnectionsToStore(connections: NewSemanticConnection[]): void {
+        this.store.addConnections(connections);
+    }
+
     private static getQuadFromTriple(triple: any) {
         return quad(triple.subject, triple.predicate, triple.object, triple.graph);
     }
 
     public saveStoreData(): void {
         let data = this.store.dump();
-        console.log(data);
         this.dumpData(data);
     }
 }

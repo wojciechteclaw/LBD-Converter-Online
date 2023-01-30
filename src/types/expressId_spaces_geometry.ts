@@ -1,3 +1,3 @@
-import { ExpressIDSpacesMap } from "./guid_spaces_map";
+import { ExpressIDGeometryGuid } from "./guid_spaces_map";
 
-export type ModelIDExpressIDSpacesMap = Map<number, ExpressIDSpacesMap>;
+export type ModelIDExpressContextBasedGuid = Map<number, ExpressIDGeometryGuid>;

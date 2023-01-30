@@ -1,5 +1,4 @@
-import { ModelIDExpressIDSpacesMap } from "@/types/expressId_spaces_geometry";
-import { ExpressIDSpacesMap } from "@/types/guid_spaces_map";
+import { ExpressIDGeometryGuid } from "@/types/guid_spaces_map";
 import {
     BufferGeometry,
     InterleavedBuffer,
@@ -11,22 +10,32 @@ import {
     Material,
     MeshPhongMaterial,
     DoubleSide,
+    Vector3,
 } from "three";
 import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry } from "web-ifc";
+import { IfcManagerService } from "./ifc_manager_service";
 
 class GeometryService {
-    public static async getSpacesGeometryForModelID(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDSpacesMap> {
-        let result: ExpressIDSpacesMap = new Map();
-        ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], (flatMesh: FlatMesh) => {
+    public static async getExpressIdContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDGeometryGuid> {
+        let result: ExpressIDGeometryGuid = new Map();
+        ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], async (flatMesh: FlatMesh) => {
             let placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
             let [vertices, indices] = GeometryService.transformIfcGeometryToAtoms(ifcAPI, modelID, placedGeometry);
             let spaceGeometry = GeometryService.convertIfcGeometryToThreeMesh(placedGeometry, vertices, indices);
-            result.set(flatMesh.expressID, spaceGeometry);
+            await spaceGeometry.computeBoundingSphere();
+            let volume = await GeometryService.getVolume(spaceGeometry);
+            let guid = await IfcManagerService.getContextBasedGuid(
+                spaceGeometry.boundingSphere!.center,
+                spaceGeometry.boundingSphere!.radius,
+                volume,
+                spaceGeometry.index!.array.length
+            ).then((e) => e);
+            result.set(flatMesh.expressID, guid);
         });
         return result;
     }
 
-    private static transformIfcGeometryToAtoms(
+    public static transformIfcGeometryToAtoms(
         ifcAPI: IfcAPI,
         modelID: number,
         placedGeometry: PlacedGeometry
@@ -37,12 +46,45 @@ class GeometryService {
         return [vertices, indices];
     }
 
+    public static getVolume(geometry: BufferGeometry) {
+        var isIndexed = geometry.index !== null;
+        let position = geometry.attributes.position;
+        let sum = 0;
+        let p1 = new Vector3(),
+            p2 = new Vector3(),
+            p3 = new Vector3();
+        if (!isIndexed) {
+            let faces = position.count / 3;
+            for (let i = 0; i < faces; i++) {
+                p1.fromBufferAttribute(position, i * 3 + 0);
+                p2.fromBufferAttribute(position, i * 3 + 1);
+                p3.fromBufferAttribute(position, i * 3 + 2);
+                sum += GeometryService.signedVolumeOfTriangle(p1, p2, p3);
+            }
+        } else {
+            let index = geometry.index;
+            let faces = index!.count / 3;
+            for (let i = 0; i < faces; i++) {
+                p1.fromBufferAttribute(position, index!.array[i * 3 + 0]);
+                p2.fromBufferAttribute(position, index!.array[i * 3 + 1]);
+                p3.fromBufferAttribute(position, index!.array[i * 3 + 2]);
+                sum += GeometryService.signedVolumeOfTriangle(p1, p2, p3);
+            }
+        }
+        return sum;
+    }
+
+    private static signedVolumeOfTriangle(p1: Vector3, p2: Vector3, p3: Vector3) {
+        return p1.dot(p2.cross(p3)) / 6.0;
+    }
+
     public static convertIfcGeometryToThreeMesh(
         ifcMeshGeometry: PlacedGeometry,
         vertices: Float32Array,
         indices: Uint32Array
     ): BufferGeometry {
         const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
+        bufferGeometry.computeVertexNormals();
         const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
         const mesh = new Mesh(bufferGeometry, material);
         const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
@@ -50,12 +92,6 @@ class GeometryService {
         mesh.matrixAutoUpdate = false;
         return mesh.geometry;
     }
-
-    public static async compareGeometriesWorker(
-        modelIDsExpressGeometry: ModelIDExpressIDSpacesMap,
-        ifcModelExpressIdGuidsMap: ModelIDExpressIDSpacesMap
-    ) {}
-
 
     private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {
         const geometry = new BufferGeometry();
