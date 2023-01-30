@@ -25,6 +25,7 @@ class IfcManagerService {
         }
         alert("Files merged");
         console.timeEnd("filesMerging");
+        dbDataController.saveStoreData();
     }
 
     public async appendFileToIfcAPI(file: File): Promise<number> {

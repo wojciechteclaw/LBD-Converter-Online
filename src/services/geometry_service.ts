@@ -1,7 +1,5 @@
 import { ModelIDExpressIDSpacesMap } from "@/types/expressId_spaces_geometry";
 import { ExpressIDSpacesMap } from "@/types/guid_spaces_map";
-import { GeometryConversionWorkerType } from "@/workers/geometry_conversion_worker";
-import { wrap } from "comlink";
 import {
     BufferGeometry,
     InterleavedBuffer,
@@ -58,20 +56,6 @@ class GeometryService {
         ifcModelExpressIdGuidsMap: ModelIDExpressIDSpacesMap
     ) {}
 
-    private static async convertIfcGeometryToThreeMeshByWorkers(
-        ifcMeshGeometry: PlacedGeometry,
-        vertices: Float32Array,
-        indices: Uint32Array
-    ): Promise<BufferGeometry> {
-        const worker = new Worker(new URL("../workers/geometry_conversion_worker.ts", import.meta.url), {
-            type: "module",
-            name: "geometry_conversion_worker",
-        });
-        const { geometryConversionWorker } = wrap<GeometryConversionWorkerType>(worker);
-        let result = await geometryConversionWorker(ifcMeshGeometry, vertices, indices).then((e) => e);
-        worker.terminate();
-        return result;
-    }
 
     private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {
         const geometry = new BufferGeometry();
