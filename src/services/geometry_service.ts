@@ -21,9 +21,11 @@ class GeometryService {
         ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], async (flatMesh: FlatMesh) => {
             let placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
             let [vertices, indices] = GeometryService.transformIfcGeometryToAtoms(ifcAPI, modelID, placedGeometry);
-            let spaceGeometry = GeometryService.convertIfcGeometryToThreeMesh(placedGeometry, vertices, indices);
-            await spaceGeometry.computeBoundingSphere();
-            let volume = await GeometryService.getVolume(spaceGeometry);
+            let spaceMesh = GeometryService.convertIfcGeometryToThreeMesh(placedGeometry, vertices, indices);
+            spaceMesh.geometry.computeBoundingSphere();
+            spaceMesh.geometry.boundingSphere!.applyMatrix4(spaceMesh.matrix);
+            let spaceGeometry = spaceMesh.geometry;
+            let volume = await GeometryService.getVolume(spaceMesh.geometry);
             let guid = await IfcManagerService.getContextBasedGuid(
                 spaceGeometry.boundingSphere!.center,
                 spaceGeometry.boundingSphere!.radius,
@@ -82,7 +84,7 @@ class GeometryService {
         ifcMeshGeometry: PlacedGeometry,
         vertices: Float32Array,
         indices: Uint32Array
-    ): BufferGeometry {
+    ): Mesh {
         const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
         bufferGeometry.computeVertexNormals();
         const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
@@ -90,7 +92,7 @@ class GeometryService {
         const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
         mesh.matrix = matrix;
         mesh.matrixAutoUpdate = false;
-        return mesh.geometry;
+        return mesh;
     }
 
     private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {

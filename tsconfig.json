@@ -8,7 +8,10 @@
         "skipDefaultLibCheck": true,
         "jsx": "react-jsx",
         "moduleResolution": "node",
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "declaration": true,
+        "sourceMap": true,
+        
     },
     "include": [
         "src"

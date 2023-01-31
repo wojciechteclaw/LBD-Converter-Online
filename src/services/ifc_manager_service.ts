@@ -10,6 +10,7 @@ import { DBDataController } from "./db/db_data_controller";
 import { Connection } from "../enums/connection";
 import { NewSemanticConnection } from "../types/new_semantic_connection";
 import { getConnectionPredicate } from "../helpers/connection_predicates";
+import { ExpressIDGeometryGuid } from "@/types/guid_spaces_map";
 
 class IfcManagerService {
     private ifcAPI: IfcAPI = new IfcAPI();
@@ -30,7 +31,6 @@ class IfcManagerService {
                 await dbDataController.addJsonLdToStore(e as JSONLD);
             });
         }
-        alert("Files merged");
         await this.joinModels();
         await dbDataController.saveStoreData();
     }
@@ -46,8 +46,9 @@ class IfcManagerService {
         volume: number,
         numberOfIndexPoints: number
     ): Promise<string> {
-        let contextString = `${Math.round(sphereCenter.x)} ${Math.round(sphereCenter.y)}
-        ${Math.round(sphereCenter.z)} ${Math.round(radius)} ${Math.round(volume)} ${numberOfIndexPoints}`;
+        let contextString = `${sphereCenter.x.toFixed(3)} ${sphereCenter.y.toFixed(3)} ${sphereCenter.z.toFixed(
+            3
+        )} ${radius.toFixed(3)} ${volume.toFixed(3)} ${numberOfIndexPoints}`;
         return await IfcManagerService.contextBasedGuid(contextString);
     }
 
@@ -67,22 +68,17 @@ class IfcManagerService {
         for (let modelPair of modelsToCompare) {
             this.compareTwoModels(modelPair[0], modelPair[1]);
         }
-        console.log(this.connections.length);
+        console.log(this.connections);
         dbDataController.addConnectionsToStore(this.connections);
     }
 
     public compareTwoModels(model1ID, model2ID) {
-        let i = 0;
-        const model1Elements = this.modelIDsExpressStringGuid.get(model1ID);
-        const model2Elements = this.modelIDsExpressStringGuid.get(model2ID);
-        if (model1Elements && model2Elements) {
-            for (const [expressID1, contextBasedGuid1] of model1Elements) {
-                for (const [expressID2, contextBasedGuid2] of model2Elements) {
-                    if (contextBasedGuid1 === contextBasedGuid2) {
-                        console.log(contextBasedGuid1, contextBasedGuid2);
-                        i++;
-                        this.addConnection(model1ID, expressID1, model2ID, expressID2, Connection.SAME_AS);
-                    }
+        const model1Elements = this.modelIDsExpressStringGuid.get(model1ID) as ExpressIDGeometryGuid;
+        const model2Elements = this.modelIDsExpressStringGuid.get(model2ID) as ExpressIDGeometryGuid;
+        for (const [expressID1, contextBasedGuid1] of model1Elements) {
+            for (const [expressID2, contextBasedGuid2] of model2Elements) {
+                if (contextBasedGuid1 === contextBasedGuid2) {
+                    this.addConnection(model1ID, expressID1, model2ID, expressID2, Connection.SAME_AS);
                 }
             }
         }
@@ -92,11 +88,9 @@ class IfcManagerService {
         let predicate = getConnectionPredicate(connectionType);
         let item1URI = this.GetURI(model1ID, expressID1);
         let item2URI = this.GetURI(model2ID, expressID2);
-        if (item1URI != item2URI) {
-            this.connections.push({ subject: item1URI, object: item2URI, predicate: predicate });
-            if (isBidirectional) {
-                this.connections.push({ subject: item2URI, object: item1URI, predicate: predicate });
-            }
+        this.connections.push({ subject: item1URI, object: item2URI, predicate: predicate });
+        if (isBidirectional) {
+            this.connections.push({ subject: item2URI, object: item1URI, predicate: predicate });
         }
         return true;
     }
