@@ -1,23 +1,55 @@
-import { Color, IfcAPI, IfcConnectionGeometry, IfcGeometry, IFCSPACE, PlacedGeometry } from "web-ifc";
-import * as THREE from "three";
+import { ModelIDExpressContextBasedGuid } from "@/types/expressId_spaces_geometry";
+import { JSONLD, LBDParser } from "ifc-lbd";
+import { Vector3 } from "three";
+import { IfcAPI } from "web-ifc";
+import { v5 as uuidv5 } from "uuid";
+import { dbDataController, filesService } from "./dependency_injection";
 import { FilesService } from "./files_service";
 import { GeometryService } from "./geometry_service";
-import { ModelIDExpressIDSpacesMap } from "@/types/expressId_spaces_geometry";
-import { ExpressIDSpacesMap } from "@/types/guid_spaces_map";
+import { DBDataController } from "./db/db_data_controller";
+import { Connection } from "../enums/connection";
+import { NewSemanticConnection } from "../types/new_semantic_connection";
+import { getConnectionPredicate } from "../helpers/connection_predicates";
+import { ExpressIDGeometryGuid } from "@/types/guid_spaces_map";
 
 class IfcManagerService {
     private ifcAPI: IfcAPI = new IfcAPI();
-    private ifcSpacesGeometry: ModelIDExpressIDSpacesMap = new Map();
     private ifcModelExpressIdGuidsMap: Map<number, Map<number | string, number | string>> = new Map();
+    private modelIDsExpressStringGuid: ModelIDExpressContextBasedGuid = new Map();
+    private connections: Array<NewSemanticConnection> = new Array();
 
     constructor() {
         this.configureIfcAPI();
     }
 
-    private configureIfcAPI() {
-        let assetsPath = "../../assets/";
-        this.ifcAPI.SetWasmPath(assetsPath);
-        this.ifcAPI.Init();
+    public async mergeFiles() {
+        console.time("filesMerging");
+        let items = filesService.getAllFileObjects();
+        for (let i = 0; i < items.length; i++) {
+            let lbdParser = new LBDParser(items[i].parserSettings);
+            await lbdParser.parse(this.ifcAPI, items[i].modelID).then(async (e) => {
+                await dbDataController.addJsonLdToStore(e as JSONLD);
+            });
+        }
+        await this.joinModels();
+        await dbDataController.saveStoreData();
+    }
+
+    private static async contextBasedGuid(contextString: string) {
+        const namespace = "daca0510-72b5-48ba-9091-b918ca18136b";
+        return uuidv5(contextString, namespace);
+    }
+
+    public static async getContextBasedGuid(
+        sphereCenter: Vector3,
+        radius: number,
+        volume: number,
+        numberOfIndexPoints: number
+    ): Promise<string> {
+        let contextString = `${sphereCenter.x.toFixed(3)} ${sphereCenter.y.toFixed(3)} ${sphereCenter.z.toFixed(
+            3
+        )} ${radius.toFixed(3)} ${volume.toFixed(3)} ${numberOfIndexPoints}`;
+        return await IfcManagerService.contextBasedGuid(contextString);
     }
 
     public async appendFileToIfcAPI(file: File): Promise<number> {
@@ -25,13 +57,55 @@ class IfcManagerService {
         let parsedBuffer = new Uint8Array(fileBuffer);
         let modelID = this.ifcAPI.OpenModel(parsedBuffer);
         await this.appendExpressIdGuidMap(modelID);
-        await this.appendSpacesGeometryMap(modelID);
+        let geometryResults = await GeometryService.getExpressIdContextGuidMap(modelID, this.ifcAPI).then((e) => e);
+        this.modelIDsExpressStringGuid.set(modelID, geometryResults);
         return modelID;
     }
 
-    private async appendSpacesGeometryMap(modelID): Promise<void> {
-        let spacesGeometryMap = await GeometryService.getSpacesGeometry(modelID, this.ifcAPI).then((e) => e);
-        this.ifcSpacesGeometry.set(modelID, spacesGeometryMap);
+    public joinModels() {
+        let modelsToCompare = DBDataController.getModelIdForComparison(this.modelIDsExpressStringGuid);
+        console.log(this.modelIDsExpressStringGuid);
+        for (let modelPair of modelsToCompare) {
+            this.compareTwoModels(modelPair[0], modelPair[1]);
+        }
+        console.log(this.connections);
+        dbDataController.addConnectionsToStore(this.connections);
+    }
+
+    public compareTwoModels(model1ID, model2ID) {
+        const model1Elements = this.modelIDsExpressStringGuid.get(model1ID) as ExpressIDGeometryGuid;
+        const model2Elements = this.modelIDsExpressStringGuid.get(model2ID) as ExpressIDGeometryGuid;
+        for (const [expressID1, contextBasedGuid1] of model1Elements) {
+            for (const [expressID2, contextBasedGuid2] of model2Elements) {
+                if (contextBasedGuid1 === contextBasedGuid2) {
+                    this.addConnection(model1ID, expressID1, model2ID, expressID2, Connection.SAME_AS);
+                }
+            }
+        }
+    }
+
+    public addConnection(model1ID, expressID1, model2ID, expressID2, connectionType, isBidirectional = true) {
+        let predicate = getConnectionPredicate(connectionType);
+        let item1URI = this.GetURI(model1ID, expressID1);
+        let item2URI = this.GetURI(model2ID, expressID2);
+        this.connections.push({ subject: item1URI, object: item2URI, predicate: predicate });
+        if (isBidirectional) {
+            this.connections.push({ subject: item2URI, object: item1URI, predicate: predicate });
+        }
+        return true;
+    }
+
+    private GetURI(modelID: number, expressID: number): string {
+        let settings = filesService.getParserSettings(modelID);
+        let prefix = settings.namespace.endsWith("/") ? settings.namespace : settings.namespace + "/";
+        let guid = this.ifcModelExpressIdGuidsMap.get(modelID)!.get(expressID);
+        return prefix + guid;
+    }
+
+    private configureIfcAPI() {
+        let assetsPath = "../../assets/";
+        this.ifcAPI.SetWasmPath(assetsPath);
+        this.ifcAPI.Init();
     }
 
     private async appendExpressIdGuidMap(modelID: number): Promise<void> {
@@ -50,8 +124,6 @@ class IfcManagerService {
     private async removeExpressIdGuidMap(modelID: number): Promise<void> {
         this.ifcModelExpressIdGuidsMap.delete(modelID);
     }
-
-    private async removeSpacesGeometryMap(modelID: number): Promise<void> {}
 }
 
 export { IfcManagerService };

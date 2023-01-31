@@ -1,28 +1,45 @@
-import init, * as oxigraph from "oxigraph/web.js";
+import { NewSemanticConnection } from "@/types/new_semantic_connection";
+import init, * as oxigraph from "oxigraph/web";
 
 class TriplesStore {
-    private store: oxigraph.Store | undefined;
+    private store: oxigraph.Store;
 
     constructor() {
-        this.initStore();
-    }
-
-    private initStore() {
-        console.time("store initialized");
-        // init("./node_modules/web/web_bg.wasm").then((e) => console.log(e));
-        // new oxigraph.Store();
-        console.timeEnd("store initialized");
+        (async () => {
+            await init();
+            this.store = new oxigraph.Store();
+            console.log("Store initialized");
+            console.log(this.store);
+        })();
     }
 
     public addTriples(triples: oxigraph.Quad[]) {
-        triples.forEach((triple) => {
-            this.store!.add(triple);
+        triples.forEach((triple: oxigraph.Quad) => {
+            this.store.add(triple);
         });
-        this.report();
     }
 
-    public report() {
-        console.log(this.store!.size);
+    public report(): void {
+        console.log(this.store.size);
+    }
+
+    public dump(): string {
+        return this.store.dump("text/turtle", undefined);
+    }
+
+    private getTriplple(connection: NewSemanticConnection): oxigraph.Quad {
+        return oxigraph.triple(
+            oxigraph.namedNode(connection.subject),
+            oxigraph.namedNode(connection.predicate),
+            oxigraph.namedNode(connection.object)
+        );
+    }
+
+    public addConnections(connections: NewSemanticConnection[]) {
+        for (let connection of connections) {
+            let quad = this.getTriplple(connection);
+            this.store.add(quad);
+        }
     }
 }
 

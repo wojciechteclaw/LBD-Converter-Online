@@ -6,26 +6,26 @@ class FilesService {
     private fileObjects: Array<ParsingObject> = [];
 
     private defaultParserSettings: ParserSettings = {
-        namespace: "http://www.w3.org/2000/svg",
+        namespace: "http://www.w3.org/",
         subsets: {
             BOT: true,
-            FSO: false,
-            PRODUCTS: true,
+            FSO: true,
+            PRODUCTS: false,
             PROPERTIES: false,
         },
         outputFormat: SerializationFormat.JSONLD,
-        normalizeToSIUnits: true,
-        verbose: true,
+        normalizeToSIUnits: false,
+        verbose: false,
     };
 
     public async addFile(file: File, parserSettings: ParserSettings = this.defaultParserSettings): Promise<void> {
         let modelID = await ifcManagerService.appendFileToIfcAPI(file).then((e) => e);
-        this.fileObjects.push({ fileName:file.name, parserSettings, modelID });
+        this.fileObjects.push({ fileName: file.name, parserSettings, modelID });
     }
 
-    public async removeFile(fileIndex: number): Promise<void> {
-        ifcManagerService.removeFileFromIfcAPI(fileIndex);
-        this.fileObjects.splice(fileIndex, 1);
+    public async removeFile(modelID: number): Promise<void> {
+        ifcManagerService.removeFileFromIfcAPI(modelID);
+        this.fileObjects = this.fileObjects.filter((parsingObject) => parsingObject.modelID !== modelID);
     }
 
     public getAllFileObjects(): ParsingObject[] {
