@@ -17,6 +17,33 @@ import { GuidUriService } from "./guid_uri_service";
 import { IfcManagerService } from "./ifc_manager_service";
 
 class GeometryService {
+    public static convertIfcGeometryToThreeMesh(
+        ifcMeshGeometry: PlacedGeometry,
+        vertices: Float32Array,
+        indices: Uint32Array
+    ): Mesh {
+        const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
+        bufferGeometry.computeVertexNormals();
+        const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
+        const mesh = new Mesh(bufferGeometry, material);
+        const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
+        mesh.matrix = matrix;
+        mesh.matrixAutoUpdate = false;
+        return mesh;
+    }
+
+    public static async getLevelsContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
+        let levels = ifcAPI.GetLineIDsWithType(modelID, IFCBUILDINGSTOREY);
+        let result: ExpressIDContextGuid = new Map();
+        for (let i = 0; i < levels.size(); i++) {
+            let expressID = levels.get(i);
+            let level = ifcAPI.GetLine(modelID, expressID);
+            let guid = await GuidUriService.getLevelContextBasedGuid(level);
+            result.set(expressID, guid);
+        }
+        return result;
+    }
+
     public static async getSpacesContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
         let result: ExpressIDContextGuid = new Map();
         ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], async (flatMesh: FlatMesh) => {
@@ -38,18 +65,6 @@ class GeometryService {
         return result;
     }
 
-    public static async getLevelsContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
-        let levels = ifcAPI.GetLineIDsWithType(modelID, IFCBUILDINGSTOREY);
-        let result: ExpressIDContextGuid = new Map();
-        for (let i = 0; i < levels.size(); i++) {
-            let expressID = levels.get(i);
-            let level = ifcAPI.GetLine(modelID, expressID);
-            let guid = await GuidUriService.getLevelContextBasedGuid(level);
-            result.set(expressID, guid);
-        }
-        return result;
-    }
-
     public static transformIfcGeometryToAtoms(
         ifcAPI: IfcAPI,
         modelID: number,
@@ -61,22 +76,29 @@ class GeometryService {
         return [vertices, indices];
     }
 
-    public static convertIfcGeometryToThreeMesh(
-        ifcMeshGeometry: PlacedGeometry,
-        vertices: Float32Array,
-        indices: Uint32Array
-    ): Mesh {
-        const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
-        bufferGeometry.computeVertexNormals();
-        const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
-        const mesh = new Mesh(bufferGeometry, material);
-        const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
-        mesh.matrix = matrix;
-        mesh.matrixAutoUpdate = false;
-        return mesh;
+    private static buildMeshMaterial(ifcColor: Color): Material {
+        const threeColor = new ThreeColor(ifcColor.x, ifcColor.y, ifcColor.z);
+        const material = new MeshPhongMaterial({
+            color: threeColor,
+            side: DoubleSide,
+        });
+        material.transparent = ifcColor.w !== 1;
+        if (material.transparent) {
+            material.opacity = ifcColor.w;
+        }
+        return material;
     }
 
-    public static getVolume(geometry: BufferGeometry) {
+    private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {
+        const geometry = new BufferGeometry();
+        const positionNormalBuffer = new InterleavedBuffer(vertices, 6);
+        geometry.setAttribute("position", new InterleavedBufferAttribute(positionNormalBuffer, 3, 0));
+        geometry.setAttribute("normal", new InterleavedBufferAttribute(positionNormalBuffer, 3, 3));
+        geometry.setIndex(new BufferAttribute(indices, 1));
+        return geometry;
+    }
+
+    private static getVolume(geometry: BufferGeometry) {
         var isIndexed = geometry.index !== null;
         let position = geometry.attributes.position;
         let sum = 0;
@@ -106,28 +128,6 @@ class GeometryService {
 
     private static signedVolumeOfTriangle(p1: Vector3, p2: Vector3, p3: Vector3) {
         return p1.dot(p2.cross(p3)) / 6.0;
-    }
-
-    private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {
-        const geometry = new BufferGeometry();
-        const positionNormalBuffer = new InterleavedBuffer(vertices, 6);
-        geometry.setAttribute("position", new InterleavedBufferAttribute(positionNormalBuffer, 3, 0));
-        geometry.setAttribute("normal", new InterleavedBufferAttribute(positionNormalBuffer, 3, 3));
-        geometry.setIndex(new BufferAttribute(indices, 1));
-        return geometry;
-    }
-
-    private static buildMeshMaterial(ifcColor: Color): Material {
-        const threeColor = new ThreeColor(ifcColor.x, ifcColor.y, ifcColor.z);
-        const material = new MeshPhongMaterial({
-            color: threeColor,
-            side: DoubleSide,
-        });
-        material.transparent = ifcColor.w !== 1;
-        if (material.transparent) {
-            material.opacity = ifcColor.w;
-        }
-        return material;
     }
 }
 

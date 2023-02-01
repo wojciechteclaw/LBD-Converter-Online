@@ -4,9 +4,8 @@ import { ifcManagerService } from "./dependency_injection";
 
 class FilesService {
     private fileObjects: Array<ParsingObject> = [];
-
-    private defaultParserSettings: ParserSettings = {
-        namespace: "http://www.w3.org/",
+    private readonly DEFAULT_PARSER_SETTINGS: ParserSettings = {
+        namespace: "http://www.theproject.org/",
         subsets: {
             BOT: true,
             FSO: true,
@@ -18,26 +17,26 @@ class FilesService {
         verbose: false,
     };
 
-    public async addFile(file: File, parserSettings: ParserSettings = this.defaultParserSettings): Promise<void> {
+    public async addFile(file: File, parserSettings: ParserSettings = this.DEFAULT_PARSER_SETTINGS): Promise<void> {
         let modelID = await ifcManagerService.appendFileToIfcAPI(file).then((e) => e);
         this.fileObjects.push({ fileName: file.name, parserSettings, modelID });
-    }
-
-    public async removeFile(modelID: number): Promise<void> {
-        ifcManagerService.removeFileFromIfcAPI(modelID);
-        this.fileObjects = this.fileObjects.filter((parsingObject) => parsingObject.modelID !== modelID);
     }
 
     public getAllFileObjects(): ParsingObject[] {
         return this.fileObjects;
     }
 
+    public getParserSettings(index: number): ParserSettings {
+        return this.fileObjects[index].parserSettings;
+    }
+
     public overrideParserSettings(index: number, parserSettings: ParserSettings): void {
         this.fileObjects[index].parserSettings = parserSettings;
     }
 
-    public getParserSettings(index: number): ParserSettings {
-        return this.fileObjects[index].parserSettings;
+    public async removeFile(modelID: number): Promise<void> {
+        ifcManagerService.removeFileFromIfcAPI(modelID);
+        this.fileObjects = this.fileObjects.filter((parsingObject) => parsingObject.modelID !== modelID);
     }
 
     public static async readInputFile(file: File): Promise<ArrayBuffer> {

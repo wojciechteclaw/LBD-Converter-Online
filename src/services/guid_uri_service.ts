@@ -30,7 +30,7 @@ class GuidUriService {
         return await GuidUriService.contextBasedGuid(contextString);
     }
 
-    public static GetElementURI(modelID: number, expressID: number): string {
+    public static getElementURI(modelID: number, expressID: number): string {
         let settings = filesService.getParserSettings(modelID);
         let prefix = settings.namespace.endsWith("/") ? settings.namespace : settings.namespace + "/";
         let guid = ifcManagerService.getExpressIDGuidMap(modelID, expressID);

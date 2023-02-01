@@ -23,37 +23,18 @@ class IfcManagerService {
         this.configureIfcAPI();
     }
 
-    public async mergeFiles() {
-        console.time("filesMerging");
-        let items = filesService.getAllFileObjects();
-        for (let i = 0; i < items.length; i++) {
-            let lbdParser = new LBDParser(items[i].parserSettings);
-            await lbdParser.parse(this.ifcAPI, items[i].modelID).then(async (e) => {
-                await dbDataController.addJsonLdToStore(e as JSONLD);
-            });
-        }
-        await this.joinModels();
-        await dbDataController.saveStoreData();
-    }
-
     public async appendFileToIfcAPI(file: File): Promise<number> {
         let fileBuffer = await FilesService.readInputFile(file).then((e) => e);
         let parsedBuffer = new Uint8Array(fileBuffer);
         let modelID = this.ifcAPI.OpenModel(parsedBuffer);
         await this.appendExpressIdGuidMap(modelID);
-        let spaces = await GeometryService.getSpacesContextGuidMap(modelID, this.ifcAPI).then((e) => e);
-        let levels = await GeometryService.getLevelsContextGuidMap(modelID, this.ifcAPI).then((e) => e);
+        let promises = Array<Promise<ExpressIDContextGuid>>();
+        promises.push(GeometryService.getSpacesContextGuidMap(modelID, this.ifcAPI));
+        promises.push(GeometryService.getLevelsContextGuidMap(modelID, this.ifcAPI));
+        let [spaces, levels] = await Promise.all(promises);
         const mergedMaps: ExpressIDContextGuid = new Map([...spaces.entries(), ...levels.entries()]);
         this.modelIDsExpressStringGuid.set(modelID, mergedMaps);
         return modelID;
-    }
-
-    public joinModels() {
-        let modelsToCompare = DBDataController.getModelIdForComparison(this.modelIDsExpressStringGuid);
-        for (let modelPair of modelsToCompare) {
-            this.compareTwoModelsContextGuids(modelPair[0], modelPair[1]);
-        }
-        dbDataController.addConnectionsToStore(this.connections);
     }
 
     public compareTwoModelsContextGuids(model1ID, model2ID) {
@@ -68,17 +49,6 @@ class IfcManagerService {
         }
     }
 
-    public addConnection(model1ID, expressID1, model2ID, expressID2, connectionType, isBidirectional = true) {
-        let predicate = getConnectionPredicate(connectionType);
-        let item1URI = GuidUriService.GetElementURI(model1ID, expressID1);
-        let item2URI = GuidUriService.GetElementURI(model2ID, expressID2);
-        this.connections.push({ subject: item1URI, object: item2URI, predicate: predicate });
-        if (isBidirectional) {
-            this.connections.push({ subject: item2URI, object: item1URI, predicate: predicate });
-        }
-        return true;
-    }
-
     public getExpressIDGuidMap(modelID: number, expressID: number): string | undefined {
         let model = this.ifcModelExpressIdGuidsMap.get(modelID);
         if (model !== undefined) {
@@ -86,10 +56,41 @@ class IfcManagerService {
         }
     }
 
-    private configureIfcAPI() {
-        let assetsPath = "../../assets/";
-        this.ifcAPI.SetWasmPath(assetsPath);
-        this.ifcAPI.Init();
+    public joinModels() {
+        let modelsToCompare = DBDataController.getModelIdForComparison(this.modelIDsExpressStringGuid);
+        for (let modelPair of modelsToCompare) {
+            this.compareTwoModelsContextGuids(modelPair[0], modelPair[1]);
+        }
+        dbDataController.addConnectionsToStore(this.connections);
+    }
+
+    public async mergeFiles() {
+        console.time("filesMerging");
+        let items = filesService.getAllFileObjects();
+        for (let i = 0; i < items.length; i++) {
+            let lbdParser = new LBDParser(items[i].parserSettings);
+            await lbdParser.parse(this.ifcAPI, items[i].modelID).then(async (e) => {
+                await dbDataController.addJsonLdToStore(e as JSONLD);
+            });
+        }
+        await this.joinModels();
+        await dbDataController.saveStoreData();
+    }
+
+    public async removeFileFromIfcAPI(modelID: number): Promise<void> {
+        this.ifcAPI.CloseModel(modelID);
+        await this.removeExpressIdGuidMap(modelID);
+    }
+
+    private addConnection(model1ID, expressID1, model2ID, expressID2, connectionType, isBidirectional = true) {
+        let predicate = getConnectionPredicate(connectionType);
+        let item1URI = GuidUriService.getElementURI(model1ID, expressID1);
+        let item2URI = GuidUriService.getElementURI(model2ID, expressID2);
+        this.connections.push({ subject: item1URI, object: item2URI, predicate: predicate });
+        if (isBidirectional) {
+            this.connections.push({ subject: item2URI, object: item1URI, predicate: predicate });
+        }
+        return true;
     }
 
     private async appendExpressIdGuidMap(modelID: number): Promise<void> {
@@ -100,9 +101,10 @@ class IfcManagerService {
         }
     }
 
-    public async removeFileFromIfcAPI(modelID: number): Promise<void> {
-        this.ifcAPI.CloseModel(modelID);
-        await this.removeExpressIdGuidMap(modelID);
+    private configureIfcAPI() {
+        let assetsPath = "../../assets/";
+        this.ifcAPI.SetWasmPath(assetsPath);
+        this.ifcAPI.Init();
     }
 
     private async removeExpressIdGuidMap(modelID: number): Promise<void> {
