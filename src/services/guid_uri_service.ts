@@ -19,9 +19,7 @@ class GuidUriService {
         volume: number,
         numberOfIndexPoints: number
     ): Promise<string> {
-        let contextString = `${sphereCenter.x.toFixed(3)} ${sphereCenter.y.toFixed(3)} ${sphereCenter.z.toFixed(
-            3
-        )} ${radius.toFixed(3)} ${volume.toFixed(3)} ${numberOfIndexPoints}`;
+        let contextString = `${sphereCenter.x.toFixed(3)} ${sphereCenter.y.toFixed(3)} ${sphereCenter.z.toFixed(3)} ${radius.toFixed(3)} ${volume.toFixed(3)} ${numberOfIndexPoints}`;
         return await GuidUriService.contextBasedGuid(contextString);
     }
 
