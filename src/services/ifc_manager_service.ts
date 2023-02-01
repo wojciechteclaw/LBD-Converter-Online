@@ -41,37 +41,27 @@ class IfcManagerService {
         let parsedBuffer = new Uint8Array(fileBuffer);
         let modelID = this.ifcAPI.OpenModel(parsedBuffer);
         await this.appendExpressIdGuidMap(modelID);
-        let geometryResults = await GeometryService.getSpacesExpressIdContextGuidMap(modelID, this.ifcAPI).then(
-            (e) => e
-        );
-        let levelsInformation = await GeometryService.getLevelsExpressIdContextGuidMap(modelID, this.ifcAPI).then(
-            (e) => e
-        );
-        const mergedMaps: ExpressIDContextGuid = new Map([
-            ...geometryResults.entries(),
-            ...levelsInformation.entries(),
-        ]);
+        let spaces = await GeometryService.getSpacesContextGuidMap(modelID, this.ifcAPI).then((e) => e);
+        let levels = await GeometryService.getLevelsContextGuidMap(modelID, this.ifcAPI).then((e) => e);
+        const mergedMaps: ExpressIDContextGuid = new Map([...spaces.entries(), ...levels.entries()]);
         this.modelIDsExpressStringGuid.set(modelID, mergedMaps);
-        console.log(mergedMaps);
         return modelID;
     }
 
     public joinModels() {
         let modelsToCompare = DBDataController.getModelIdForComparison(this.modelIDsExpressStringGuid);
-        console.log(this.modelIDsExpressStringGuid);
         for (let modelPair of modelsToCompare) {
-            this.compareTwoModels(modelPair[0], modelPair[1]);
+            this.compareTwoModelsContextGuids(modelPair[0], modelPair[1]);
         }
         dbDataController.addConnectionsToStore(this.connections);
     }
 
-    public compareTwoModels(model1ID, model2ID) {
+    public compareTwoModelsContextGuids(model1ID, model2ID) {
         const model1Elements = this.modelIDsExpressStringGuid.get(model1ID) as ExpressIDContextGuid;
         const model2Elements = this.modelIDsExpressStringGuid.get(model2ID) as ExpressIDContextGuid;
         for (const [expressID1, contextBasedGuid1] of model1Elements) {
             for (const [expressID2, contextBasedGuid2] of model2Elements) {
                 if (contextBasedGuid1 === contextBasedGuid2) {
-                    console.log("same", expressID1, expressID2, contextBasedGuid1, contextBasedGuid2);
                     this.addConnection(model1ID, expressID1, model2ID, expressID2, Connection.SAME_AS);
                 }
             }
@@ -89,15 +79,7 @@ class IfcManagerService {
         return true;
     }
 
-    // private GetURI(modelID: number, expressID: number): string {
-    //     let settings = filesService.getParserSettings(modelID);
-    //     let prefix = settings.namespace.endsWith("/") ? settings.namespace : settings.namespace + "/";
-    //     debugger;
-    //     let guid = this.ifcModelExpressIdGuidsMap.get(modelID)!.get(expressID);
-    //     return prefix + guid;
-    // }
-
-    public getExpressIDGuidMap(modelID: number, expressID:number): string | undefined {
+    public getExpressIDGuidMap(modelID: number, expressID: number): string | undefined {
         let model = this.ifcModelExpressIdGuidsMap.get(modelID);
         if (model !== undefined) {
             return model.get(expressID) as string;
