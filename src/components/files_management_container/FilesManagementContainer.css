@@ -9,7 +9,8 @@
     display: block;
     max-width: 350px;
     border-radius: 20px;
-
+    z-index: 10;
+    float: left;
 }
 
 .file-management-ifc-files-wrapper{
