@@ -1,1 +1,1 @@
-export type ExpressIDGeometryGuid = Map<number, string>;
+export type ExpressIDContextGuid = Map<number, string>;

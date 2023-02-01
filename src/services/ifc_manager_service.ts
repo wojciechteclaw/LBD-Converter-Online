@@ -1,4 +1,4 @@
-import { ModelIDExpressContextBasedGuid } from "@/types/expressId_spaces_geometry";
+import { ModelIDExpressContextGuid } from "@/types/express_id_context_guid";
 import { JSONLD, LBDParser } from "ifc-lbd";
 import { Vector3 } from "three";
 import { IfcAPI } from "web-ifc";
@@ -10,12 +10,12 @@ import { DBDataController } from "./db/db_data_controller";
 import { Connection } from "../enums/connection";
 import { NewSemanticConnection } from "../types/new_semantic_connection";
 import { getConnectionPredicate } from "../helpers/connection_predicates";
-import { ExpressIDGeometryGuid } from "@/types/guid_spaces_map";
+import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
 
 class IfcManagerService {
     private ifcAPI: IfcAPI = new IfcAPI();
     private ifcModelExpressIdGuidsMap: Map<number, Map<number | string, number | string>> = new Map();
-    private modelIDsExpressStringGuid: ModelIDExpressContextBasedGuid = new Map();
+    private modelIDsExpressStringGuid: ModelIDExpressContextGuid = new Map();
     private connections: Array<NewSemanticConnection> = new Array();
 
     constructor() {
@@ -40,7 +40,7 @@ class IfcManagerService {
         return uuidv5(contextString, namespace);
     }
 
-    public static async getContextBasedGuid(
+    public static async getContextBasedGuidForSpace(
         sphereCenter: Vector3,
         radius: number,
         volume: number,
@@ -73,8 +73,8 @@ class IfcManagerService {
     }
 
     public compareTwoModels(model1ID, model2ID) {
-        const model1Elements = this.modelIDsExpressStringGuid.get(model1ID) as ExpressIDGeometryGuid;
-        const model2Elements = this.modelIDsExpressStringGuid.get(model2ID) as ExpressIDGeometryGuid;
+        const model1Elements = this.modelIDsExpressStringGuid.get(model1ID) as ExpressIDContextGuid;
+        const model2Elements = this.modelIDsExpressStringGuid.get(model2ID) as ExpressIDContextGuid;
         for (const [expressID1, contextBasedGuid1] of model1Elements) {
             for (const [expressID2, contextBasedGuid2] of model2Elements) {
                 if (contextBasedGuid1 === contextBasedGuid2) {
@@ -83,6 +83,8 @@ class IfcManagerService {
             }
         }
     }
+
+    // public 
 
     public addConnection(model1ID, expressID1, model2ID, expressID2, connectionType, isBidirectional = true) {
         let predicate = getConnectionPredicate(connectionType);

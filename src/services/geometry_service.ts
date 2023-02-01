@@ -1,4 +1,4 @@
-import { ExpressIDGeometryGuid } from "@/types/guid_spaces_map";
+import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
 import {
     BufferGeometry,
     InterleavedBuffer,
@@ -16,8 +16,8 @@ import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry } from "
 import { IfcManagerService } from "./ifc_manager_service";
 
 class GeometryService {
-    public static async getExpressIdContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDGeometryGuid> {
-        let result: ExpressIDGeometryGuid = new Map();
+    public static async getExpressIdContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
+        let result: ExpressIDContextGuid = new Map();
         ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], async (flatMesh: FlatMesh) => {
             let placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
             let [vertices, indices] = GeometryService.transformIfcGeometryToAtoms(ifcAPI, modelID, placedGeometry);
@@ -26,7 +26,7 @@ class GeometryService {
             spaceMesh.geometry.boundingSphere!.applyMatrix4(spaceMesh.matrix);
             let spaceGeometry = spaceMesh.geometry;
             let volume = await GeometryService.getVolume(spaceMesh.geometry);
-            let guid = await IfcManagerService.getContextBasedGuid(
+            let guid = await IfcManagerService.getContextBasedGuidForSpace(
                 spaceGeometry.boundingSphere!.center,
                 spaceGeometry.boundingSphere!.radius,
                 volume,
@@ -46,6 +46,21 @@ class GeometryService {
         let vertices: Float32Array = ifcAPI.GetVertexArray(geometry.GetVertexData(), geometry.GetVertexDataSize());
         let indices = ifcAPI.GetIndexArray(geometry.GetIndexData(), geometry.GetIndexDataSize());
         return [vertices, indices];
+    }
+
+    public static convertIfcGeometryToThreeMesh(
+        ifcMeshGeometry: PlacedGeometry,
+        vertices: Float32Array,
+        indices: Uint32Array
+    ): Mesh {
+        const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
+        bufferGeometry.computeVertexNormals();
+        const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
+        const mesh = new Mesh(bufferGeometry, material);
+        const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
+        mesh.matrix = matrix;
+        mesh.matrixAutoUpdate = false;
+        return mesh;
     }
 
     public static getVolume(geometry: BufferGeometry) {
@@ -78,21 +93,6 @@ class GeometryService {
 
     private static signedVolumeOfTriangle(p1: Vector3, p2: Vector3, p3: Vector3) {
         return p1.dot(p2.cross(p3)) / 6.0;
-    }
-
-    public static convertIfcGeometryToThreeMesh(
-        ifcMeshGeometry: PlacedGeometry,
-        vertices: Float32Array,
-        indices: Uint32Array
-    ): Mesh {
-        const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
-        bufferGeometry.computeVertexNormals();
-        const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
-        const mesh = new Mesh(bufferGeometry, material);
-        const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
-        mesh.matrix = matrix;
-        mesh.matrixAutoUpdate = false;
-        return mesh;
     }
 
     private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {

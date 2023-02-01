@@ -2,7 +2,7 @@ import { JSONLD } from "ifc-lbd";
 import { quad, Quad } from "oxigraph/web";
 import { TriplesStore } from "./triples_store";
 import * as jsonld from "jsonld";
-import { ModelIDExpressContextBasedGuid } from "@/types/expressId_spaces_geometry";
+import { ModelIDExpressContextGuid } from "@/types/express_id_context_guid";
 import { NewSemanticConnection } from "@/types/new_semantic_connection";
 
 class DBDataController {
@@ -47,9 +47,7 @@ class DBDataController {
         return result;
     }
 
-    public static getModelIdForComparison(
-        modelIDsExpressGeometry: ModelIDExpressContextBasedGuid
-    ): Array<Array<number>> {
+    public static getModelIdForComparison(modelIDsExpressGeometry: ModelIDExpressContextGuid): Array<Array<number>> {
         let result = new Array<Array<number>>();
         let set = new Set();
         let modelIDs = Array.from(modelIDsExpressGeometry.keys());
