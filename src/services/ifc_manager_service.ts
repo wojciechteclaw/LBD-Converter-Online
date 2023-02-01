@@ -1,17 +1,15 @@
-import { ModelIDExpressContextGuid } from "@/types/express_id_context_guid";
 import { JSONLD, LBDParser } from "ifc-lbd";
-import { Vector3 } from "three";
-import { IfcAPI, IfcBuildingStorey } from "web-ifc";
-import { v5 as uuidv5 } from "uuid";
+import { IfcAPI } from "web-ifc";
+import { DBDataController } from "./db/db_data_controller";
 import { dbDataController, filesService } from "./dependency_injection";
 import { FilesService } from "./files_service";
 import { GeometryService } from "./geometry_service";
-import { DBDataController } from "./db/db_data_controller";
-import { Connection } from "../enums/connection";
-import { NewSemanticConnection } from "../types/new_semantic_connection";
-import { getConnectionPredicate } from "../helpers/connection_predicates";
-import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
 import { GuidUriService } from "./guid_uri_service";
+import { Connection } from "@enums/connection";
+import { getConnectionPredicate } from "@helpers/connection_predicates";
+import { ModelIDExpressContextGuid } from "@/types/express_id_context_guid";
+import { NewSemanticConnection } from "@/types/new_semantic_connection";
+import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
 
 class IfcManagerService {
     private ifcAPI: IfcAPI = new IfcAPI();

@@ -1,6 +1,6 @@
-import { ParsingObject } from "@/types/parsing_object";
 import { ParserSettings, SerializationFormat } from "ifc-lbd";
 import { ifcManagerService } from "./dependency_injection";
+import { ParsingObject } from "@/types/parsing_object";
 
 class FilesService {
     private fileObjects: Array<ParsingObject> = [];

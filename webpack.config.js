@@ -4,7 +4,7 @@ const path = require("path");
 module.exports = {
     plugins: [
         new HTMLWebpackPlugin({
-            template: "./src/index.html",
+            template: "./public/index.html",
         }),
     ],
     module: {
@@ -34,6 +34,8 @@ module.exports = {
             "@components": path.resolve(process.cwd(), "./src/components/"),
             "@services": path.resolve(process.cwd(), "./src/services/"),
             "@hooks": path.resolve(process.cwd(), "./src/hooks/"),
+            "@enums": path.resolve(process.cwd(), "./src/enums/"),
+            "@helpers": path.resolve(process.cwd(), "./src/helpers/"),
         },
         extensions: [".tsx", ".ts", ".jsx", ".js"],
     },

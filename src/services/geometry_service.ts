@@ -1,4 +1,3 @@
-import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
 import {
     BufferGeometry,
     InterleavedBuffer,
@@ -8,13 +7,12 @@ import {
     Matrix4,
     Color as ThreeColor,
     Material,
-    MeshPhongMaterial,
-    DoubleSide,
     Vector3,
+    MeshBasicMaterial,
 } from "three";
 import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry, IFCBUILDINGSTOREY } from "web-ifc";
+import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
 import { GuidUriService } from "./guid_uri_service";
-import { IfcManagerService } from "./ifc_manager_service";
 
 class GeometryService {
     public static convertIfcGeometryToThreeMesh(
@@ -78,10 +76,7 @@ class GeometryService {
 
     private static buildMeshMaterial(ifcColor: Color): Material {
         const threeColor = new ThreeColor(ifcColor.x, ifcColor.y, ifcColor.z);
-        const material = new MeshPhongMaterial({
-            color: threeColor,
-            side: DoubleSide,
-        });
+        let material = new MeshBasicMaterial({ color: threeColor });
         material.transparent = ifcColor.w !== 1;
         if (material.transparent) {
             material.opacity = ifcColor.w;

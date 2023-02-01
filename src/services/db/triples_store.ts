@@ -1,5 +1,5 @@
-import { NewSemanticConnection } from "@/types/new_semantic_connection";
 import init, * as oxigraph from "oxigraph/web";
+import { NewSemanticConnection } from "@/types/new_semantic_connection";
 
 class TriplesStore {
     private store: oxigraph.Store;
