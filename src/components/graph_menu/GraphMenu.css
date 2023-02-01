@@ -1,0 +1,18 @@
+#graph-menu-container {
+    margin: auto;
+    background-color: #618685;
+    bottom: 20px;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    border-top: 1px solid #5ea8a6;
+    font-weight: 600;
+}
+
+#graph-menu-content {
+    margin: auto;
+    text-align: center;
+    color: white;
+    font-size: 22px;
+    padding: 20px;
+    width: 100%;
+}

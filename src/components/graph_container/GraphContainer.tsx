@@ -1,4 +1,6 @@
 import { FC } from "react";
+import { Graph } from "@components/graph/Graph";
+import { GraphMenu } from "@components/graph_menu/GraphMenu";
 import "./GraphContainer.css";
 
 const GraphContainer: FC = () => {
@@ -7,8 +9,10 @@ const GraphContainer: FC = () => {
             <div id="graph-container-title">
                 <p>graph visualizer</p>
             </div>
-            <div id="graph-container-graph">Graph</div>
-            <div id="graph-container-bottom-menu"></div>
+            <div id="graph-container-graph">
+                <Graph />
+            </div>
+            <GraphMenu />
         </div>
     );
 };

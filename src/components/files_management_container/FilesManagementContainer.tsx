@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { FileUpload } from "@components/buttons/file_upload/FileUpload";
 import "./FilesManagementContainer.css";
 import { LoadedFile } from "../loaded_file/LoadedFile";
-import { MergeFilesButton } from "../buttons/convert_files/MergeFilesButton";
+import { MergeFilesButton } from "../buttons/merge_files/MergeFilesButton";
 import { filesService, ifcManagerService } from "@services/dependency_injection";
 
 const FilesManagementContainer: FC = () => {
