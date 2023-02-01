@@ -12,11 +12,15 @@ import {
     DoubleSide,
     Vector3,
 } from "three";
-import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry } from "web-ifc";
+import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry, IFCBUILDINGSTOREY } from "web-ifc";
+import { GuidUriService } from "./guid_uri_service";
 import { IfcManagerService } from "./ifc_manager_service";
 
 class GeometryService {
-    public static async getExpressIdContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
+    public static async getSpacesExpressIdContextGuidMap(
+        modelID: number,
+        ifcAPI: IfcAPI
+    ): Promise<ExpressIDContextGuid> {
         let result: ExpressIDContextGuid = new Map();
         ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], async (flatMesh: FlatMesh) => {
             let placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
@@ -26,7 +30,7 @@ class GeometryService {
             spaceMesh.geometry.boundingSphere!.applyMatrix4(spaceMesh.matrix);
             let spaceGeometry = spaceMesh.geometry;
             let volume = await GeometryService.getVolume(spaceMesh.geometry);
-            let guid = await IfcManagerService.getContextBasedGuidForSpace(
+            let guid = await GuidUriService.getSpaceContextBasedGuid(
                 spaceGeometry.boundingSphere!.center,
                 spaceGeometry.boundingSphere!.radius,
                 volume,
@@ -34,6 +38,21 @@ class GeometryService {
             ).then((e) => e);
             result.set(flatMesh.expressID, guid);
         });
+        return result;
+    }
+
+    public static async getLevelsExpressIdContextGuidMap(
+        modelID: number,
+        ifcAPI: IfcAPI
+    ): Promise<ExpressIDContextGuid> {
+        let levels = ifcAPI.GetLineIDsWithType(modelID, IFCBUILDINGSTOREY);
+        let result: ExpressIDContextGuid = new Map();
+        for (let i = 0; i < levels.size(); i++) {
+            let expressID = levels.get(i);
+            let level = ifcAPI.GetLine(modelID, expressID)
+            let guid = await GuidUriService.getLevelContextBasedGuid(level);
+            result.set(expressID, guid);
+        }
         return result;
     }
 

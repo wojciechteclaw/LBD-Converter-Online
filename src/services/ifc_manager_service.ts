@@ -1,7 +1,7 @@
 import { ModelIDExpressContextGuid } from "@/types/express_id_context_guid";
 import { JSONLD, LBDParser } from "ifc-lbd";
 import { Vector3 } from "three";
-import { IfcAPI } from "web-ifc";
+import { IfcAPI, IfcBuildingStorey } from "web-ifc";
 import { v5 as uuidv5 } from "uuid";
 import { dbDataController, filesService } from "./dependency_injection";
 import { FilesService } from "./files_service";
@@ -11,6 +11,7 @@ import { Connection } from "../enums/connection";
 import { NewSemanticConnection } from "../types/new_semantic_connection";
 import { getConnectionPredicate } from "../helpers/connection_predicates";
 import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
+import { GuidUriService } from "./guid_uri_service";
 
 class IfcManagerService {
     private ifcAPI: IfcAPI = new IfcAPI();
@@ -35,30 +36,23 @@ class IfcManagerService {
         await dbDataController.saveStoreData();
     }
 
-    private static async contextBasedGuid(contextString: string) {
-        const namespace = "daca0510-72b5-48ba-9091-b918ca18136b";
-        return uuidv5(contextString, namespace);
-    }
-
-    public static async getContextBasedGuidForSpace(
-        sphereCenter: Vector3,
-        radius: number,
-        volume: number,
-        numberOfIndexPoints: number
-    ): Promise<string> {
-        let contextString = `${sphereCenter.x.toFixed(3)} ${sphereCenter.y.toFixed(3)} ${sphereCenter.z.toFixed(
-            3
-        )} ${radius.toFixed(3)} ${volume.toFixed(3)} ${numberOfIndexPoints}`;
-        return await IfcManagerService.contextBasedGuid(contextString);
-    }
-
     public async appendFileToIfcAPI(file: File): Promise<number> {
         let fileBuffer = await FilesService.readInputFile(file).then((e) => e);
         let parsedBuffer = new Uint8Array(fileBuffer);
         let modelID = this.ifcAPI.OpenModel(parsedBuffer);
         await this.appendExpressIdGuidMap(modelID);
-        let geometryResults = await GeometryService.getExpressIdContextGuidMap(modelID, this.ifcAPI).then((e) => e);
-        this.modelIDsExpressStringGuid.set(modelID, geometryResults);
+        let geometryResults = await GeometryService.getSpacesExpressIdContextGuidMap(modelID, this.ifcAPI).then(
+            (e) => e
+        );
+        let levelsInformation = await GeometryService.getLevelsExpressIdContextGuidMap(modelID, this.ifcAPI).then(
+            (e) => e
+        );
+        const mergedMaps: ExpressIDContextGuid = new Map([
+            ...geometryResults.entries(),
+            ...levelsInformation.entries(),
+        ]);
+        this.modelIDsExpressStringGuid.set(modelID, mergedMaps);
+        console.log(mergedMaps);
         return modelID;
     }
 
@@ -68,7 +62,6 @@ class IfcManagerService {
         for (let modelPair of modelsToCompare) {
             this.compareTwoModels(modelPair[0], modelPair[1]);
         }
-        console.log(this.connections);
         dbDataController.addConnectionsToStore(this.connections);
     }
 
@@ -78,18 +71,17 @@ class IfcManagerService {
         for (const [expressID1, contextBasedGuid1] of model1Elements) {
             for (const [expressID2, contextBasedGuid2] of model2Elements) {
                 if (contextBasedGuid1 === contextBasedGuid2) {
+                    console.log("same", expressID1, expressID2, contextBasedGuid1, contextBasedGuid2);
                     this.addConnection(model1ID, expressID1, model2ID, expressID2, Connection.SAME_AS);
                 }
             }
         }
     }
 
-    // public 
-
     public addConnection(model1ID, expressID1, model2ID, expressID2, connectionType, isBidirectional = true) {
         let predicate = getConnectionPredicate(connectionType);
-        let item1URI = this.GetURI(model1ID, expressID1);
-        let item2URI = this.GetURI(model2ID, expressID2);
+        let item1URI = GuidUriService.GetElementURI(model1ID, expressID1);
+        let item2URI = GuidUriService.GetElementURI(model2ID, expressID2);
         this.connections.push({ subject: item1URI, object: item2URI, predicate: predicate });
         if (isBidirectional) {
             this.connections.push({ subject: item2URI, object: item1URI, predicate: predicate });
@@ -97,11 +89,19 @@ class IfcManagerService {
         return true;
     }
 
-    private GetURI(modelID: number, expressID: number): string {
-        let settings = filesService.getParserSettings(modelID);
-        let prefix = settings.namespace.endsWith("/") ? settings.namespace : settings.namespace + "/";
-        let guid = this.ifcModelExpressIdGuidsMap.get(modelID)!.get(expressID);
-        return prefix + guid;
+    // private GetURI(modelID: number, expressID: number): string {
+    //     let settings = filesService.getParserSettings(modelID);
+    //     let prefix = settings.namespace.endsWith("/") ? settings.namespace : settings.namespace + "/";
+    //     debugger;
+    //     let guid = this.ifcModelExpressIdGuidsMap.get(modelID)!.get(expressID);
+    //     return prefix + guid;
+    // }
+
+    public getExpressIDGuidMap(modelID: number, expressID:number): string | undefined {
+        let model = this.ifcModelExpressIdGuidsMap.get(modelID);
+        if (model !== undefined) {
+            return model.get(expressID) as string;
+        }
     }
 
     private configureIfcAPI() {
