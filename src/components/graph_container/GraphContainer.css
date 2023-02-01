@@ -1,6 +1,6 @@
 #graph-container-container {
     float: left;
-    width: 79vw;
+    width: 70vw;
     height: 100%;
     margin-top: 2.5vh;
     margin-left: 30px;
@@ -34,4 +34,3 @@
     font-weight: 600;
     text-transform: uppercase;
 }
-
