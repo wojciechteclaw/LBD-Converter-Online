@@ -1,4 +1,4 @@
-import { Connection } from "../enums/connection";
+import { Connection } from "@enums/connection";
 
 export function getConnectionPredicate(connection: Connection) {
     switch (connection) {

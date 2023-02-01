@@ -2,7 +2,7 @@ import { JSONLD } from "ifc-lbd";
 import { quad, Quad } from "oxigraph/web";
 import { TriplesStore } from "./triples_store";
 import * as jsonld from "jsonld";
-import { ModelIDExpressContextBasedGuid } from "@/types/expressId_spaces_geometry";
+import { ModelIDExpressContextGuid } from "@/types/express_id_context_guid";
 import { NewSemanticConnection } from "@/types/new_semantic_connection";
 
 class DBDataController {
@@ -13,17 +13,8 @@ class DBDataController {
         this.store.addTriples(quads);
     }
 
-    private downloadData(triples: string | JSONLD, filename: string): void {
-        const content = JSON.stringify(triples, null, 2);
-        const fileType = "application/ld+json";
-        filename = `${filename}.jsonld`;
-        const blob = new Blob([content], { type: fileType });
-        const a = document.createElement("a");
-        a.download = filename;
-        a.href = URL.createObjectURL(blob);
-        a.dataset.downloadurl = [fileType, a.download, a.href].join(":");
-        a.style.display = "none";
-        a.click();
+    public addConnectionsToStore(connections: NewSemanticConnection[]): void {
+        this.store.addConnections(connections);
     }
 
     private dumpData(triples: string, fileName: string = "mergedFiles.ttl"): void {
@@ -37,19 +28,7 @@ class DBDataController {
         a.click();
     }
 
-    public logReport(): void {
-        this.store.report();
-    }
-
-    private async getQuadsFromTriples(triples: any): Promise<Quad[]> {
-        const jsonLd = await jsonld.toRDF(triples as jsonld.JsonLdDocument).then((e) => e);
-        let result = Object.values(jsonLd).map((e) => DBDataController.getQuadFromTriple(e));
-        return result;
-    }
-
-    public static getModelIdForComparison(
-        modelIDsExpressGeometry: ModelIDExpressContextBasedGuid
-    ): Array<Array<number>> {
+    public static getModelIdForComparison(modelIDsExpressGeometry: ModelIDExpressContextGuid): Array<Array<number>> {
         let result = new Array<Array<number>>();
         let set = new Set();
         let modelIDs = Array.from(modelIDsExpressGeometry.keys());
@@ -64,17 +43,19 @@ class DBDataController {
         return result;
     }
 
-    public addConnectionsToStore(connections: NewSemanticConnection[]): void {
-        this.store.addConnections(connections);
+    public saveStoreData(): void {
+        let data = this.store.dump();
+        this.dumpData(data);
     }
 
     private static getQuadFromTriple(triple: any) {
         return quad(triple.subject, triple.predicate, triple.object, triple.graph);
     }
 
-    public saveStoreData(): void {
-        let data = this.store.dump();
-        this.dumpData(data);
+    private async getQuadsFromTriples(triples: any): Promise<Quad[]> {
+        const jsonLd = await jsonld.toRDF(triples as jsonld.JsonLdDocument).then((e) => e);
+        let result = Object.values(jsonLd).map((e) => DBDataController.getQuadFromTriple(e));
+        return result;
     }
 }
 
