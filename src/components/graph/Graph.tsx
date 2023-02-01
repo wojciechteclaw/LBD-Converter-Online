@@ -8,12 +8,17 @@ const Graph: FC = () => {
 
     const forceGraphRef = useRef();
 
+    const handleResize = () => {
+        setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth);
+        setHeight((document.querySelector("#graph-container-graph") as HTMLElement).clientHeight);
+    }
+
     useEffect(() => {
         setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth);
         setHeight((document.querySelector("#graph-container-graph") as HTMLElement).clientHeight);
-    }, []);
+    }, [forceGraphRef]);
 
-    
+    window.addEventListener("resize", handleResize, false);
 
     return (
         <>
@@ -24,6 +29,8 @@ const Graph: FC = () => {
                 backgroundColor="#ced9d9"
                 graphData={exampleData}
                 linkCurvature="curvature"
+                linkDirectionalArrowLength={3}
+                linkDirectionalArrowRelPos={0.9}
             />
         </>
     );
