@@ -1,4 +1,4 @@
-import { DBDataController } from "./db/db_data_controller";
+import { DBDataController } from "./db_data_controller";
 import { IfcManagerService } from "./ifc_manager_service";
 import { FilesService } from "./files_service";
 
