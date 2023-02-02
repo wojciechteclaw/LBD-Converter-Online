@@ -10,9 +10,19 @@
 
 #graph-menu-content {
     margin: auto;
-    text-align: center;
+    text-align: right;
     color: white;
     font-size: 22px;
     padding: 20px;
     width: 100%;
+}
+
+.graph-menu-icon{
+    padding-right: 12.0%;
+    color: white;
+}
+
+.graph-menu-icon:hover {
+    color: #8fc7c5;
+    cursor: pointer;
 }

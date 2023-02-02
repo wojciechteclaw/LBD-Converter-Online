@@ -61,9 +61,11 @@ const Graph: FC<GraphProps> = ({ graphData }) => {
                 linkCurvature="curvature"
                 linkDirectionalArrowLength={1}
                 linkDirectionalArrowRelPos={0.93}
-                nodeLabel="body"
+                nodeLabel={(node) => {
+                    let nodeElement = node as NodeElement;
+                    return nodeElement.namespace + nodeElement.body;
+                }}
                 autoPauseRedraw={false}
-                nodeAutoColorBy="namespace"
                 cooldownTime={2000}
                 onNodeDragEnd={(node) => {
                     node.fx = node.x;
