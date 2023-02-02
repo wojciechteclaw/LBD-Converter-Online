@@ -1,5 +1,5 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import ForceGraph2D, { ForceGraphProps } from "react-force-graph-2d";
+import { FC, useEffect, useRef, useState } from "react";
+import ForceGraph2D, { LinkObject } from "react-force-graph-2d";
 import { exampleData } from "./exampleData";
 
 const Graph: FC = () => {
@@ -11,7 +11,7 @@ const Graph: FC = () => {
     const handleResize = () => {
         setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth);
         setHeight((document.querySelector("#graph-container-graph") as HTMLElement).clientHeight);
-    }
+    };
 
     useEffect(() => {
         setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth);
@@ -29,8 +29,28 @@ const Graph: FC = () => {
                 backgroundColor="#ced9d9"
                 graphData={exampleData}
                 linkCurvature="curvature"
-                linkDirectionalArrowLength={3}
+                linkDirectionalArrowLength={5}
                 linkDirectionalArrowRelPos={0.9}
+                nodeLabel="id"
+                autoPauseRedraw={false}
+                onLinkHover={(link: LinkObject) => {
+                    console.log(link)
+                }}
+                linkLabel={(link: LinkObject) => `${link.source!.id} to ${link.target!.id}`}
+                linkColor={(link: LinkObject) => (parseInt(link.source!.id) > 5 ? "red" : "blue")}
+                nodeCanvasObject={(node, ctx, globalScale) => {
+                    const label = node.id;
+                    const fontSize = 12 / globalScale;
+                    ctx.font = `${fontSize}px Sans-Serif`;
+                    ctx.fillStyle = "green";
+                    ctx.beginPath();
+                    ctx.arc(node.x as number, node.y as number, 25 / globalScale, 0, 2 * Math.PI, false);
+                    ctx.fill();
+                    ctx.fillStyle = "white";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(label as string, node.x as number, node.y as number);
+                }}
             />
         </>
     );
