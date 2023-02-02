@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import ForceGraph2D, { LinkObject } from "react-force-graph-2d";
 import { exampleData } from "./exampleData";
+import "./Graph.css";
 
 const Graph: FC = () => {
     const [width, setWidth] = useState(0);
@@ -9,19 +10,18 @@ const Graph: FC = () => {
     const forceGraphRef = useRef();
 
     const handleResize = () => {
-        setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth);
+        setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth * 0.75);
         setHeight((document.querySelector("#graph-container-graph") as HTMLElement).clientHeight);
     };
 
     useEffect(() => {
-        setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth);
-        setHeight((document.querySelector("#graph-container-graph") as HTMLElement).clientHeight);
+        handleResize();
     }, [forceGraphRef]);
 
     window.addEventListener("resize", handleResize, false);
 
     return (
-        <>
+        <div id="graph-element">
             <ForceGraph2D
                 ref={forceGraphRef}
                 width={width}
@@ -34,10 +34,10 @@ const Graph: FC = () => {
                 nodeLabel="id"
                 autoPauseRedraw={false}
                 onLinkHover={(link: LinkObject) => {
-                    console.log(link)
+                    console.log(link);
                 }}
-                linkLabel={(link: LinkObject) => `${link.source!.id} to ${link.target!.id}`}
-                linkColor={(link: LinkObject) => (parseInt(link.source!.id) > 5 ? "red" : "blue")}
+                // linkLabel={(link: LinkObject) => `${link.source!.id} to ${link.target!.id}`}
+                // linkColor={(link: LinkObject) => (parseInt(link.source!.id) > 5 ? "red" : "blue")}
                 nodeCanvasObject={(node, ctx, globalScale) => {
                     const label = node.id;
                     const fontSize = 12 / globalScale;
@@ -52,7 +52,7 @@ const Graph: FC = () => {
                     ctx.fillText(label as string, node.x as number, node.y as number);
                 }}
             />
-        </>
+        </div>
     );
 };
 

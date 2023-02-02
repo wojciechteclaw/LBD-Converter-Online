@@ -16,6 +16,7 @@
     },
     "license": "ISC",
     "dependencies": {
+        "@uiw/react-textarea-code-editor": "^2.1.0",
         "comlink": "^4.3.1",
         "ifc-lbd": "^0.3.4",
         "jsonld": "^8.1.0",
