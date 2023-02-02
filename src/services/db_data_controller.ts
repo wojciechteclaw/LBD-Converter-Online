@@ -8,7 +8,7 @@ class DBDataController {
     private store: oxigraph.Store;
 
     constructor() {
-        console.time("Store initialized");
+        console.time("TripleStore initialized");
         (async () => {
             await init();
             this.store = new oxigraph.Store();
@@ -16,12 +16,15 @@ class DBDataController {
         console.timeEnd("TripleStore initialized");
     }
 
-    public query(query: string): void {
+    public async query(query: string): Promise<any> {
         debugger;
-        console.log(this.store.query(query));
-        // for (const binding of this.store.query(query)) {
-        //     console.log(binding.get("name").value);
-        // }
+        let result: any = "";
+        try {
+            result = this.store.query(query) as oxigraph.Quad[];
+        } catch (e) {
+            result = e;
+        }
+        return result;
     }
 
     public async addJsonLdToStore(jsonLd: JSONLD): Promise<void> {
