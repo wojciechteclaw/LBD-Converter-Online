@@ -1,4 +1,3 @@
-import { ExpressIDGeometryGuid } from "@/types/guid_spaces_map";
 import {
     BufferGeometry,
     InterleavedBuffer,
@@ -8,16 +7,43 @@ import {
     Matrix4,
     Color as ThreeColor,
     Material,
-    MeshPhongMaterial,
-    DoubleSide,
     Vector3,
+    MeshBasicMaterial,
 } from "three";
-import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry } from "web-ifc";
-import { IfcManagerService } from "./ifc_manager_service";
+import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry, IFCBUILDINGSTOREY } from "web-ifc";
+import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
+import { GuidUriService } from "./guid_uri_service";
 
 class GeometryService {
-    public static async getExpressIdContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDGeometryGuid> {
-        let result: ExpressIDGeometryGuid = new Map();
+    public static convertIfcGeometryToThreeMesh(
+        ifcMeshGeometry: PlacedGeometry,
+        vertices: Float32Array,
+        indices: Uint32Array
+    ): Mesh {
+        const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
+        bufferGeometry.computeVertexNormals();
+        const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
+        const mesh = new Mesh(bufferGeometry, material);
+        const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
+        mesh.matrix = matrix;
+        mesh.matrixAutoUpdate = false;
+        return mesh;
+    }
+
+    public static async getLevelsContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
+        let levels = ifcAPI.GetLineIDsWithType(modelID, IFCBUILDINGSTOREY);
+        let result: ExpressIDContextGuid = new Map();
+        for (let i = 0; i < levels.size(); i++) {
+            let expressID = levels.get(i);
+            let level = ifcAPI.GetLine(modelID, expressID);
+            let guid = await GuidUriService.getLevelContextBasedGuid(level);
+            result.set(expressID, guid);
+        }
+        return result;
+    }
+
+    public static async getSpacesContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
+        let result: ExpressIDContextGuid = new Map();
         ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], async (flatMesh: FlatMesh) => {
             let placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
             let [vertices, indices] = GeometryService.transformIfcGeometryToAtoms(ifcAPI, modelID, placedGeometry);
@@ -26,7 +52,7 @@ class GeometryService {
             spaceMesh.geometry.boundingSphere!.applyMatrix4(spaceMesh.matrix);
             let spaceGeometry = spaceMesh.geometry;
             let volume = await GeometryService.getVolume(spaceMesh.geometry);
-            let guid = await IfcManagerService.getContextBasedGuid(
+            let guid = await GuidUriService.getSpaceContextBasedGuid(
                 spaceGeometry.boundingSphere!.center,
                 spaceGeometry.boundingSphere!.radius,
                 volume,
@@ -48,7 +74,26 @@ class GeometryService {
         return [vertices, indices];
     }
 
-    public static getVolume(geometry: BufferGeometry) {
+    private static buildMeshMaterial(ifcColor: Color): Material {
+        const threeColor = new ThreeColor(ifcColor.x, ifcColor.y, ifcColor.z);
+        let material = new MeshBasicMaterial({ color: threeColor });
+        material.transparent = ifcColor.w !== 1;
+        if (material.transparent) {
+            material.opacity = ifcColor.w;
+        }
+        return material;
+    }
+
+    private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {
+        const geometry = new BufferGeometry();
+        const positionNormalBuffer = new InterleavedBuffer(vertices, 6);
+        geometry.setAttribute("position", new InterleavedBufferAttribute(positionNormalBuffer, 3, 0));
+        geometry.setAttribute("normal", new InterleavedBufferAttribute(positionNormalBuffer, 3, 3));
+        geometry.setIndex(new BufferAttribute(indices, 1));
+        return geometry;
+    }
+
+    private static getVolume(geometry: BufferGeometry) {
         var isIndexed = geometry.index !== null;
         let position = geometry.attributes.position;
         let sum = 0;
@@ -78,43 +123,6 @@ class GeometryService {
 
     private static signedVolumeOfTriangle(p1: Vector3, p2: Vector3, p3: Vector3) {
         return p1.dot(p2.cross(p3)) / 6.0;
-    }
-
-    public static convertIfcGeometryToThreeMesh(
-        ifcMeshGeometry: PlacedGeometry,
-        vertices: Float32Array,
-        indices: Uint32Array
-    ): Mesh {
-        const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
-        bufferGeometry.computeVertexNormals();
-        const material = GeometryService.buildMeshMaterial(ifcMeshGeometry.color);
-        const mesh = new Mesh(bufferGeometry, material);
-        const matrix = new Matrix4().fromArray(ifcMeshGeometry.flatTransformation.map((x) => +x.toFixed(5)));
-        mesh.matrix = matrix;
-        mesh.matrixAutoUpdate = false;
-        return mesh;
-    }
-
-    private static buildThreeGeometry(vertices: Float32Array, indices: Uint32Array): BufferGeometry {
-        const geometry = new BufferGeometry();
-        const positionNormalBuffer = new InterleavedBuffer(vertices, 6);
-        geometry.setAttribute("position", new InterleavedBufferAttribute(positionNormalBuffer, 3, 0));
-        geometry.setAttribute("normal", new InterleavedBufferAttribute(positionNormalBuffer, 3, 3));
-        geometry.setIndex(new BufferAttribute(indices, 1));
-        return geometry;
-    }
-
-    private static buildMeshMaterial(ifcColor: Color): Material {
-        const threeColor = new ThreeColor(ifcColor.x, ifcColor.y, ifcColor.z);
-        const material = new MeshPhongMaterial({
-            color: threeColor,
-            side: DoubleSide,
-        });
-        material.transparent = ifcColor.w !== 1;
-        if (material.transparent) {
-            material.opacity = ifcColor.w;
-        }
-        return material;
     }
 }
 
