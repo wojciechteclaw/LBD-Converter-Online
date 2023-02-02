@@ -32,7 +32,6 @@ class SparQlGraphParserService {
             nodes: Object.values(this.nodes),
             links: this.links,
         };
-        console.log({ nodes: Object.values(this.nodes) as NodeElement[], links: this.links as LinkElement[] });
         return result;
     }
 
