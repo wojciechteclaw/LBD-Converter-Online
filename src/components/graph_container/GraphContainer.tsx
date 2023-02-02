@@ -17,7 +17,8 @@ const GraphContainer: FC = () => {
             .catch((e) => console.log(e));
         if (result) {
             let parser = new SparQlGraphParserService(result);
-            parser.convertQueryResultToGraphInput();
+            let results = await parser.convertQueryResultToGraphInput().then(e => e)
+            setGraphData(results);
         }
     };
 
@@ -32,7 +33,7 @@ const GraphContainer: FC = () => {
                 <p>graph visualizer</p>
             </div>
             <div id="graph-container-graph">
-                <Graph />
+                <Graph graphData={graphData} />
                 <SparQlQuery queryString={queryString} onQueryStringChange={setQueryString} />
             </div>
             <GraphMenu />

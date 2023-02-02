@@ -1,9 +1,14 @@
+import { NodeElement } from "@/types/node_element";
 import { FC, useEffect, useRef, useState } from "react";
-import ForceGraph2D, { LinkObject } from "react-force-graph-2d";
-import { exampleData } from "./exampleData";
+import ForceGraph2D, { GraphData } from "react-force-graph-2d";
+import { exampleData } from "./example_data";
 import "./Graph.css";
 
-const Graph: FC = () => {
+interface GraphProps {
+    graphData: GraphData;
+}
+
+const Graph: FC<GraphProps> = ({ graphData }) => {
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
 
@@ -27,24 +32,25 @@ const Graph: FC = () => {
                 width={width}
                 height={height}
                 backgroundColor="#ced9d9"
-                graphData={exampleData}
+                graphData={graphData ? graphData : exampleData}
                 linkCurvature="curvature"
-                linkDirectionalArrowLength={5}
+                linkDirectionalArrowLength={0.2}
                 linkDirectionalArrowRelPos={0.9}
-                nodeLabel="id"
+                nodeLabel="body"
                 autoPauseRedraw={false}
-                onLinkHover={(link: LinkObject) => {
-                    console.log(link);
-                }}
-                // linkLabel={(link: LinkObject) => `${link.source!.id} to ${link.target!.id}`}
-                // linkColor={(link: LinkObject) => (parseInt(link.source!.id) > 5 ? "red" : "blue")}
+                // onLinkHover={(link: LinkObject) => {
+                //     // ctx.
+                // }}
+                // // linkLabel={(link: LinkObject) => `${link.source!.id} to ${link.target!.id}`}
+                // // linkColor={(link: LinkObject) => (parseInt(link.source!.id) > 5 ? "red" : "blue")}
                 nodeCanvasObject={(node, ctx, globalScale) => {
-                    const label = node.id;
-                    const fontSize = 12 / globalScale;
+                    let nodeElement = node as NodeElement;
+                    const label = nodeElement.body;
+                    const fontSize = 10 / globalScale;
                     ctx.font = `${fontSize}px Sans-Serif`;
-                    ctx.fillStyle = "green";
+                    ctx.fillStyle = nodeElement.color ? nodeElement.color : "green";
                     ctx.beginPath();
-                    ctx.arc(node.x as number, node.y as number, 25 / globalScale, 0, 2 * Math.PI, false);
+                    ctx.arc(node.x as number, node.y as number, 20 / globalScale, 0, 2 * Math.PI, false);
                     ctx.fill();
                     ctx.fillStyle = "white";
                     ctx.textAlign = "center";
