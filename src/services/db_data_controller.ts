@@ -16,13 +16,12 @@ class DBDataController {
         console.timeEnd("TripleStore initialized");
     }
 
-    public async query(query: string): Promise<any> {
-        debugger;
-        let result: any = "";
+    public async query(query: string): Promise<oxigraph.Quad[] | undefined> {
+        let result: oxigraph.Quad[] | undefined;
         try {
             result = this.store.query(query) as oxigraph.Quad[];
         } catch (e) {
-            result = e;
+            alert("invalid query");
         }
         return result;
     }

@@ -1,8 +1,6 @@
 import { NodeObject } from "react-force-graph-2d";
+import { ElementBody } from "./element_body";
 
-type NodeElement = NodeObject & {
-    namespace: string;
-    id: string;
-};
+type NodeElement = NodeObject & ElementBody;
 
 export { NodeElement };

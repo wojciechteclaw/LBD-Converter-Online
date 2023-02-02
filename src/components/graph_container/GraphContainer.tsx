@@ -4,16 +4,21 @@ import { GraphMenu } from "@components/graph_menu/GraphMenu";
 import "./GraphContainer.css";
 import { SparQlQuery } from "../sparql_query/SparQlQuery";
 import { dbDataController } from "@services/dependency_injection";
+import { SparQlGraphParserService } from "@services/sparql_graph_parser_service";
 
 const GraphContainer: FC = () => {
     const [queryString, setQueryString] = useState<string>("");
     const [graphData, setGraphData] = useState<any>(null);
 
     const fetchGraphData = async () => {
-        return await dbDataController
+        const result = await dbDataController
             .query(queryString)
-            .then((e) => console.log(e))
+            .then((e) => e)
             .catch((e) => console.log(e));
+        if (result) {
+            let parser = new SparQlGraphParserService(result);
+            parser.convertQueryResultToGraphInput();
+        }
     };
 
     useEffect(() => {
