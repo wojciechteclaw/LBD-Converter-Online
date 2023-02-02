@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Graph } from "@components/graph/Graph";
 import { GraphMenu } from "@components/graph_menu/GraphMenu";
 import "./GraphContainer.css";
@@ -9,11 +9,16 @@ const GraphContainer: FC = () => {
     const [queryString, setQueryString] = useState<string>("");
     const [graphData, setGraphData] = useState<any>(null);
 
+    const fetchGraphData = async () => {
+        return await dbDataController
+            .query(queryString)
+            .then((e) => console.log(e))
+            .catch((e) => console.log(e));
+    };
+
     useEffect(() => {
         if (queryString === "") return;
-        console.log(`query database with: ${queryString}`);
-        let result = dbDataController.query(queryString);
-        console.log(result);
+        fetchGraphData();
     }, [queryString]);
 
     return (

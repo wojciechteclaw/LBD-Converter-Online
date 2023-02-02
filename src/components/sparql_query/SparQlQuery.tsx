@@ -13,6 +13,15 @@ const SparQlQuery: FC<SparQlQueryProps> = ({ queryString, onQueryStringChange })
         onQueryStringChange(query);
     };
 
+    const PLACEHOLDER_VALUE = `Enter SPARQL query here:
+
+!Remember to use CONSTRUCT QUERY!
+
+CONSTRUCT 
+WHERE {
+    ?s ?p ?o
+}`;
+
     return (
         <div
             id="sparQlEditor"
@@ -29,7 +38,7 @@ const SparQlQuery: FC<SparQlQueryProps> = ({ queryString, onQueryStringChange })
                 value={query}
                 language="sparql"
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Enter SPARQL query here"
+                placeholder={PLACEHOLDER_VALUE}
                 padding={10}
                 style={{
                     height: "90%",
