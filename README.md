@@ -1,30 +1,13 @@
 # WEB-LBD-CONVERTER
-<style>
-.fullWidth {
-  width: 100%;
-  text-align:center;
-}
 
-.link {
-  font-size:20px;
-  font-weight:650
-}
-
-a:link{
-    color:white;
-}
-
-#imageStrap{
-  background-color: #FFFF01
-}
-
-</style>
 ## Authors:
-<div class="fullWidth" id="imageStrap"><img src="./media/lbd.jpg" width="300px"/></div>
+<div style="background-color:#FFFF01; width:100%; text-align:center;padding-top:50px" ><img src="./media/lbd.jpg" width="300px"/></div>
 
-<div class="fullWidth">
-<a class="link" href="https://www.linkedin.com/in/wojciech-teclaw/" target="_blank">Wojciech Tecław</a> &
-<a class="link" href="https://www.linkedin.com/in/mads-holten-rasmussen-061b7414/" target="_blank">Mads Holten Rasmussen</a>
+<div style="width:100%; text-align:center; background-color:#FFFF01" >
+<p style="color:black; font-size:20px; padding:50px">
+<a style="color:black; font-size:20px" href="https://www.linkedin.com/in/wojciech-teclaw/" target="_blank">Wojciech Tecław</a> &
+<a style="color:black; font-size:20px" href="https://www.linkedin.com/in/mads-holten-rasmussen-061b7414/" target="_blank">Mads Holten Rasmussen</a>
+</p>
 
 </div>
 
