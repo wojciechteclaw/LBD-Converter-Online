@@ -1,7 +1,6 @@
 import { NodeElement } from "@/types/node_element";
 import { FC, useEffect, useRef, useState } from "react";
 import ForceGraph2D, { GraphData } from "react-force-graph-2d";
-import { exampleData } from "./example_data";
 import "./Graph.css";
 
 interface GraphProps {
@@ -11,13 +10,23 @@ interface GraphProps {
 const Graph: FC<GraphProps> = ({ graphData }) => {
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
-
+    const [exampleData, setExampleData] = useState<GraphData>({ nodes: [], links: [] });
     const forceGraphRef = useRef();
 
     const handleResize = () => {
         setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth * 0.75);
         setHeight((document.querySelector("#graph-container-graph") as HTMLElement).clientHeight);
     };
+
+    useEffect(() => {
+        (async () => {
+            return await fetch("./samples/example_data.json")
+                .then((e) => e.json())
+                .then((e) => {
+                    setExampleData(e);
+                });
+        })();
+    }, []);
 
     useEffect(() => {
         handleResize();
