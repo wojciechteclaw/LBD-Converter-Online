@@ -16,6 +16,14 @@ class DBDataController {
         console.timeEnd("TripleStore initialized");
     }
 
+    public query(query: string): void {
+        debugger;
+        console.log(this.store.query(query));
+        // for (const binding of this.store.query(query)) {
+        //     console.log(binding.get("name").value);
+        // }
+    }
+
     public async addJsonLdToStore(jsonLd: JSONLD): Promise<void> {
         await DBDataController.getQuadsFromTriples(jsonLd).then((quads: oxigraph.Quad[]) => {
             quads.forEach((triple: oxigraph.Quad) => {

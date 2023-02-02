@@ -8,6 +8,11 @@ interface SparQlQueryProps {
 }
 
 const SparQlQuery: FC<SparQlQueryProps> = ({ queryString, onQueryStringChange }) => {
+    const [query, setQuery] = useState<string>(queryString);
+    const onButtonClick = () => {
+        onQueryStringChange(query);
+    };
+
     return (
         <div
             id="sparQlEditor"
@@ -21,9 +26,9 @@ const SparQlQuery: FC<SparQlQueryProps> = ({ queryString, onQueryStringChange })
             }}
         >
             <CodeEditor
-                value={queryString}
+                value={query}
                 language="sparql"
-                onChange={(e) => onQueryStringChange(e.target.value)}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder="Enter SPARQL query here"
                 padding={10}
                 style={{
@@ -36,7 +41,7 @@ const SparQlQuery: FC<SparQlQueryProps> = ({ queryString, onQueryStringChange })
                 }}
                 data-color-mode="light"
             />
-            <SubmitSparQL />
+            <SubmitSparQL onClick={onButtonClick} />
         </div>
     );
 };

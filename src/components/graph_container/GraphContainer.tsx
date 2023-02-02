@@ -1,24 +1,20 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Graph } from "@components/graph/Graph";
 import { GraphMenu } from "@components/graph_menu/GraphMenu";
 import "./GraphContainer.css";
 import { SparQlQuery } from "../sparql_query/SparQlQuery";
+import { dbDataController } from "@services/dependency_injection";
 
 const GraphContainer: FC = () => {
-    const DEFAULT_QUERY = `PREFIX bot: <https://w3id.org/bot#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-SELECT ?element ?p ?object
-WHERE {
-    ?element a bot:Space .
-    ?element ?p ?object .
-    FILTER (
-        strstarts(str(?p), "https://w3id.org/bot#") ||
-        strstarts(str(?p), "http://www.w3.org/2002/07/owl#")
-    )
-}`;
-
-    const [queryString, setQueryString] = useState<string>(DEFAULT_QUERY);
+    const [queryString, setQueryString] = useState<string>("");
     const [graphData, setGraphData] = useState<any>(null);
+
+    useEffect(() => {
+        if (queryString === "") return;
+        console.log(`query database with: ${queryString}`);
+        let result = dbDataController.query(queryString);
+        console.log(result);
+    }, [queryString]);
 
     return (
         <div id="graph-container-container">
