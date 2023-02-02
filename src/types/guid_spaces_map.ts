@@ -1,3 +1,1 @@
-import { BufferGeometry } from "three";
-
-export type ExpressIDSpacesMap = Map<number, BufferGeometry>;
+export type ExpressIDContextGuid = Map<number, string>;

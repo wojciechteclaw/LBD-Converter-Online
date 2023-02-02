@@ -2,8 +2,8 @@ import { FC, useState } from "react";
 import { FileUpload } from "@components/buttons/file_upload/FileUpload";
 import "./FilesManagementContainer.css";
 import { LoadedFile } from "../loaded_file/LoadedFile";
-import { MergeFilesButton } from "../buttons/convert_files/MergeFilesButton";
-import { filesService } from "@services/dependency_injection";
+import { MergeFilesButton } from "../buttons/merge_files/MergeFilesButton";
+import { filesService, ifcManagerService } from "@services/dependency_injection";
 
 const FilesManagementContainer: FC = () => {
     const [loadedFileComponents, setLoadedFileComponents] = useState<JSX.Element[]>([]);
@@ -36,15 +36,15 @@ const FilesManagementContainer: FC = () => {
         setLoadedFileComponents(newComponents);
     };
 
-    const mergeFiles = () => {
-        console.log("merginig files");
+    const mergeFiles = async () => {
+        await ifcManagerService.mergeFiles().then((e) => e);
     };
 
     return (
         <div id="file-management-container">
             <FileUpload onFileUpload={async (e) => onFileLoad(e)} />
             <div className="file-management-ifc-files-wrapper">{loadedFileComponents}</div>
-            <MergeFilesButton onClick={mergeFiles} />
+            <MergeFilesButton onClick={async () => await mergeFiles()} />
         </div>
     );
 };
