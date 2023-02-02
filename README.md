@@ -1,7 +1,33 @@
 # WEB-LBD-CONVERTER
+<style>
+.fullWidth {
+  width: 100%;
+  text-align:center;
+}
 
+.link {
+  font-size:20px;
+  font-weight:650
+}
+
+a:link{
+    color:white;
+}
+
+#imageStrap{
+  background-color: #FFFF01
+}
+
+</style>
 ## Authors:
-[Wojciech Tecław](https://www.linkedin.com/in/wojciech-teclaw/) & [Mads Holten Rasmussen](https://www.linkedin.com/in/mads-holten-rasmussen-061b7414/)
+<div class="fullWidth" id="imageStrap"><img src="./media/lbd.jpg" width="300px"/></div>
+
+<div class="fullWidth">
+<a class="link" href="https://www.linkedin.com/in/wojciech-teclaw/" target="_blank">Wojciech Tecław</a> &
+<a class="link" href="https://www.linkedin.com/in/mads-holten-rasmussen-061b7414/" target="_blank">Mads Holten Rasmussen</a>
+
+</div>
+
 ## Local usage
 
 Download latest version of Node.js: https://nodejs.org/en/download/
