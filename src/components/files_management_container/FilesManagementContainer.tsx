@@ -3,7 +3,7 @@ import { FileUpload } from "@components/buttons/file_upload/FileUpload";
 import "./FilesManagementContainer.css";
 import { LoadedFile } from "../loaded_file/LoadedFile";
 import { MergeFilesButton } from "../buttons/merge_files/MergeFilesButton";
-import { filesService, ifcManagerService } from "@services/dependency_injection";
+import { dbDataController, filesService, ifcManagerService } from "@services/dependency_injection";
 
 const FilesManagementContainer: FC = () => {
     const [loadedFileComponents, setLoadedFileComponents] = useState<JSX.Element[]>([]);
@@ -37,6 +37,7 @@ const FilesManagementContainer: FC = () => {
     };
 
     const mergeFiles = async () => {
+        dbDataController.clearStore();
         await ifcManagerService.mergeFiles().then((e) => e);
     };
 
