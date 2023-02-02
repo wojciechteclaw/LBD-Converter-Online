@@ -1,6 +1,6 @@
 import { JSONLD, LBDParser } from "ifc-lbd";
 import { IfcAPI } from "web-ifc";
-import { DBDataController } from "./db/db_data_controller";
+import { DBDataController } from "./db_data_controller";
 import { dbDataController, filesService } from "./dependency_injection";
 import { FilesService } from "./files_service";
 import { GeometryService } from "./geometry_service";
