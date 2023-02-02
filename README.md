@@ -1,15 +1,12 @@
 # WEB-LBD-CONVERTER
 
 ## Authors:
-<div style="background-color:#FFFF01; width:100%; text-align:center;padding-top:50px" ><img src="./media/lbd.jpg" width="300px"/></div>
+<img src="./media/lbd.jpg" width="100%"/>
 
-<div style="width:100%; text-align:center; background-color:#FFFF01" >
-<p style="color:black; font-size:20px; padding:50px">
-<a style="color:black; font-size:20px" href="https://www.linkedin.com/in/wojciech-teclaw/" target="_blank">Wojciech Tecław</a> &
-<a style="color:black; font-size:20px" href="https://www.linkedin.com/in/mads-holten-rasmussen-061b7414/" target="_blank">Mads Holten Rasmussen</a>
-</p>
+* <a href="https://www.linkedin.com/in/wojciech-teclaw/" target="_blank">Wojciech Tecław</a>
+* <a href="https://www.linkedin.com/in/mads-holten-rasmussen-061b7414/" target="_blank">Mads Holten Rasmussen</a>
 
-</div>
+
 
 ## Local usage
 
