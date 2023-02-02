@@ -8,12 +8,22 @@ class DBDataController {
     private store: oxigraph.Store;
 
     constructor() {
-        console.time("Store initialized");
+        console.time("TripleStore initialized");
         (async () => {
             await init();
             this.store = new oxigraph.Store();
         })();
         console.timeEnd("TripleStore initialized");
+    }
+
+    public async query(query: string): Promise<oxigraph.Quad[] | undefined> {
+        let result: oxigraph.Quad[] | undefined;
+        try {
+            result = this.store.query(query) as oxigraph.Quad[];
+        } catch (e) {
+            alert("invalid query");
+        }
+        return result;
     }
 
     public async addJsonLdToStore(jsonLd: JSONLD): Promise<void> {

@@ -72,7 +72,6 @@ class IfcManagerService {
             });
         }
         await this.joinModels();
-        await dbDataController.saveStoreData();
     }
 
     public async removeFileFromIfcAPI(modelID: number): Promise<void> {
