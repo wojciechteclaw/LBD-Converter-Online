@@ -17,7 +17,7 @@ const GraphContainer: FC = () => {
             .catch((e) => console.log(e));
         if (result) {
             let parser = new SparQlGraphParserService(result);
-            let results = await parser.convertQueryResultToGraphInput().then(e => e)
+            let results = await parser.convertQueryResultToGraphInput().then((e) => e);
             setGraphData(results);
         }
     };
@@ -28,15 +28,17 @@ const GraphContainer: FC = () => {
     }, [queryString]);
 
     return (
-        <div id="graph-container-container">
-            <div id="graph-container-title">
-                <p>graph visualizer</p>
+        <div id="graph-container-center">
+            <div id="graph-container-container">
+                <div id="graph-container-title">
+                    graph visualization
+                </div>
+                {/* <div id="graph-container-graph">
+                    <Graph graphData={graphData} />
+                    <SparQlQuery queryString={queryString} onQueryStringChange={setQueryString} />
+                </div>
+                <GraphMenu />*/}
             </div>
-            <div id="graph-container-graph">
-                <Graph graphData={graphData} />
-                <SparQlQuery queryString={queryString} onQueryStringChange={setQueryString} />
-            </div>
-            <GraphMenu />
         </div>
     );
 };
