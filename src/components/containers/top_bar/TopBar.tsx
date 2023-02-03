@@ -14,7 +14,9 @@ const TopBar: FC = () => {
                     <div id="top-bar-contact-container">Paper</div>
                 </div>
                 <div className="top-bar-menu-wrappers">
-                    <div id="top-bar-contact-container">IFC-LBD</div>
+                    <a href="https://github.com/LBD-Hackers/IFC-LBD/" target="_blank">
+                        <div id="top-bar-contact-container">IFC-LBD</div>
+                    </a>
                 </div>
                 <div className="top-bar-menu-wrappers">
                     <div id="top-bar-contact-container">Contact</div>

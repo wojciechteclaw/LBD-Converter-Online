@@ -1,5 +1,4 @@
 #graph-container-container {
-    text-align: center;
     width: 90%;
     margin-left: 5%;
     height: 100%;
@@ -20,10 +19,10 @@
 
 #graph-container-title {
     color: white;
+    text-align: center;
 }
 
 #graph-container-center {
-    text-align: center;
     width: 80%;
     margin: 0;
     height: 100%;
