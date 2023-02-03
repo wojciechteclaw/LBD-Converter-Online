@@ -1,8 +1,7 @@
 .file-upload-container {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-    position: absolute;
-    width: calc(20% - 30px);
+    width: 100%;
     background-color: #618685;
     color: white;
     vertical-align: middle;

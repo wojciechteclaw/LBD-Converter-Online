@@ -1,13 +1,11 @@
 #file-management-container {
     width: 20%;
     height: 100%;
-    padding-left: 30px;
+    padding-left: 2vw;
     float: left;
 }
 
 .file-management-ifc-files-wrapper {
-    height: 95%;
-    border-top-right-radius: 20px;
-    border-top-left-radius: 20px;
+    height: 90%;
     background-color: #ced9d9;
 }

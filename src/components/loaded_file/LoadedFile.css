@@ -1,3 +1,7 @@
+.ifc-file-container:first{
+    padding-top: 10%;
+}
+
 .ifc-file-container {
     display: flex;
     border-top: 1px solid gray;
