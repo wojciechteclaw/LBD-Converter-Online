@@ -15,7 +15,7 @@ const Graph: FC<GraphProps> = ({ graphData }) => {
     const forceGraphRef = useRef();
 
     const handleResize = () => {
-        setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth * 0.75);
+        setWidth((document.querySelector("#graph-container-graph") as HTMLElement).clientWidth);
         setHeight((document.querySelector("#graph-container-graph") as HTMLElement).clientHeight);
     };
 
@@ -51,7 +51,7 @@ const Graph: FC<GraphProps> = ({ graphData }) => {
     window.addEventListener("resize", handleResize, false);
 
     return (
-        <div id="graph-element">
+        <>
             <ForceGraph2D
                 ref={forceGraphRef}
                 width={width}
@@ -76,7 +76,7 @@ const Graph: FC<GraphProps> = ({ graphData }) => {
                 warmupTicks={100}
                 nodeCanvasObject={onNodeCanvasObject}
             />
-        </div>
+        </>
     );
 };
 

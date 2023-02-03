@@ -5,9 +5,9 @@ import "./GraphMenu.css";
 const GraphMenu: FC = () => {
     return (
         <div id="graph-menu-container">
-            <div id="graph-menu-content">
-                <i className="download icon graph-menu-icon" onClick={() => dbDataController.saveStoreData()}></i>
-            </div>
+            <p>
+                <i className="download icon" id="graph-menu-icon" onClick={() => dbDataController.saveStoreData()}></i>
+            </p>
         </div>
     );
 };

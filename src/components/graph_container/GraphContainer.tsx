@@ -31,13 +31,16 @@ const GraphContainer: FC = () => {
         <div id="graph-container-center">
             <div id="graph-container-container">
                 <div id="graph-container-title">
-                    graph visualization
+                    <p id="graph-container-title-content">graph visualization</p>
                 </div>
-                {/* <div id="graph-container-graph">
+                <div id="graph-container-graph">
                     <Graph graphData={graphData} />
+                </div>
+                <div id="graph-container-sparql-wrapper" style={{borderLeft: "1px solid #618685"}}>
                     <SparQlQuery queryString={queryString} onQueryStringChange={setQueryString} />
                 </div>
-                <GraphMenu />*/}
+
+                <GraphMenu />
             </div>
         </div>
     );

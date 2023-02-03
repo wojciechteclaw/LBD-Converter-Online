@@ -23,17 +23,7 @@ WHERE {
 }`;
 
     return (
-        <div
-            id="sparQlEditor"
-            style={{
-                display: "block",
-                width: "24.9%",
-                height: "100%",
-                border: "none",
-                borderLeft: "1px solid #618685",
-                float: "left",
-            }}
-        >
+        <div id="sparQlEditor" style={{height:"100%"}}>
             <CodeEditor
                 value={query}
                 language="sparql"
@@ -41,7 +31,7 @@ WHERE {
                 placeholder={PLACEHOLDER_VALUE}
                 padding={10}
                 style={{
-                    height: "90%",
+                    height: "100%",
                     width: "100%",
                     float: "left",
                     backgroundColor: "#ced9d9",

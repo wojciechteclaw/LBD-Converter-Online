@@ -23,7 +23,7 @@
     border-bottom-right-radius: 15px;
 }
 
-p {
+merge-files-container > p {
     margin: auto;
     text-align: center;
     width: 100%;
