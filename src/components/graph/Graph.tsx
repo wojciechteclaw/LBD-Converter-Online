@@ -3,28 +3,20 @@ import Cytoscape, { ElementsDefinition } from "cytoscape";
 import COSEBilkent from "cytoscape-cose-bilkent";
 import CytoscapeComponent from "react-cytoscapejs";
 import "./Graph.css";
+import { GraphElementsDefinition } from "@/types/graph/graph_elements_definition";
 
-// interface GraphProps {
-//     graphData: ElementDefinition[];
-// }
+interface GraphProps {
+    graphElements: GraphElementsDefinition;
+}
 
-const otherElements: Cytoscape.ElementsDefinition = { nodes: [], edges: [] };
-
-const elements: Cytoscape.ElementDefinition[] = [
-    { data: { id: "a" } },
-    { data: { id: "b" } },
-    { data: { id: "ab", label: "sample", source: "a", target: "b" } },
-];
-const layout = { name: "cose-bilkent", idealEdgeLength: 200 };
+const layout = { name: "cose-bilkent", idealEdgeLength: 500, label: "data(id)" };
 Cytoscape.use(COSEBilkent);
 
-const Graph: FC = () => {
-    let graphData: Cytoscape.ElementDefinition[] = [];
-
+const Graph: FC<GraphProps> = ({ graphElements }) => {
     return (
         <div id="graph-element">
             <CytoscapeComponent
-                elements={elements}
+                elements={[...graphElements.nodes, ...graphElements.edges]}
                 layout={layout}
                 style={{
                     width: "100%",
@@ -33,6 +25,12 @@ const Graph: FC = () => {
                     display: "block",
                     backgroundColor: "#ced9d9",
                 }}
+                cy={(cy) => {
+                    cy.on('add', 'node', _evt => {
+                    cy.layout(layout).run()
+                    cy.fit()
+                    })   
+                  }}
             />
         </div>
     );
