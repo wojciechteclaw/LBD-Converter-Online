@@ -1,7 +1,4 @@
-import { LinkElement } from "@/types/link_element";
-import { NodeElement } from "@/types/node_element";
 import { FC, useEffect, useRef, useState } from "react";
-import ForceGraph2D, { GraphData, NodeObject } from "react-force-graph-2d";
 import Cytoscape, { ElementsDefinition } from "cytoscape";
 import COSEBilkent from "cytoscape-cose-bilkent";
 import CytoscapeComponent from "react-cytoscapejs";
@@ -11,7 +8,7 @@ import "./Graph.css";
 //     graphData: ElementDefinition[];
 // }
 
-
+const otherElements: Cytoscape.ElementsDefinition = { nodes: [], edges: [] };
 
 const elements: Cytoscape.ElementDefinition[] = [
     { data: { id: "a" } },
@@ -29,7 +26,13 @@ const Graph: FC = () => {
             <CytoscapeComponent
                 elements={elements}
                 layout={layout}
-                style={{ width: "100%", height: "100%", margin: "0px auto", display: "block", backgroundColor: "#ced9d9" }}
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    margin: "0px auto",
+                    display: "block",
+                    backgroundColor: "#ced9d9",
+                }}
             />
         </div>
     );

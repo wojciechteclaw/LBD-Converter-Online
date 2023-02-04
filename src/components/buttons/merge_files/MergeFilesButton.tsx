@@ -7,7 +7,7 @@ interface MergeFilesButtonProps {
 
 const MergeFilesButton: FC<MergeFilesButtonProps> = ({ onClick }) => {
     return (
-        <div className="merge-files-container">
+        <div className="merge-files-container" onClick={onClick}>
             <p style={{ textAlign: "center" }}>Load and merge</p>
         </div>
     );
