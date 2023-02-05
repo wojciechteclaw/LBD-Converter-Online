@@ -9,11 +9,11 @@
     height: 90%;
     width: 75%;
     float: left;
+    border-left: 1px solid #618685;
 }
 #graph-container-sparql-wrapper {
     height: 90%;
     width: 25%;
-    background-color: pink;
     float: left;
 }
 
