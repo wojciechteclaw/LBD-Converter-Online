@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import { SubmitSparQL } from "@components/buttons/submit_sparql/SubmitSparQL";
+import "./SparQlQuery.css"
 
 interface SparQlQueryProps {
     queryString: string;
@@ -23,7 +24,7 @@ WHERE {
 }`;
 
     return (
-        <div id="sparQlEditor" style={{height:"100%"}}>
+        <div id="spar-ql-editor" style={{height:"100%"}}>
             <CodeEditor
                 value={query}
                 language="sparql"

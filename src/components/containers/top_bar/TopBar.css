@@ -51,6 +51,10 @@ img {
     border-right: 1px solid #5ea8a6;
 }
 
+.top-bar-menu-wrappers > a {
+    color: white;
+}
+
 .top-bar-menu {
     width: 20%;
     height: 100%;

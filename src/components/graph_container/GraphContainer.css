@@ -1,5 +1,4 @@
 #graph-container-container {
-    text-align: center;
     width: 90%;
     margin-left: 5%;
     height: 100%;
@@ -10,20 +9,20 @@
     height: 90%;
     width: 75%;
     float: left;
+    border-left: 1px solid #618685;
 }
 #graph-container-sparql-wrapper {
     height: 90%;
     width: 25%;
-    background-color: pink;
     float: left;
 }
 
 #graph-container-title {
     color: white;
+    text-align: center;
 }
 
 #graph-container-center {
-    text-align: center;
     width: 80%;
     margin: 0;
     height: 100%;
