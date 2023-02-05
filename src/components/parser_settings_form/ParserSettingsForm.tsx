@@ -1,6 +1,6 @@
-import { ParserSettings, SerializationFormat } from "ifc-lbd";
 import { FC, useState } from "react";
-import { Checkbox } from "../buttons/checkbox/Checkbox";
+import { ParserSettings, SerializationFormat } from "ifc-lbd";
+import { Checkbox } from "@components/buttons/checkbox/Checkbox";
 import { filesService } from "@services/dependency_injection";
 import "./ParserSettingsForm.css";
 

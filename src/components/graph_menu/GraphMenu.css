@@ -5,20 +5,23 @@
     border-bottom-right-radius: 15px;
     border-top: 1px solid #5ea8a6;
     font-weight: 600;
-    width:100%
+    width: 100%;
 }
 
-#graph-menu-icon{
-    padding-right: 12.0%;
+.graph-menu-icon-upload {
     color: white;
-    margin-left: 5%;
+    padding-left: 5%;
 }
 
-#graph-menu-icon:hover {
+.graph-menu-icon {
+    padding-left: 2.5%;
+}
+
+.graph-menu-icon:hover {
     color: #8fc7c5;
     cursor: pointer;
-    
 }
+
 
 p {
     margin: auto;

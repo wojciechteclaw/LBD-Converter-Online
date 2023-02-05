@@ -1,13 +1,13 @@
 import { Quad, Literal, NamedNode } from "oxigraph/web";
-import { GuidUriService } from "./guid_uri_service";
+import { v4 as uuidv4 } from "uuid";
 import { colorsManager } from "./dependency_injection";
+import { GuidUriService } from "./guid_uri_service";
+import { CustomElementData } from "@/types/graph/custom_element_data";
 import { EdgeElement } from "@/types/graph/edge_element";
+import { EdgeElementData } from "@/types/graph/edge_element_data";
 import { GraphElementsDefinition } from "@/types/graph/graph_elements_definition";
 import { NodeElement } from "@/types/graph/node_element";
 import { NodeElementData } from "@/types/graph/node_element_data";
-import { CustomElementData } from "@/types/graph/custom_element_data";
-import { EdgeElementData } from "@/types/graph/edge_element_data";
-import { v4 as uuidv4 } from "uuid";
 
 class SparQlGraphParserService {
     private queryResult: Quad[];
@@ -99,13 +99,13 @@ class SparQlGraphParserService {
 
     private static readonly MOST_POPULAR_PREFIXES = {
         "https://w3id.org/bot#": "bot",
-        "https://example.com/": "ex",
         "https://w3id.org/fog#": "fog",
         "https://w3id.org/fso#": "fso",
         "http://ifcowl.openbimstandards.org/IFC2X3_Final#": "ifc",
         "https://w3id.org/kobl/building-topology#": "kbt",
         "https://w3id.org/omg#": "omg",
-        "http://qudt.org/schema/qudt/": "qudt",
+        "http://www.w3.org/2002/07/owl#": "owl",
+        "http://qudt.org/schema/qudt/#": "qudt",
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#": "rdf",
         "http://www.w3.org/2000/01/rdf-schema#": "rdfs",
         "https://w3id.org/tso#": "tso",

@@ -11,8 +11,8 @@ import {
     MeshBasicMaterial,
 } from "three";
 import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry, IFCBUILDINGSTOREY } from "web-ifc";
-import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
 import { GuidUriService } from "./guid_uri_service";
+import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
 
 class GeometryService {
     public static convertIfcGeometryToThreeMesh(
