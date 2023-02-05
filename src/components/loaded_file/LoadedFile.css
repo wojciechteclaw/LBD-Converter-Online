@@ -1,7 +1,12 @@
+.ifc-file-container:first{
+    border-top: none;
+}
+
 .ifc-file-container {
     display: flex;
     border-top: 1px solid gray;
     padding: 10px;
+    line-height: normal;
 }
 
 .ifc-file-container:last-of-type {
@@ -36,6 +41,8 @@
     white-space: nowrap;
     color: #618685;
     font-weight: 600;
+    line-height: normal;
+    font-size: 16px;
 }
 
 /* modal */

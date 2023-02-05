@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useRef } from "react";
 import "./FileUpload.css";
 
 interface FileUploadProps {
@@ -6,8 +6,15 @@ interface FileUploadProps {
 }
 
 const FileUpload: FC<FileUploadProps> = ({ onFileUpload }) => {
+
+    const inputElement = useRef<HTMLInputElement>(null);
+
+    const onClick = () => {
+        inputElement.current!.click();
+    }
+
     return (
-        <div className="file-upload-container">
+        <div className="file-upload-container" onClick={onClick}>
             <input
                 type="file"
                 id="file-upload"
@@ -15,10 +22,9 @@ const FileUpload: FC<FileUploadProps> = ({ onFileUpload }) => {
                 style={{ display: "none" }}
                 multiple={true}
                 accept=".ifc"
+                ref={inputElement}
             />
-            <label htmlFor="file-upload" className="green-button">
-                <p>Upload IFC File</p>
-            </label>
+            <p className="file-upload-button-title">Upload IFC File</p>
         </div>
     );
 };

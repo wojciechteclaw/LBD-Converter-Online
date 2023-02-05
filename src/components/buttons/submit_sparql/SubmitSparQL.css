@@ -1,3 +1,11 @@
 #submit-spar-ql:hover {
-    background-color: #5ea8a6 !important;
+    background-color: #5ea8a6 !important
+}
+
+#submit-spar-ql{
+    font-size: 16px;
+    height: 5%;
+    position: relative;
+    transform: translateY(-150%);
+    margin-left: 10%
 }
