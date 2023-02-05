@@ -3,9 +3,31 @@
         {
             "data": {
                 "color": "#e6194b",
-                "id": "http://www.ventilation.org/2xmwjQJj55hujJUuUA3b9_",
-                "namespace": "http://www.ventilation.org/",
-                "body": "2xmwjQJj55hujJUuUA3b9_"
+                "id": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Kj",
+                "namespace": "http://www.theproject.org/",
+                "body": "1PiWuBnrv9bfeIpvOEd6Kj",
+                "prefix": "inst:",
+                "label": "inst:1PiWuBnrv9bfeIpvOEd6Kj"
+            }
+        },
+        {
+            "data": {
+                "color": "#3cb44b",
+                "id": "https://w3id.org/bot#Space",
+                "namespace": "https://w3id.org/bot#",
+                "body": "Space",
+                "prefix": "bot:",
+                "label": "bot:Space"
+            }
+        },
+        {
+            "data": {
+                "color": "#e6194b",
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7c8",
+                "namespace": "http://www.theproject.org/",
+                "body": "1YUhtZU$b6V9RfO57XJ7c8",
+                "prefix": "inst:",
+                "label": "inst:1YUhtZU$b6V9RfO57XJ7c8"
             }
         },
         {
@@ -13,35 +35,224 @@
                 "color": "#3cb44b",
                 "id": "https://w3id.org/bot#Site",
                 "namespace": "https://w3id.org/bot#",
-                "body": "Site"
+                "body": "Site",
+                "prefix": "bot:",
+                "label": "bot:Site"
             }
         },
         {
             "data": {
                 "color": "#e6194b",
-                "id": "http://www.ventilation.org/2xmwjQJj55hujJUuUA3b9z",
-                "namespace": "http://www.ventilation.org/",
-                "body": "2xmwjQJj55hujJUuUA3b9z"
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cB",
+                "namespace": "http://www.theproject.org/",
+                "body": "1YUhtZU$b6V9RfO57XJ7cB",
+                "prefix": "inst:",
+                "label": "inst:1YUhtZU$b6V9RfO57XJ7cB"
+            }
+        },
+        {
+            "data": {
+                "color": "#e6194b",
+                "id": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Lv",
+                "namespace": "http://www.theproject.org/",
+                "body": "1PiWuBnrv9bfeIpvOEd6Lv",
+                "prefix": "inst:",
+                "label": "inst:1PiWuBnrv9bfeIpvOEd6Lv"
+            }
+        },
+        {
+            "data": {
+                "color": "#e6194b",
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTD",
+                "namespace": "http://www.theproject.org/",
+                "body": "1YUhtZU$b6V9RfO54UiuTD",
+                "prefix": "inst:",
+                "label": "inst:1YUhtZU$b6V9RfO54UiuTD"
+            }
+        },
+        {
+            "data": {
+                "color": "#3cb44b",
+                "id": "https://w3id.org/bot#Storey",
+                "namespace": "https://w3id.org/bot#",
+                "body": "Storey",
+                "prefix": "bot:",
+                "label": "bot:Storey"
+            }
+        },
+        {
+            "data": {
+                "color": "#e6194b",
+                "id": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6QI",
+                "namespace": "http://www.theproject.org/",
+                "body": "1PiWuBnrv9bfeIpvOEd6QI",
+                "prefix": "inst:",
+                "label": "inst:1PiWuBnrv9bfeIpvOEd6QI"
+            }
+        },
+        {
+            "data": {
+                "color": "#3cb44b",
+                "id": "https://w3id.org/bot#Building",
+                "namespace": "https://w3id.org/bot#",
+                "body": "Building",
+                "prefix": "bot:",
+                "label": "bot:Building"
+            }
+        },
+        {
+            "data": {
+                "color": "#e6194b",
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuJC",
+                "namespace": "http://www.theproject.org/",
+                "body": "1YUhtZU$b6V9RfO54UiuJC",
+                "prefix": "inst:",
+                "label": "inst:1YUhtZU$b6V9RfO54UiuJC"
             }
         }
     ],
     "edges": [
         {
             "data": {
-                "id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "id": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Kjhttps://w3id.org/bot#Space",
                 "namespace": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
                 "body": "type",
-                "source": "http://www.ventilation.org/2xmwjQJj55hujJUuUA3b9_",
+                "prefix": "rdf:",
+                "label": "rdf:type",
+                "source": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Kj",
+                "target": "https://w3id.org/bot#Space"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7c8https://w3id.org/bot#Site",
+                "namespace": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "body": "type",
+                "prefix": "rdf:",
+                "label": "rdf:type",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7c8",
                 "target": "https://w3id.org/bot#Site"
             }
         },
         {
             "data": {
-                "id": "https://w3id.org/bot#hasBuilding",
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7c8http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cB",
                 "namespace": "https://w3id.org/bot#",
                 "body": "hasBuilding",
-                "source": "http://www.ventilation.org/2xmwjQJj55hujJUuUA3b9_",
-                "target": "http://www.ventilation.org/2xmwjQJj55hujJUuUA3b9z"
+                "prefix": "bot:",
+                "label": "bot:hasBuilding",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7c8",
+                "target": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cB"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Lvhttps://w3id.org/bot#Space",
+                "namespace": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "body": "type",
+                "prefix": "rdf:",
+                "label": "rdf:type",
+                "source": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Lv",
+                "target": "https://w3id.org/bot#Space"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTDhttps://w3id.org/bot#Storey",
+                "namespace": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "body": "type",
+                "prefix": "rdf:",
+                "label": "rdf:type",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTD",
+                "target": "https://w3id.org/bot#Storey"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTDhttp://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Lv",
+                "namespace": "https://w3id.org/bot#",
+                "body": "hasSpace",
+                "prefix": "bot:",
+                "label": "bot:hasSpace",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTD",
+                "target": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Lv"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTDhttp://www.theproject.org/1PiWuBnrv9bfeIpvOEd6QI",
+                "namespace": "https://w3id.org/bot#",
+                "body": "hasSpace",
+                "prefix": "bot:",
+                "label": "bot:hasSpace",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTD",
+                "target": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6QI"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6QIhttps://w3id.org/bot#Space",
+                "namespace": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "body": "type",
+                "prefix": "rdf:",
+                "label": "rdf:type",
+                "source": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6QI",
+                "target": "https://w3id.org/bot#Space"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cBhttps://w3id.org/bot#Building",
+                "namespace": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "body": "type",
+                "prefix": "rdf:",
+                "label": "rdf:type",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cB",
+                "target": "https://w3id.org/bot#Building"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cBhttp://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTD",
+                "namespace": "https://w3id.org/bot#",
+                "body": "hasStorey",
+                "prefix": "bot:",
+                "label": "bot:hasStorey",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cB",
+                "target": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuTD"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cBhttp://www.theproject.org/1YUhtZU%24b6V9RfO54UiuJC",
+                "namespace": "https://w3id.org/bot#",
+                "body": "hasStorey",
+                "prefix": "bot:",
+                "label": "bot:hasStorey",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO57XJ7cB",
+                "target": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuJC"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuJChttps://w3id.org/bot#Storey",
+                "namespace": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "body": "type",
+                "prefix": "rdf:",
+                "label": "rdf:type",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuJC",
+                "target": "https://w3id.org/bot#Storey"
+            }
+        },
+        {
+            "data": {
+                "id": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuJChttp://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Kj",
+                "namespace": "https://w3id.org/bot#",
+                "body": "hasSpace",
+                "prefix": "bot:",
+                "label": "bot:hasSpace",
+                "source": "http://www.theproject.org/1YUhtZU%24b6V9RfO54UiuJC",
+                "target": "http://www.theproject.org/1PiWuBnrv9bfeIpvOEd6Kj"
             }
         }
     ]
