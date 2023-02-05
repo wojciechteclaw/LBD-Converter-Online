@@ -1,9 +1,9 @@
 import { FC } from "react";
-import "./LoadedFile.css";
-import { Modal } from "../modal/Modal";
+import { Modal } from "@components/modal/Modal";
+import { ParserSettingsForm } from "@components/parser_settings_form/ParserSettingsForm";
 import { useModal } from "@hooks/useModal";
-import { ParserSettingsForm } from "../parser_settings_form/ParserSettingsForm";
 import { ifcManagerService } from "@services/dependency_injection";
+import "./LoadedFile.css";
 
 interface LoadedFileProps {
     fileName: string;

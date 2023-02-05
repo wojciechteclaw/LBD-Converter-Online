@@ -13,6 +13,17 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
         },
     },
     {
+        selector: "node:selected",
+        style: {
+            "background-color": "blue",
+            "z-index": 999,
+            // "padding-top": "4",
+            // "padding-bottom": "4",
+            // "font-size": "12",
+            // "background-fit": "cover",
+        },
+    },
+    {
         selector: "node[label]",
         style: {
             label: "data(label)",
@@ -49,6 +60,16 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
             color: "#455C5C",
             "text-background-color": "#ced9d9",
 
+        },
+    },
+    {
+        selector: "edge:selected",
+        style: {
+            "line-color": "blue",
+            // "padding-top": "4",
+            // "padding-bottom": "4",
+            // "font-size": "12",
+            // "background-fit": "cover",
         },
     },
 ];

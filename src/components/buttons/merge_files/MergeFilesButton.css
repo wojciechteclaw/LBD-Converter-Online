@@ -22,12 +22,3 @@
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
 }
-
-merge-files-container > p {
-    margin: auto;
-    text-align: center;
-    width: 100%;
-    font-size: 20px;
-    line-height: 4vh;
-    color: white;
-}
