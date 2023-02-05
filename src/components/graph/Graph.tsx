@@ -4,20 +4,34 @@ import COSEBilkent from "cytoscape-cose-bilkent";
 import CytoscapeComponent from "react-cytoscapejs";
 import "./Graph.css";
 import { GraphElementsDefinition } from "@/types/graph/graph_elements_definition";
+import { graphLayoutConfiguration } from "./graph_layout_configuration";
+import { GraphStylesheet } from "./graph_stylesheet";
+import cytoscape from "cytoscape";
 
 interface GraphProps {
     graphElements: GraphElementsDefinition;
 }
 
-const layout = { name: "cose-bilkent", idealEdgeLength: 500, label: "data(id)" };
 Cytoscape.use(COSEBilkent);
 
 const Graph: FC<GraphProps> = ({ graphElements }) => {
+    const cyRef = useRef<any>();
+    const anotherRef = useRef<any>();
+
+    useEffect(() => {
+        if (cyRef.current) {
+            cyRef.current.layout(graphLayoutConfiguration).run();
+            cyRef.current.fit();
+        }
+        console.log(anotherRef.current)
+    }, [graphElements]);
+
     return (
         <div id="graph-element">
             <CytoscapeComponent
                 elements={[...graphElements.nodes, ...graphElements.edges]}
-                layout={layout}
+                layout={graphLayoutConfiguration}
+                ref={anotherRef}
                 style={{
                     width: "100%",
                     height: "100%",
@@ -25,12 +39,8 @@ const Graph: FC<GraphProps> = ({ graphElements }) => {
                     display: "block",
                     backgroundColor: "#ced9d9",
                 }}
-                cy={(cy) => {
-                    cy.on('add', 'node', _evt => {
-                    cy.layout(layout).run()
-                    cy.fit()
-                    })   
-                  }}
+                stylesheet={GraphStylesheet}
+                cy={(cy) => (cyRef.current = cy)}
             />
         </div>
     );
