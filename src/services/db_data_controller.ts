@@ -76,6 +76,8 @@ class DBDataController {
         a.click();
     }
 
+    // private static downloadPng(data: string, fileName: string = "graph.png"): void {
+
     private static getQuadFromTriple(triple: any) {
         return oxigraph.quad(triple.subject, triple.predicate, triple.object, triple.graph);
     }

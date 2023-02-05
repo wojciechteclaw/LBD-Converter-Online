@@ -1,6 +1,6 @@
+import { Vector3 } from "three";
 import { IfcBuildingStorey } from "web-ifc";
 import { v5 as uuidv5 } from "uuid";
-import { Vector3 } from "three";
 import { filesService, ifcManagerService } from "./dependency_injection";
 
 class GuidUriService {
