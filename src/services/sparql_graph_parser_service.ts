@@ -36,7 +36,6 @@ class SparQlGraphParserService {
             nodes: Object.values(this.nodes),
             edges: this.edges,
         };
-        console.log(result);
         return result;
     }
 

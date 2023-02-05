@@ -15,8 +15,6 @@ interface GraphProps {
 Cytoscape.use(COSEBilkent);
 
 const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
-    const [selectedNodes, setSelectedNodes] = useState([]);
-    const [ready, setReady] = useState(false);
 
     const cyRef = useRef<Cytoscape.Core>();
 
@@ -29,7 +27,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
             cyRef.current.layout(graphLayoutConfiguration).run();
             cyRef.current.fit();
         }
-    }, [graphElements, ready]);
+    }, [graphElements]);
 
     return (
         <div id="graph-element" onContextMenu={(e) => console.log(e)}>
