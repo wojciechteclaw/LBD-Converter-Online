@@ -99,13 +99,13 @@ class SparQlGraphParserService {
 
     private static readonly MOST_POPULAR_PREFIXES = {
         "https://w3id.org/bot#": "bot",
-        "https://example.com/": "ex",
         "https://w3id.org/fog#": "fog",
         "https://w3id.org/fso#": "fso",
         "http://ifcowl.openbimstandards.org/IFC2X3_Final#": "ifc",
         "https://w3id.org/kobl/building-topology#": "kbt",
         "https://w3id.org/omg#": "omg",
-        "http://qudt.org/schema/qudt/": "qudt",
+        "http://www.w3.org/2002/07/owl#": "owl",
+        "http://qudt.org/schema/qudt/#": "qudt",
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#": "rdf",
         "http://www.w3.org/2000/01/rdf-schema#": "rdfs",
         "https://w3id.org/tso#": "tso",

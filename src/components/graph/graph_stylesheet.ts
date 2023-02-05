@@ -17,10 +17,6 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
         style: {
             "background-color": "blue",
             "z-index": 999,
-            // "padding-top": "4",
-            // "padding-bottom": "4",
-            // "font-size": "12",
-            // "background-fit": "cover",
         },
     },
     {
@@ -31,9 +27,10 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
             "text-halign": "center",
             "text-valign": "center",
             color: "#455C5C",
-            "padding-left": "4",
-            "padding-right": "4",
             "text-margin-y": 37,
+            "text-background-color": "#ced9d9",
+            "text-background-padding": "4px",
+            "text-background-opacity": 1,
         },
     },
     {
@@ -48,7 +45,6 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
             "control-point-distances": "25",
             "line-color": "#618685",
             "target-arrow-color": "#618685",
-            
         },
     },
     {
@@ -59,18 +55,19 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
             "text-background-opacity": 1,
             color: "#455C5C",
             "text-background-color": "#ced9d9",
-
         },
     },
     {
-        selector: "edge:selected",
-        style: {
-            "line-color": "blue",
-            // "padding-top": "4",
-            // "padding-bottom": "4",
-            // "font-size": "12",
-            // "background-fit": "cover",
-        },
+        selector: "node.unselected",
+        style: { "background-opacity": 0.1, "text-opacity": 0.1 },
+    },
+    {
+        selector: "edge.unselected",
+        style: { "background-opacity": 0.1, "text-opacity": 0.1, "line-opacity": 0.1, "text-background-opacity": 0 },
+    },
+    {
+        selector: "edge[label].unselected",
+        style: { "text-background-opacity": 0 },
     },
 ];
 

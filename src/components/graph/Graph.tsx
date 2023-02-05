@@ -29,7 +29,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
     }, [graphElements]);
 
     return (
-        <div id="graph-element">
+        <div id="graph-element" onContextMenu={(e) => console.log(e)}>
             <CytoscapeComponent
                 elements={[...graphElements.nodes, ...graphElements.edges]}
                 layout={graphLayoutConfiguration}
@@ -43,6 +43,22 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
                 stylesheet={GraphStylesheet}
                 cy={(cy) => {
                     cyRef.current = cy;
+                    cy.addListener("tap", "node", (e) => {
+                        let selectedNode = e.target.union(e.target.outgoers()).union(e.target.incomers());
+                        let currentSelection = cy.nodes(":selected");
+                        let selection = currentSelection
+                            .union(currentSelection.outgoers())
+                            .union(currentSelection.incomers())
+                            .union(e.target);
+                        let sumSelection = selectedNode.union(selection);
+                        cy.elements().difference(sumSelection).addClass("unselected");
+                        sumSelection.removeClass("unselected");
+                    });
+                    cy.addListener("tap", (e) => {
+                        if (!e.target.length) {
+                            cy.elements().removeClass("unselected");
+                        }
+                    });
                 }}
             />
         </div>
