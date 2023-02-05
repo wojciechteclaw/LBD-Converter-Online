@@ -14,10 +14,6 @@ const GraphContainer: FC = () => {
     const [cyReference, setCyReference] = useState<MutableRefObject<Cytoscape.Core | undefined>>();
 
     useEffect(() => {
-        console.log(cyReference);
-    }, [cyReference]);
-
-    useEffect(() => {
         (async () => {
             return await fetch("./samples/example_data.json")
                 .then((e) => e.json())
