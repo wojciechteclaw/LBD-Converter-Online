@@ -8,15 +8,8 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
             "padding-bottom": "4",
             "font-size": "12",
             "background-fit": "cover",
-            width: 50,
-            height: 50,
-        },
-    },
-    {
-        selector: "node:selected",
-        style: {
-            "background-color": "blue",
-            "z-index": 999,
+            width: 40,
+            height: 40,
         },
     },
     {
@@ -59,7 +52,7 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
     },
     {
         selector: "node.unselected",
-        style: { "background-opacity": 0.1, "text-opacity": 0.1 },
+        style: { "background-opacity": 0.1, "text-opacity": 0.1, "text-background-opacity": 0 },
     },
     {
         selector: "edge.unselected",
