@@ -57,8 +57,8 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
             .union(currentSelection.incomers())
             .union(e.target);
         let sumSelection = selectedNode.union(selection);
-        cy.elements().difference(sumSelection).addClass("unselected").lock()
-        sumSelection.removeClass("unselected").selectify().unlock()
+        cy.elements().difference(sumSelection).addClass("unselected").lock();
+        sumSelection.removeClass("unselected").selectify().unlock();
     };
 
     const onDblClick = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
@@ -80,8 +80,17 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
 
     const onRightClick = (e: Cytoscape.EventObject) => {
         let neighbours = e.target.outgoers().union(e.target.incomers()).nodes() as Cytoscape.NodeCollection;
-        let unconnectedNodes = neighbours.filter((node) => node.connectedEdges().length < 2);
-        unconnectedNodes.remove();
+        neighbours
+            .filter(
+                (node) =>
+                    node
+                        .connectedEdges()
+                        .targets()
+                        .union(node.connectedEdges().sources())
+                        .subtract(node)
+                        .subtract(e.target).length === 0
+            )
+            .remove();
     };
 
     return (
@@ -105,7 +114,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
                     cy.on("cxttap", "node", (e) => onRightClick(e));
                     cy.addListener("tap", (e) => {
                         if (!e.target.length) {
-                            cy.elements().removeClass("unselected").unlock()
+                            cy.elements().removeClass("unselected").unlock();
                         }
                     });
                 }}
