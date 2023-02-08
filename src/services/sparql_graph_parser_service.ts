@@ -18,13 +18,11 @@ class SparQlGraphParserService {
         this.queryResult = queryResult;
     }
 
-    public async convertQueryResultToGraphInput(): Promise<GraphElementsDefinition> {
+    public convertQueryResultToGraphInput(): GraphElementsDefinition {
         for (const binding of this.queryResult) {
-            let [subject, object] = await Promise.all([
-                SparQlGraphParserService.getNode(binding.subject),
-                SparQlGraphParserService.getNode(binding.object),
-            ]).then((e) => e);
-            let edge = await SparQlGraphParserService.getEdge(binding.predicate).then((e) => e);
+            let subject = SparQlGraphParserService.getNode(binding.subject);
+            let object = SparQlGraphParserService.getNode(binding.object);
+            let edge = SparQlGraphParserService.getEdge(binding.predicate);
             edge.source = subject.id;
             edge.target = object.id;
             edge.id = subject.id + object.id;
@@ -39,10 +37,10 @@ class SparQlGraphParserService {
         return result;
     }
 
-    private static async getNode(node: NamedNode | Literal): Promise<NodeElementData> {
+    private static getNode(node: NamedNode | Literal): NodeElementData {
         let result: NodeElementData;
         if (node.termType === "NamedNode") {
-            result = await SparQlGraphParserService.getElementBody(node.value).then((e) => e);
+            result = SparQlGraphParserService.getElementBody(node.value);
         } else {
             result = {
                 id: GuidUriService.encodeURI(node.value),
@@ -52,15 +50,15 @@ class SparQlGraphParserService {
                 prefix: "",
             };
         }
-        let color = await colorsManager.getColorByNamespace(result.namespace).then((e) => e);
+        let color = colorsManager.getColorByNamespace(result.namespace);
         return { color: color, ...result };
     }
 
-    private static async getEdge(edge: NamedNode): Promise<EdgeElementData> {
-        return (await SparQlGraphParserService.getElementBody(edge.value)) as EdgeElementData;
+    private static getEdge(edge: NamedNode): EdgeElementData {
+        return SparQlGraphParserService.getElementBody(edge.value) as EdgeElementData;
     }
 
-    private static async getElementBody(str: string): Promise<CustomElementData> {
+    private static getElementBody(str: string): CustomElementData {
         if (!str.includes("http")) {
             return {
                 id: uuidv4(),
@@ -71,14 +69,14 @@ class SparQlGraphParserService {
             };
         }
         let character = str.includes("#") ? "#" : "/";
-        return await SparQlGraphParserService.splitStringByCharacter(str, character).then((e) => e);
+        return SparQlGraphParserService.splitStringByCharacter(str, character);
     }
 
-    private static async splitStringByCharacter(str: string, character: string): Promise<CustomElementData> {
+    private static splitStringByCharacter(str: string, character: string): CustomElementData {
         var splitString = str.split(character);
         var firstPart = splitString.slice(0, splitString.length - 1).join(character) + character;
         var lastPart = splitString[splitString.length - 1];
-        let prefix = await SparQlGraphParserService.getPrefix(firstPart).then((e) => e);
+        let prefix = SparQlGraphParserService.getPrefix(firstPart);
         let body = GuidUriService.decodeURI(lastPart);
         return {
             id: str,
@@ -89,7 +87,7 @@ class SparQlGraphParserService {
         };
     }
 
-    private static async getPrefix(namespace: string): Promise<string> {
+    private static getPrefix(namespace: string): string {
         let prefix = SparQlGraphParserService.MOST_POPULAR_PREFIXES[namespace];
         if (prefix) {
             return prefix + ":";

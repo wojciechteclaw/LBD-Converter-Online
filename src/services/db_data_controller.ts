@@ -20,7 +20,7 @@ class DBDataController {
         this.store = new oxigraph.Store();
     }
 
-    public async query(query: string): Promise<oxigraph.Quad[] | undefined> {
+    public query(query: string): oxigraph.Quad[] | undefined {
         let result: oxigraph.Quad[] | undefined;
         try {
             result = this.store.query(query) as oxigraph.Quad[];
