@@ -80,6 +80,12 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
         }
     };
 
+    const onRightClick = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
+        let neighbours = e.target.outgoers().union(e.target.incomers()).nodes() as Cytoscape.NodeCollection;
+        let unconnectedNodes = neighbours.filter((node) => node.connectedEdges().length < 2);
+        unconnectedNodes.remove();
+    }
+
     return (
         <div id="graph-element" onContextMenu={(e) => console.log(e)}>
             <CytoscapeComponent
@@ -98,6 +104,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
                     cy.dblclick();
                     cy.addListener("dblclick", "node", (e) => onDblClick(cy, e));
                     cy.addListener("tap", "node", (e) => onNodeClick(cy, e));
+                    cy.on('cxttap', "node", (e) => onRightClick(cy, e));
                     cy.addListener("tap", (e) => {
                         if (!e.target.length) {
                             cy.elements().removeClass("unselected");

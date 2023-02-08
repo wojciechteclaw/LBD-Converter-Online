@@ -62,14 +62,6 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
         selector: "node[label].invisible",
         style: { "background-opacity": 0, "text-opacity": 0, "text-background-opacity": 0 },
     },
-    {
-        selector: "edge.unselected",
-        style: { "background-opacity": 0.1, "text-opacity": 0.1, "line-opacity": 0.1, "text-background-opacity": 0 },
-    },
-    {
-        selector: "edge[label].unselected",
-        style: { "text-background-opacity": 0 },
-    },
 ];
 
 export { GraphStylesheet };
