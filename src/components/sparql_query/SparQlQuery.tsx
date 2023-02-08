@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import { SubmitSparQL } from "@components/buttons/submit_sparql/SubmitSparQL";
-import "./SparQlQuery.css"
+import "./SparQlQuery.css";
 
 interface SparQlQueryProps {
     queryString: string;
@@ -18,13 +18,14 @@ const SparQlQuery: FC<SparQlQueryProps> = ({ queryString, onQueryStringChange })
 
 !Remember to use CONSTRUCT QUERY!
 
-CONSTRUCT 
+CONSTRUCT
+{ ?s ?p ?o }
 WHERE {
-    ?s ?p ?o
+    ?s ?p ?o .
 }`;
 
     return (
-        <div id="spar-ql-editor" style={{height:"100%"}}>
+        <div id="spar-ql-editor" style={{ height: "100%" }}>
             <CodeEditor
                 value={query}
                 language="sparql"

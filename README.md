@@ -14,21 +14,29 @@ Download latest version of Node.js: https://nodejs.org/en/download/
 
 Install all dependencies: `npm install`
 
-Run locally: `npm start`. The application will run on http://localhost:3333
+Run locally: `npm start`
+
+The application will run on http://localhost:3333
+
+One can change the default port in `webpack.dev.js`
 
 ## Usage
 ### 1. Welcome view
 ![MainInterface](media/view_1.png)
 
-The initial view of the application loads a same data set for a graph.
+The initial view of the application loads a sample graph.
 
 ### 2. Models loading
 ![MainInterface](media/view_2.png)
 
 Clicking `Upload ifc file` button opens new window allowing for import one or more IFC files.
 
-### 3. Model parsing settings
+### 3. Uploaded files
+After uploading, files are ready to set
 ![MainInterface](media/view_3.png)
+
+
+### 4. Model parsing settings
 After loading user might custom following options:
 * BOT => `True/False` Parse to BOT 
 * FSO =>`True/False` Parse to FSO
@@ -38,20 +46,73 @@ After loading user might custom following options:
 * Normalize SI units => `True/False` Normalize values to SI units according to documentation of [IFC-LBD](https://github.com/LBD-Hackers/IFC-LBD)
 * Verbose => `True/False` verbose mode
 * Namespace => `string` a custom namespace URI for each model
+![MainInterface](media/view_4.png)
 
 Clicking on blur closes the window without saving the changes. 
 
-### 4. Model remove
-![MainInterface](media/view_4.png)
-
+### 5. Model remove
 Allows for removing an imported file
+![MainInterface](media/view_5.png)
 
-### 5. Quering the data
-After configuration of uploaded models use `Load and merge` button, which triggers following actions
+### 6. Load the data to the database memory
+After appling all settings click `Load and merge` to start using the data. 
+Before every reload the database is prune, that is why you can freely change the settings. However, the button triggers following actions
 * Parse all models to LBD format
 * Connects models spaces and levels using `owl:sameAs` predicate
 * Adds all triples to TripleStore
 
-After that models are ready to query using the SPARQL input.
+![MainInterface](media/view_6.png)
 
-![MainInterface](media/view_5.png)
+### 7. Querying the database
+In the following panel you can query the database. It doesn't allow user to sent two exactly the same query one by one. That is why one has to change anything or add an empty row in the end of the input.
+
+Try sample queries:
+
+* `CONSTRUCT
+{?s ?p ?o}
+WHERE { 
+	?s ?p ?o .
+    FILTER(?p = <https://w3id.org/bot#containsElement>)
+}
+`
+
+* `CONSTRUCT
+{?s ?p ?o}
+WHERE { 
+	?s ?p ?o .
+    FILTER(?o = <https://w3id.org/bot#Space>)
+}`
+
+<b>Always use !!!CONSTRUCT!!!</b>
+
+![MainInterface](media/submit_query.gif)
+
+### 8. Nodes highlighting
+Tapping at a node highlights it and all connected elements. Holding `shift` while clicking turns on modifier allowing for selection of multiple nodes
+
+![MainInterface](media/nodeTap.gif)
+
+### 9. Loading new nodes
+Double click triggers an action loading from db all neighbour elements of clicked node.
+
+![MainInterface](media/nodeDblClick.gif)
+
+### 10. Hiding unconnected nodes
+Right click on a node triggers an action removing nodes and edges being only connected with clicked node
+
+![MainInterface](media/nodeRightClick.gif)
+
+### 11. Download PNG
+Clicking at image icon download current view of the graph
+
+![MainInterface](media/screenShot.gif)
+
+### 12. DbDump
+Click at download icon triggers an action of downloading all parsed information in form of `ttl` file.
+
+![MainInterface](media/dataDownload.gif)
+
+### 13. Upload youdataset
+
+To be continued
+
