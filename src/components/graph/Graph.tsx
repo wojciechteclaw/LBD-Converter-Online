@@ -72,7 +72,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
             nodesInGraph.lock();
             let collection = allObjectsToAdd.union(nodesInGraph);
             cy.zoomingEnabled(false);
-            collection.layout(graphLayoutConfiguration).run();
+            allObjectsToAdd.length > 0 ? cy.layout(graphLayoutConfiguration).run() : null;
             cy.zoomingEnabled(true);
             nodesInGraph.unlock();
         }

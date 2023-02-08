@@ -1,6 +1,6 @@
 const graphLayoutConfiguration = {
     name: "cose-bilkent",
-    idealEdgeLength: 400,
+    idealEdgeLength: 300,
     randomize: true,
     refresh: 15,
     edgeElasticity: 0.45,
