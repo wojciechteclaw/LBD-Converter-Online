@@ -22,13 +22,10 @@ const GraphContainer: FC = () => {
     }, []);
 
     const fetchGraphData = async () => {
-        const result = await dbDataController
-            .query(queryString)
-            .then((e) => e)
-            .catch((e) => console.log(e));
+        const result = dbDataController.query(queryString);
         if (result) {
             let parser = new SparQlGraphParserService(result);
-            let results = await parser.convertQueryResultToGraphInput().then((e) => e);
+            let results = parser.convertQueryResultToGraphInput();
             setGraphElements(results);
         }
     };
