@@ -57,8 +57,8 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
             .union(currentSelection.incomers())
             .union(e.target);
         let sumSelection = selectedNode.union(selection);
-        cy.elements().difference(sumSelection).addClass("unselected").removeClass("invisible");
-        sumSelection.removeClass("unselected").removeClass("invisible");
+        cy.elements().difference(sumSelection).addClass("unselected")
+        sumSelection.removeClass("unselected")
     };
 
     const onDblClick = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
