@@ -1,6 +1,6 @@
 class ColorsManager {
     private colors: { [key: string]: string } = {
-        "https://w3id.org/bot#": "#e6194b",
+        "https://w3id.org/bot#": "#42d4f5",
         "https://w3id.org/fog#": "#3cb44b",
         "https://w3id.org/fso#": "#ffe119",
         "http://ifcowl.openbimstandards.org/IFC2X3_Final#": "#4363d8",
@@ -22,7 +22,6 @@ class ColorsManager {
     }
 
     public getColorByNamespace(namespace: string): string {
-        debugger;
         if (this.colors[namespace] === undefined) {
             return this.addNamespaceToColorMap(namespace);
         }
@@ -39,7 +38,7 @@ class ColorsManager {
         "#808080",
         "#ffffff",
         "#000000",
-        "#42d4f5",
+        "#e6194b",
     ];
 }
 

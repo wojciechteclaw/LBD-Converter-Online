@@ -57,30 +57,28 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
             .union(currentSelection.incomers())
             .union(e.target);
         let sumSelection = selectedNode.union(selection);
-        cy.elements().difference(sumSelection).addClass("unselected")
-        sumSelection.removeClass("unselected")
+        cy.elements().difference(sumSelection).addClass("unselected").lock()
+        sumSelection.removeClass("unselected").selectify().unlock()
     };
 
     const onDblClick = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
         let newElementsDefinition = getNodeAdjacentElements(e.target.id());
         if (newElementsDefinition.nodes.length > 0) {
-            let currentlyExistingNodes = cy.nodes();
-            let graphNodes = cy.nodes().map((node) => node.id());
             let allObjectsToAdd = cy.add(newElementsDefinition);
-            currentlyExistingNodes.lock();
-            let result = allObjectsToAdd
-                .edges()
-                .filter(
-                    (edge, _) => !(graphNodes.includes(edge.source().id()) && graphNodes.includes(edge.target().id()))
-                );
+            let edges = allObjectsToAdd.edges();
+            let originalNodes = allObjectsToAdd.nodes();
+            let connectedNodes = edges.sources().union(edges.targets());
+            let nodesInGraph = connectedNodes.subtract(originalNodes);
+            nodesInGraph.lock();
+            let collection = allObjectsToAdd.union(nodesInGraph);
             cy.zoomingEnabled(false);
-            result.length > 0 ? cy.layout(graphLayoutConfiguration).run() : null;
+            collection.layout(graphLayoutConfiguration).run();
             cy.zoomingEnabled(true);
-            currentlyExistingNodes.unlock();
+            nodesInGraph.unlock();
         }
     };
 
-    const onRightClick = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
+    const onRightClick = (e: Cytoscape.EventObject) => {
         let neighbours = e.target.outgoers().union(e.target.incomers()).nodes() as Cytoscape.NodeCollection;
         let unconnectedNodes = neighbours.filter((node) => node.connectedEdges().length < 2);
         unconnectedNodes.remove();
@@ -104,10 +102,10 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
                     cy.dblclick();
                     cy.addListener("dblclick", "node", (e) => onDblClick(cy, e));
                     cy.addListener("tap", "node", (e) => onNodeClick(cy, e));
-                    cy.on("cxttap", "node", (e) => onRightClick(cy, e));
+                    cy.on("cxttap", "node", (e) => onRightClick(e));
                     cy.addListener("tap", (e) => {
                         if (!e.target.length) {
-                            cy.elements().removeClass("unselected");
+                            cy.elements().removeClass("unselected").unlock()
                         }
                     });
                 }}
