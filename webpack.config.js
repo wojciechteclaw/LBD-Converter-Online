@@ -27,10 +27,18 @@ module.exports = {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"],
             },
+            {
+                test: /\.(png|wasm|json)$/,
+                loader: 'file-loader',
+                options: {
+                    name: 'src/assets/[name].[ext]'
+                }
+            }
         ],
     },
     resolve: {
         alias: {
+            "@assets": path.resolve(process.cwd(), "./src/assets/"),
             "@components": path.resolve(process.cwd(), "./src/components/"),
             "@enums": path.resolve(process.cwd(), "./src/enums/"),
             "@helpers": path.resolve(process.cwd(), "./src/helpers/"),
