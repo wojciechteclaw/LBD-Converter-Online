@@ -27,8 +27,23 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
 
     useEffect(() => {
         if (cyRef.current) {
+<<<<<<< Updated upstream
             cyRef.current.elements().remove();
             cyRef.current.add(graphElements);
+=======
+<<<<<<< Updated upstream
+            cyRef.current.elements().remove()
+            cyRef.current.add(graphElements)
+=======
+<<<<<<< HEAD
+            cyRef.current.elements().remove();
+            cyRef.current.add(graphElements);
+=======
+            cyRef.current.elements().remove()
+            cyRef.current.add(graphElements)
+>>>>>>> dd05e34784fac0e8ecf2a1da86a39d930f198bad
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
             cyRef.current.layout(graphLayoutConfiguration).run();
             cyRef.current.fit();
         }
