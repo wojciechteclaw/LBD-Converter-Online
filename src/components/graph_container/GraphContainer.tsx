@@ -7,6 +7,7 @@ import { dbDataController } from "@services/dependency_injection";
 import { SparQlGraphParserService } from "@services/sparql_graph_parser_service";
 import { GraphElementsDefinition } from "@/types/graph/graph_elements_definition";
 import "./GraphContainer.css";
+import { ExportStyleSheet, GraphStylesheet } from "../graph/graph_stylesheet";
 
 const GraphContainer: FC = () => {
     const [queryString, setQueryString] = useState<string>("");
@@ -31,7 +32,9 @@ const GraphContainer: FC = () => {
     };
 
     const onGraphPngDownload = () => {
+        cyReference!.current!.style(ExportStyleSheet)
         let text = cyReference!.current!.png({ full: true, scale: 2, output: "blob" });
+        cyReference!.current!.style(GraphStylesheet)
         const a = document.createElement("a");
         a.download = "lbd-converter-graph.png";
         a.href = URL.createObjectURL(text);
