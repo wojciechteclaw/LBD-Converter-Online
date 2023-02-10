@@ -27,12 +27,11 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
 
     useEffect(() => {
         if (cyRef.current) {
-            cyRef.current.elements().remove()
-            cyRef.current.add(graphElements)
+            cyRef.current.elements().remove();
+            cyRef.current.add(graphElements);
             cyRef.current.layout(graphLayoutConfiguration).run();
-            cyRef.current.fit()
+            cyRef.current.fit();
         }
-
     }, [graphElements]);
 
     const getNodeAdjacentElements = (id: string) => {
@@ -97,7 +96,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
     };
 
     return (
-        <div id="graph-element" onContextMenu={(e) => console.log(e)}>
+        <div id="graph-element">
             <CytoscapeComponent
                 elements={[]}
                 layout={graphLayoutConfiguration}
