@@ -52,12 +52,9 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
     };
 
     const onNodeTap = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
-        let selectedNode = e.target.union(e.target.outgoers()).union(e.target.incomers());
+        let selectedNode = e.target.union(e.target.neighborhood());
         let currentSelection = cy.nodes(":selected");
-        let selection = currentSelection
-            .union(currentSelection.outgoers())
-            .union(currentSelection.incomers())
-            .union(e.target);
+        let selection = currentSelection.union(currentSelection.neighborhood()).union(e.target);
         let sumSelection = selectedNode.union(selection);
         cy.elements().difference(sumSelection).addClass("unselected").lock();
         sumSelection.removeClass("unselected").selectify().unlock();
@@ -69,10 +66,8 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
             let allObjectsToAdd = cy.add(newElementsDefinition);
             let edges = allObjectsToAdd.edges();
             let originalNodes = allObjectsToAdd.nodes();
-            let connectedNodes = edges.sources().union(edges.targets());
-            let nodesInGraph = connectedNodes.subtract(originalNodes);
+            let nodesInGraph = edges.connectedNodes().subtract(originalNodes);
             nodesInGraph.lock();
-            let collection = allObjectsToAdd.union(nodesInGraph);
             cy.zoomingEnabled(false);
             allObjectsToAdd.length > 0 ? cy.layout(graphLayoutConfiguration).run() : null;
             cy.zoomingEnabled(true);
@@ -81,7 +76,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
     };
 
     const onRightClick = (e: Cytoscape.EventObject) => {
-        let neighbours = e.target.outgoers().union(e.target.incomers()).nodes() as Cytoscape.NodeCollection;
+        let neighbours = e.target.neighborhood().nodes() as Cytoscape.NodeCollection;
         neighbours
             .filter(
                 (node) =>

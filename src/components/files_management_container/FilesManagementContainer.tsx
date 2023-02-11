@@ -11,8 +11,8 @@ const FilesManagementContainer: FC = () => {
     const onFileLoad = async (e) => {
         if (e.target.files.length === 0) return;
         let files = e.target.files as File[];
-        for (let i = 0; i < files.length; i++) {
-            await filesService.addFile(files[i]);
+        for (let file of files) {
+            await filesService.addFile(file);
         }
         generateLoadedFileComponents();
     };
