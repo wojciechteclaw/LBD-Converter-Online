@@ -26,12 +26,19 @@ class FilesService {
         return this.fileObjects;
     }
 
-    public getParserSettings(index: number): ParserSettings {
-        return this.fileObjects[index].parserSettings;
+    public getParserSettings(modelID: number): ParserSettings {
+        let element = this.fileObjects.find((parsingObject) => parsingObject.modelID === modelID);
+        if (element) {
+            return element.parserSettings;
+        }
+        return this.DEFAULT_PARSER_SETTINGS;
     }
 
-    public overrideParserSettings(index: number, parserSettings: ParserSettings): void {
-        this.fileObjects[index].parserSettings = parserSettings;
+    public overrideParserSettings(modelID: number, parserSettings: ParserSettings): void {
+        let element = this.fileObjects.find((parsingObject) => parsingObject.modelID === modelID);
+        if (element) {
+            element.parserSettings = parserSettings;
+        }
     }
 
     public async removeFile(modelID: number): Promise<void> {
