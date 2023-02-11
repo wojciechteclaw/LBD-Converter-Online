@@ -109,11 +109,15 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
                     cy.addListener("dblclick", "node", (e) => onDblClick(cy, e));
                     cy.addListener("tap", "node", (e) => onNodeTap(cy, e));
                     cy.on("cxttap", "node", (e) => onRightClick(e));
-                    cy.addListener("tap", (e) => {
-                        if (!e.target.length) {
-                            cy.elements().removeClass("unselected").unlock();
-                        }
+                    cy.on("mouseover", "node|edge", (e) => {
+                        e.target.union(e.target.neighborhood()).addClass("highlighted");
                     });
+                    cy.on("mouseout", "node|edge", (e) => {
+                        e.target.union(e.target.neighborhood()).removeClass("highlighted");
+                    });
+                    cy.addListener("tap", (e) =>
+                        !e.target.length ? cy.elements().removeClass("unselected").unlock() : null
+                    );
                 }}
             />
         </div>

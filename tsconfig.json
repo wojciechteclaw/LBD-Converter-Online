@@ -9,7 +9,6 @@
         "jsx": "react-jsx",
         "moduleResolution": "node",
         "downlevelIteration": true,
-        "declaration": true,
         "sourceMap": true,
         
     },
