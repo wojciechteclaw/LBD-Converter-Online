@@ -51,7 +51,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
         return result;
     };
 
-    const onNodeClick = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
+    const onNodeTap = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
         let selectedNode = e.target.union(e.target.outgoers()).union(e.target.incomers());
         let currentSelection = cy.nodes(":selected");
         let selection = currentSelection
@@ -112,7 +112,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
                     cyRef.current = cy;
                     cy.dblclick();
                     cy.addListener("dblclick", "node", (e) => onDblClick(cy, e));
-                    cy.addListener("tap", "node", (e) => onNodeClick(cy, e));
+                    cy.addListener("tap", "node", (e) => onNodeTap(cy, e));
                     cy.on("cxttap", "node", (e) => onRightClick(e));
                     cy.addListener("tap", (e) => {
                         if (!e.target.length) {
