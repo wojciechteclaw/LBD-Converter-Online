@@ -27,12 +27,11 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
 
     useEffect(() => {
         if (cyRef.current) {
-            cyRef.current.elements().remove()
-            cyRef.current.add(graphElements)
+            cyRef.current.elements().remove();
+            cyRef.current.add(graphElements);
             cyRef.current.layout(graphLayoutConfiguration).run();
-            cyRef.current.fit()
+            cyRef.current.fit();
         }
-
     }, [graphElements]);
 
     const getNodeAdjacentElements = (id: string) => {
@@ -52,13 +51,10 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
         return result;
     };
 
-    const onNodeClick = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
-        let selectedNode = e.target.union(e.target.outgoers()).union(e.target.incomers());
+    const onNodeTap = (cy: Cytoscape.Core, e: Cytoscape.EventObject) => {
+        let selectedNode = e.target.union(e.target.neighborhood());
         let currentSelection = cy.nodes(":selected");
-        let selection = currentSelection
-            .union(currentSelection.outgoers())
-            .union(currentSelection.incomers())
-            .union(e.target);
+        let selection = currentSelection.union(currentSelection.neighborhood()).union(e.target);
         let sumSelection = selectedNode.union(selection);
         cy.elements().difference(sumSelection).addClass("unselected").lock();
         sumSelection.removeClass("unselected").selectify().unlock();
@@ -70,10 +66,8 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
             let allObjectsToAdd = cy.add(newElementsDefinition);
             let edges = allObjectsToAdd.edges();
             let originalNodes = allObjectsToAdd.nodes();
-            let connectedNodes = edges.sources().union(edges.targets());
-            let nodesInGraph = connectedNodes.subtract(originalNodes);
+            let nodesInGraph = edges.connectedNodes().subtract(originalNodes);
             nodesInGraph.lock();
-            let collection = allObjectsToAdd.union(nodesInGraph);
             cy.zoomingEnabled(false);
             allObjectsToAdd.length > 0 ? cy.layout(graphLayoutConfiguration).run() : null;
             cy.zoomingEnabled(true);
@@ -82,7 +76,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
     };
 
     const onRightClick = (e: Cytoscape.EventObject) => {
-        let neighbours = e.target.outgoers().union(e.target.incomers()).nodes() as Cytoscape.NodeCollection;
+        let neighbours = e.target.neighborhood().nodes() as Cytoscape.NodeCollection;
         neighbours
             .filter(
                 (node) =>
@@ -97,7 +91,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
     };
 
     return (
-        <div id="graph-element" onContextMenu={(e) => console.log(e)}>
+        <div id="graph-element">
             <CytoscapeComponent
                 elements={[]}
                 layout={graphLayoutConfiguration}
@@ -113,13 +107,17 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
                     cyRef.current = cy;
                     cy.dblclick();
                     cy.addListener("dblclick", "node", (e) => onDblClick(cy, e));
-                    cy.addListener("tap", "node", (e) => onNodeClick(cy, e));
+                    cy.addListener("tap", "node", (e) => onNodeTap(cy, e));
                     cy.on("cxttap", "node", (e) => onRightClick(e));
-                    cy.addListener("tap", (e) => {
-                        if (!e.target.length) {
-                            cy.elements().removeClass("unselected").unlock();
-                        }
+                    cy.on("mouseover", "node", (e) => {
+                        e.target.union(e.target.neighborhood()).addClass("highlighted");
                     });
+                    cy.on("mouseout", "node", (e) => {
+                        e.target.union(e.target.neighborhood()).removeClass("highlighted");
+                    });
+                    cy.addListener("tap", (e) =>
+                        !e.target.length ? cy.elements().removeClass("unselected").unlock() : null
+                    );
                 }}
             />
         </div>

@@ -15,6 +15,7 @@
     height: 90%;
     width: 25%;
     float: left;
+    border-left: 1px solid #618685;
 }
 
 #graph-container-title {

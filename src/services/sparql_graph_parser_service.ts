@@ -43,7 +43,7 @@ class SparQlGraphParserService {
             result = SparQlGraphParserService.getElementBody(node.value);
         } else {
             result = {
-                id: GuidUriService.encodeURI(node.value),
+                id: node.value !== "" ? GuidUriService.encodeURI(node.value) : uuidv4(),
                 namespace: "OWL",
                 body: node.value,
                 label: node.value,

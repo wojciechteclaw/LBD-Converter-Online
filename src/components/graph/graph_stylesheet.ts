@@ -58,6 +58,26 @@ const GraphStylesheet: Array<cytoscape.Stylesheet> = [
         selector: "edge.unselected",
         style: { "background-opacity": 0.1, "line-opacity": 0.1, "text-opacity": 0.1, "text-background-opacity": 0 },
     },
+    {
+        selector: "node.highlighted",
+        style: {
+            backgroundColor: "#F5A623",
+            "background-opacity": 1,
+            "text-opacity": 1,
+            "text-background-opacity": 1,
+        },
+    },
+    {
+        selector: "edge.highlighted",
+        style: {
+            "line-color": "#F5A623",
+            "target-arrow-color": "#F5A623",
+            "background-opacity": 1,
+            "line-opacity": 1,
+            "text-opacity": 1,
+            "text-background-opacity": 1,
+        },
+    },
 ];
 
 const ExportStyleSheet: Array<cytoscape.Stylesheet> = [
