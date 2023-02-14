@@ -15,7 +15,7 @@ const GraphContainer: FC = () => {
 
     useEffect(() => {
         (async () => {
-            return await fetch("./assets/example_data.json")
+            return await fetch("./assets/sample_data.json")
                 .then((e) => e.json())
                 .then((e) => setGraphElements(e));
         })();
