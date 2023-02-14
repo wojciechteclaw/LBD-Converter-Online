@@ -8,12 +8,10 @@ class DBDataController {
     private store: oxigraph.Store;
 
     constructor() {
-        console.time("TripleStore initialized");
         (async () => {
             await init();
             this.store = new oxigraph.Store();
         })();
-        console.timeEnd("TripleStore initialized");
     }
 
     public clearStore(): void {

@@ -1,10 +1,19 @@
 const HTMLWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 
 module.exports = {
     plugins: [
         new HTMLWebpackPlugin({
             template: "./public/index.html",
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: "public/assets",
+                    to: "assets",
+                },
+            ],
         }),
     ],
     module: {
@@ -27,13 +36,6 @@ module.exports = {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"],
             },
-            {
-                test: /\.(png|wasm|json)$/,
-                loader: 'file-loader',
-                options: {
-                    name: 'src/assets/[name].[ext]'
-                }
-            }
         ],
     },
     resolve: {

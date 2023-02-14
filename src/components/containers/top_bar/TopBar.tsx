@@ -1,5 +1,4 @@
 import { FC } from "react";
-import logo from "@assets/logo.png"
 import "./TopBar.css";
 
 const TopBar: FC = () => {
@@ -7,7 +6,7 @@ const TopBar: FC = () => {
         <div id="top-bar-container">
             <a href="https://github.com/LBD-Hackers" target="_blank" style={{ height: "100%", width: "auto" }}>
                 <div id="top-bar-logo-container" style={{ height: "100%", width: "auto" }}>
-                    <img src={logo} />
+                    <img src={"./assets/logo.png"} />
                 </div>
             </a>
             <div className="top-bar-menu">

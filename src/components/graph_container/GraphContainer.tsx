@@ -16,7 +16,7 @@ const GraphContainer: FC = () => {
 
     useEffect(() => {
         (async () => {
-            return await fetch("./samples/example_data.json")
+            return await fetch("./assets/example_data.json")
                 .then((e) => e.json())
                 .then((e) => setGraphElements(e));
         })();
@@ -32,9 +32,9 @@ const GraphContainer: FC = () => {
     };
 
     const onGraphPngDownload = () => {
-        cyReference!.current!.style(ExportStyleSheet)
+        cyReference!.current!.style(ExportStyleSheet);
         let text = cyReference!.current!.png({ full: true, scale: 2, output: "blob" });
-        cyReference!.current!.style(GraphStylesheet)
+        cyReference!.current!.style(GraphStylesheet);
         const a = document.createElement("a");
         a.download = "lbd-converter-graph.png";
         a.href = URL.createObjectURL(text);

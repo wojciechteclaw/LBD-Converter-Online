@@ -27,12 +27,11 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
 
     useEffect(() => {
         if (cyRef.current) {
-            cyRef.current.elements().remove()
-            cyRef.current.add(graphElements)
+            cyRef.current.elements().remove();
+            cyRef.current.add(graphElements);
             cyRef.current.layout(graphLayoutConfiguration).run();
-            cyRef.current.fit()
+            cyRef.current.fit();
         }
-
     }, [graphElements]);
 
     const getNodeAdjacentElements = (id: string) => {
