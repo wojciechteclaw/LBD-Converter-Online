@@ -22,7 +22,7 @@ const ParserSettingsForm: FC<ParserSettingsProps> = ({ visibilityToggle, index }
 
     const getParserSettings = () => {
         let newSettings: ParserSettings = {
-            namespace: namespace,
+            namespace: namespace.endsWith("/") ? namespace : namespace + "/",
             subsets: {
                 BOT: bot,
                 FSO: fso,

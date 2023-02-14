@@ -71,6 +71,7 @@ class IfcManagerService {
                 await dbDataController.addJsonLdToStore(e as JSONLD);
             });
         }
+        console.timeEnd("filesMerging");
         await this.joinModels();
     }
 
@@ -99,7 +100,7 @@ class IfcManagerService {
     }
 
     private configureIfcAPI() {
-        let assetsPath = "../../assets/";
+        let assetsPath = "/assets/";
         this.ifcAPI.SetWasmPath(assetsPath);
         this.ifcAPI.Init();
     }
