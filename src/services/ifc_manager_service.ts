@@ -100,8 +100,7 @@ class IfcManagerService {
     }
 
     private configureIfcAPI() {
-        let assetsPath = "/assets/";
-        this.ifcAPI.SetWasmPath(assetsPath);
+        this.ifcAPI.SetWasmPath("./assets/");
         this.ifcAPI.Init();
     }
 
