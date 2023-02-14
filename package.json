@@ -10,9 +10,11 @@
         "IFC",
         "Linked Data"
     ],
+    "homepage": "https://wojciechteclaw.github.io/web-lbd-converter/",
     "scripts": {
         "start": "webpack-dev-server --config webpack.dev.js --stats-error-details",
-        "build": "webpack --config webpack.prod.js"
+        "build": "webpack --config webpack.prod.js",
+        "deploy": "npm run build && gh-pages -d dist"
     },
     "license": "ISC",
     "dependencies": {
@@ -45,6 +47,7 @@
         "babel-loader": "^9.1.2",
         "copy-webpack-plugin": "^11.0.0",
         "css-loader": "^6.7.3",
+        "gh-pages": "^5.0.0",
         "html-webpack-plugin": "^5.5.0",
         "ignore-loader": "^0.1.2",
         "style-loader": "^3.3.1",
