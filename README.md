@@ -31,11 +31,18 @@ Build the application: `npm run build`
 
 Run application using some server:
 * Install server `npm i http-server`
+
 * Run server `npm http-server ./`
 
 ### Using docker
 
-Run the docker container, the application will run at the port 3000: `docker-compose up`
+Run the docker container: `docker-compose up`
+
+The application runs at http://localhost:3000
+
+One can configure the port editing the file or using direct run from Dockerfile:
+`docker build -t lbd-vis .`
+`docker run -p 1234:80 lbd-vis`
 
 ## Usage
 ### 1. Welcome view
