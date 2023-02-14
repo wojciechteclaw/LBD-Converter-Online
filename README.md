@@ -8,7 +8,9 @@
 
 
 
-## Local usage
+## Run the application
+### Local
+### Using NPM in dev mode
 
 Download latest version of Node.js: https://nodejs.org/en/download/
 
@@ -19,6 +21,28 @@ Run locally: `npm start`
 The application will run on http://localhost:3333
 
 One can change the default port in `webpack.dev.js`
+
+
+### Using NPM in production mode
+Download latest version of Node.js: https://nodejs.org/en/download/
+Install all dependencies: `npm install`
+
+Build the application: `npm run build`
+
+Run application using some server:
+* Install server `npm i http-server`
+
+* Run server `npm http-server ./`
+
+### Using docker
+
+Run the docker container: `docker-compose up`
+
+The application runs at http://localhost:3000
+
+One can configure the port editing the file or using direct run from Dockerfile:
+`docker build -t lbd-vis .`
+`docker run -p 1234:80 lbd-vis`
 
 ## Usage
 ### 1. Welcome view

@@ -1,10 +1,19 @@
 const HTMLWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 
 module.exports = {
     plugins: [
         new HTMLWebpackPlugin({
             template: "./public/index.html",
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: "public/assets",
+                    to: "assets",
+                },
+            ],
         }),
     ],
     module: {
@@ -31,6 +40,7 @@ module.exports = {
     },
     resolve: {
         alias: {
+            "@assets": path.resolve(process.cwd(), "./src/assets/"),
             "@components": path.resolve(process.cwd(), "./src/components/"),
             "@enums": path.resolve(process.cwd(), "./src/enums/"),
             "@helpers": path.resolve(process.cwd(), "./src/helpers/"),
