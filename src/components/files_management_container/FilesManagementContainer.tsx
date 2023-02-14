@@ -38,7 +38,7 @@ const FilesManagementContainer: FC = () => {
 
     const mergeFiles = async () => {
         dbDataController.clearStore();
-        await ifcManagerService.mergeFiles().then((e) => e);
+        ifcManagerService.mergeFiles();
     };
 
     return (
