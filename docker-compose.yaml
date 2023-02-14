@@ -1,0 +1,12 @@
+version: '1.0'
+services:
+  lbd-visualizer:
+    container_name: lbd-visualizer
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lbd-visualizer
+    ports:
+      - 3000:80
+    environment:
+      - NODE_ENV=production
