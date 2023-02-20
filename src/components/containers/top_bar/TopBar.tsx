@@ -1,7 +1,7 @@
 import { FC } from "react";
 import "./TopBar.css";
 
-const TopBar: FC = () => {
+export const TopBar: FC = () => {
     return (
         <div id="top-bar-container">
             <a href="https://github.com/LBD-Hackers" target="_blank" style={{ height: "100%", width: "auto" }}>
@@ -25,5 +25,3 @@ const TopBar: FC = () => {
         </div>
     );
 };
-
-export { TopBar };

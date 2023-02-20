@@ -6,6 +6,8 @@ import "./AppBody.css";
 const AppBody: FC = () => {
     return (
         <div id="app-body-container">
+            {/* semantyka (aside + section) */}
+
             <FilesManagementContainer />
             <GraphContainer />
         </div>

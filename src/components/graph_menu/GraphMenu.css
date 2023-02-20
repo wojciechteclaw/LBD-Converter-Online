@@ -1,9 +1,9 @@
 #graph-menu-container {
     margin: 0;
-    background-color: #618685;
+    background-color: var(--main-bg-color);
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
-    border-top: 1px solid #5ea8a6;
+    border-top: var(--medium-light-green-border);
     font-weight: 600;
     width: 100%;
 }
@@ -21,7 +21,6 @@
     color: #8fc7c5;
     cursor: pointer;
 }
-
 
 p {
     margin: auto;

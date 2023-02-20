@@ -1,18 +1,17 @@
 #top-bar-container {
     width: 100%;
     height: 6vh;
-    background-color: #618685;
+    background-color: var(--main-bg-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #5ea8a6;
+    border-bottom: var(--medium-light-green-border);
 }
 
 #top-bar-logo-container {
     width: 10%;
     max-width: 250px;
     height: 100%;
-    background-color: blue;
 }
 
 #top-bar-contact-container {
@@ -22,14 +21,14 @@
     height: 100%;
     align-items: center;
     justify-content: center;
-    border-left: 1px solid #5ea8a6;
+    border-left: var(--medium-light-green-border);
 }
 
 img {
     width: auto;
     height: 100%;
     object-fit: contain;
-    border-right: 1px solid #5ea8a6;
+    border-right: var(--medium-light-green-border);
 }
 
 .top-bar-menu-wrappers {
@@ -43,12 +42,12 @@ img {
 }
 
 .top-bar-menu-wrappers:hover {
-    background-color: #5ea8a6;
+    background-color: var(--medium-green);
     cursor: pointer;
 }
 
-.top-bar-menu-wrappers:last-of-type{
-    border-right: 1px solid #5ea8a6;
+.top-bar-menu-wrappers:last-of-type {
+    border-right: var(--medium-light-green-border);
 }
 
 .top-bar-menu-wrappers > a {

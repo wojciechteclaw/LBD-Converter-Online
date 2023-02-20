@@ -4,9 +4,16 @@ import { LoadedFile } from "@components/loaded_file/LoadedFile";
 import { MergeFilesButton } from "@components/buttons/merge_files/MergeFilesButton";
 import { dbDataController, filesService, ifcManagerService } from "@services/dependency_injection";
 import "./FilesManagementContainer.css";
+import { ParsingObject } from "@/types/parsing_object";
+import RemoveModal from "../remove_modal/RemoveModal";
+import { EditModal } from "../edit_modal/EditModal";
+import { useModal } from "@hooks/useModal";
 
 const FilesManagementContainer: FC = () => {
-    const [loadedFileComponents, setLoadedFileComponents] = useState<JSX.Element[]>([]);
+    const [loadedFileComponents, setLoadedFileComponents] = useState<ParsingObject[]>([]);
+    const [activeFile, setActiveFile] = useState<ParsingObject | null>(null);
+    const editModal = useModal(false);
+    const removeModal = useModal(false);
 
     const onFileLoad = async (e) => {
         if (e.target.files.length === 0) return;
@@ -17,23 +24,15 @@ const FilesManagementContainer: FC = () => {
         generateLoadedFileComponents();
     };
 
-    const onRemoveFile = (index: number) => {
-        filesService.removeFile(index);
+    const onRemoveFile = () => {
+        if (!activeFile) return;
+        filesService.removeFile(activeFile.modelID);
         generateLoadedFileComponents();
     };
 
     const generateLoadedFileComponents = () => {
-        const newComponents = filesService.getAllFileObjects().map((parsingObject, fileIndex) => {
-            return (
-                <LoadedFile
-                    key={fileIndex}
-                    fileName={parsingObject.fileName}
-                    index={parsingObject.modelID}
-                    onRemoveFile={onRemoveFile}
-                />
-            );
-        });
-        setLoadedFileComponents(newComponents);
+        const newComponents = filesService.getAllFileObjects();
+        setLoadedFileComponents([...newComponents]);
     };
 
     const mergeFiles = async () => {
@@ -42,11 +41,35 @@ const FilesManagementContainer: FC = () => {
     };
 
     return (
-        <div id="file-management-container">
-            <FileUpload onFileUpload={async (e) => onFileLoad(e)} />
-            <div className="file-management-ifc-files-wrapper">{loadedFileComponents}</div>
-            <MergeFilesButton onClick={async () => await mergeFiles()} />
-        </div>
+        <aside id="file-management-container">
+            <FileUpload onFileUpload={onFileLoad} />
+            <div className="file-management-ifc-files-wrapper">
+                {loadedFileComponents.map((parsingObject, index) => {
+                    return (
+                        <LoadedFile
+                            key={index}
+                            fileName={parsingObject.fileName}
+                            onEditModalToggle={() => {
+                                editModal.toggle();
+                                setActiveFile(parsingObject);
+                            }}
+                            onRemoveModalToggle={() => {
+                                removeModal.toggle();
+                                setActiveFile(parsingObject);
+                            }}
+                        />
+                    );
+                })}
+            </div>
+            <MergeFilesButton onClick={mergeFiles} />
+            <EditModal activeFile={activeFile} isOpen={editModal.isOpen} toggle={editModal.toggle} />
+            <RemoveModal
+                activeFile={activeFile}
+                isOpen={removeModal.isOpen}
+                onRemoveFile={onRemoveFile}
+                toggle={removeModal.toggle}
+            />
+        </aside>
     );
 };
 

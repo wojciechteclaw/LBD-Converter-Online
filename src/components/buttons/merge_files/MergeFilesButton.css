@@ -1,9 +1,9 @@
 .merge-files-container {
     margin: auto;
-    background-color: #618685;
+    background-color: var(--main-bg-color);
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
-    border-top: 1px solid #5ea8a6;
+    border-top: var(--medium-light-green-border);
     font-weight: 600;
     min-height: 5%;
 }
@@ -17,7 +17,7 @@
 }
 
 .merge-files-container:hover {
-    background-color: #5ea8a6;
+    background-color: var(--medium-green);
     cursor: pointer;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
