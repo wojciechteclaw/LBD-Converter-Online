@@ -1,7 +1,7 @@
 import { JSONLD } from "ifc-lbd";
 import init, * as oxigraph from "oxigraph/web";
 import * as jsonld from "jsonld";
-import { ModelIDExpressContextGuid } from "@/types/express_id_context_guid";
+import { ModelIdsRepresentation } from "@/types/model_ids_representations";
 import { NewSemanticConnection } from "@/types/new_semantic_connection";
 
 class DBDataController {
@@ -41,7 +41,7 @@ class DBDataController {
         }
     }
 
-    public static getModelIdForComparison(modelIDsExpressGeometry: ModelIDExpressContextGuid): Array<Array<number>> {
+    public static getModelIdForComparison(modelIDsExpressGeometry: ModelIdsRepresentation): Array<Array<number>> {
         let result = new Array<Array<number>>();
         let set = new Set();
         let modelIDs = Array.from(modelIDsExpressGeometry.keys());

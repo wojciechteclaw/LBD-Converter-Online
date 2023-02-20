@@ -9,10 +9,14 @@ import {
     Material,
     Vector3,
     MeshBasicMaterial,
+    Quaternion,
 } from "three";
 import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry, IFCBUILDINGSTOREY } from "web-ifc";
 import { GuidUriService } from "./guid_uri_service";
-import { ExpressIDContextGuid } from "@/types/guid_spaces_map";
+import { ExpressIdToElementRepresentation } from "@/types/element_representation/express_id_to_element_representation";
+import { CSG } from "three-csg-ts";
+import { GeometricalRepresentation } from "@/types/element_representation/geometrical_representation";
+import { Representation } from "@enums/representation";
 
 class GeometryService {
     public static convertIfcGeometryToThreeMesh(
@@ -30,37 +34,55 @@ class GeometryService {
         return mesh;
     }
 
-    public static async getLevelsContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
+    public static async getLevelsContextGuidMap(
+        modelID: number,
+        ifcAPI: IfcAPI
+    ): Promise<ExpressIdToElementRepresentation> {
         let levels = ifcAPI.GetLineIDsWithType(modelID, IFCBUILDINGSTOREY);
-        let result: ExpressIDContextGuid = new Map();
+        let result: ExpressIdToElementRepresentation = new Map();
         for (let i = 0; i < levels.size(); i++) {
             let expressID = levels.get(i);
             let level = ifcAPI.GetLine(modelID, expressID);
             let guid = await GuidUriService.getLevelContextBasedGuid(level);
-            result.set(expressID, guid);
+            result.set(expressID, { contextString: guid, type: Representation.LEVEL });
         }
         return result;
     }
 
-    public static async getSpacesContextGuidMap(modelID: number, ifcAPI: IfcAPI): Promise<ExpressIDContextGuid> {
-        let result: ExpressIDContextGuid = new Map();
+    public static async getSpacesContextGuidMap(
+        modelID: number,
+        ifcAPI: IfcAPI
+    ): Promise<ExpressIdToElementRepresentation> {
+        const result = new Map<number, GeometricalRepresentation>();
         ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], async (flatMesh: FlatMesh) => {
-            let placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
-            let [vertices, indices] = GeometryService.transformIfcGeometryToAtoms(ifcAPI, modelID, placedGeometry);
-            let spaceMesh = GeometryService.convertIfcGeometryToThreeMesh(placedGeometry, vertices, indices);
-            spaceMesh.geometry.computeBoundingSphere();
-            spaceMesh.geometry.boundingSphere!.applyMatrix4(spaceMesh.matrix);
-            let spaceGeometry = spaceMesh.geometry;
-            let volume = await GeometryService.getVolume(spaceMesh.geometry);
-            let guid = await GuidUriService.getSpaceContextBasedGuid(
-                spaceGeometry.boundingSphere!.center,
-                spaceGeometry.boundingSphere!.radius,
-                volume,
-                spaceGeometry.index!.array.length
-            ).then((e) => e);
-            result.set(flatMesh.expressID, guid);
+            const placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
+            let matrix = this.getMeshMatrix(placedGeometry.flatTransformation);
+            let buffer = this.convertPlacedGeometryToThreeMesh(modelID, ifcAPI, placedGeometry);
+            const mesh = new Mesh(buffer);
+            mesh.applyMatrix4(matrix);
+            const volume = await GeometryService.getVolume(buffer);
+            result.set(flatMesh.expressID, { geometry: mesh, volume: volume, type: Representation.SPACE });
+            console.log(mesh);
         });
         return result;
+    }
+
+    private static getMeshMatrix(matrix: Array<number>) {
+        const mat = new Matrix4();
+        mat.fromArray(matrix);
+        return mat;
+    }
+
+    private static convertPlacedGeometryToThreeMesh(
+        modelId: number,
+        ifcAPI: IfcAPI,
+        ifcMeshGeometry: PlacedGeometry
+    ): BufferGeometry {
+        const geometry = ifcAPI.GetGeometry(modelId, ifcMeshGeometry.geometryExpressID);
+        const vertices = ifcAPI.GetVertexArray(geometry.GetVertexData(), geometry.GetVertexDataSize());
+        const indices = ifcAPI.GetIndexArray(geometry.GetIndexData(), geometry.GetIndexDataSize());
+        const bufferGeometry = GeometryService.buildThreeGeometry(vertices, indices);
+        return bufferGeometry;
     }
 
     public static transformIfcGeometryToAtoms(
@@ -93,7 +115,23 @@ class GeometryService {
         return geometry;
     }
 
-    private static getVolume(geometry: BufferGeometry) {
+    public static compareTwoGeometryRepresentations(
+        geometry1: GeometricalRepresentation,
+        geometry2: GeometricalRepresentation
+    ): boolean {
+        let mesh1 = CSG.fromMesh(geometry1.geometry);
+        let mesh2 = CSG.fromMesh(geometry2.geometry);
+        let result = mesh1.intersect(mesh2);
+        let volume = GeometryService.getVolume(result.toGeometry(new Matrix4()));
+        return (
+            volume > 0.95 * geometry1.volume &&
+            volume > 0.95 * geometry2.volume &&
+            geometry1.volume > 0.95 * geometry2.volume &&
+            geometry1.volume < 1.05 * geometry2.volume
+        );
+    }
+
+    public static getVolume(geometry: BufferGeometry) {
         var isIndexed = geometry.index !== null;
         let position = geometry.attributes.position;
         let sum = 0;
