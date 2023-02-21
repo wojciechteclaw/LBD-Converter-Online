@@ -15,6 +15,7 @@ import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IfcGeometry, IFCBUIL
 import { GuidUriService } from "./guid_uri_service";
 import { ExpressIdToElementRepresentation } from "@/types/element_representation/express_id_to_element_representation";
 import { CSG } from "three-csg-ts";
+import { computeMeshVolume } from "three-bvh-csg";
 import { GeometricalRepresentation } from "@/types/element_representation/geometrical_representation";
 import { Representation } from "@enums/representation";
 
@@ -116,18 +117,17 @@ class GeometryService {
     }
 
     public static compareTwoGeometryRepresentations(
-        geometry1: GeometricalRepresentation,
-        geometry2: GeometricalRepresentation
+        element1: GeometricalRepresentation,
+        element2: GeometricalRepresentation
     ): boolean {
-        let mesh1 = CSG.fromMesh(geometry1.geometry);
-        let mesh2 = CSG.fromMesh(geometry2.geometry);
-        let result = mesh1.intersect(mesh2);
-        let volume = GeometryService.getVolume(result.toGeometry(new Matrix4()));
+        let result = CSG.intersect(element1.geometry, element2.geometry);
+        let volume = GeometryService.getVolume(result.geometry);
+        console.log(element1.volume, element2.volume);
         return (
-            volume > 0.95 * geometry1.volume &&
-            volume > 0.95 * geometry2.volume &&
-            geometry1.volume > 0.95 * geometry2.volume &&
-            geometry1.volume < 1.05 * geometry2.volume
+            volume > 0.95 * element1.volume &&
+            volume > 0.95 * element2.volume &&
+            element1.volume > 0.95 * element2.volume &&
+            element1.volume < 1.05 * element2.volume
         );
     }
 
