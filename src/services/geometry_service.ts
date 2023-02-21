@@ -120,15 +120,12 @@ class GeometryService {
         element1: GeometricalRepresentation,
         element2: GeometricalRepresentation
     ): boolean {
-        let result = CSG.intersect(element1.geometry, element2.geometry);
-        let volume = GeometryService.getVolume(result.geometry);
-        console.log(element1.volume, element2.volume);
-        return (
-            volume > 0.95 * element1.volume &&
-            volume > 0.95 * element2.volume &&
-            element1.volume > 0.95 * element2.volume &&
-            element1.volume < 1.05 * element2.volume
-        );
+        let result_intersect = CSG.intersect(element1.geometry, element2.geometry);
+        let intersectVolume = GeometryService.getVolume(result_intersect.geometry);
+        console.log(intersectVolume);
+        console.log(element1.volume);
+        console.log(element2.volume);
+        return true;
     }
 
     public static getVolume(geometry: BufferGeometry) {
