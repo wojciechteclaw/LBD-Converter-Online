@@ -1,6 +1,6 @@
 #graph-menu-container {
     margin: 0;
-    background-color: var(--main-bg-color);
+    background-color: var(--dark-green);
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     border-top: var(--medium-light-green-border);

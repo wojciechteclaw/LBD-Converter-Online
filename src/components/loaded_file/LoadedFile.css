@@ -15,7 +15,7 @@
 
 .ifc-file-remove-button,
 .ifc-file-edit-button {
-    color: var(--main-bg-color);
+    color: var(--dark-green);
 }
 
 .ifc-file-edit-button:hover,
@@ -39,7 +39,7 @@
     overflow-y: hidden;
     overflow-x: hidden;
     white-space: nowrap;
-    color: var(--main-bg-color);
+    color: var(--dark-green);
     font-weight: 600;
     line-height: normal;
     font-size: 16px;

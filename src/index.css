@@ -1,5 +1,7 @@
 :root {
-    --main-bg-color: #618685;
+    --dark-green: #618685;
+    --dirty-white: #ced9d9;
     --medium-green: #5ea8a6;
     --medium-light-green-border: 1px solid var(--medium-green);
+    --dark-green-border: 1px solid var(--dark-green);
 }

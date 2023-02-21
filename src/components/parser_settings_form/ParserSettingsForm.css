@@ -2,18 +2,18 @@
     margin-top: 2% !important;
     margin-bottom: 4% !important;
     width: 100%;
-    border-bottom: 1px solid var(--main-bg-color);
+    border-bottom: var(--dark-green-border);
     text-align: center;
     letter-spacing: 1px;
     font-size: 18px;
     text-transform: uppercase;
-    color: var(--main-bg-color);
+    color: var(--dark-green);
     font-weight: 700;
 }
 
 .ui.toggle.checkbox input[type="checkbox"]:checked ~ label::before,
 .ui.toggle.checkbox input[type="checkbox"]:checked:focus ~ label::before {
-    background: #618685 !important;
+    background: var(--dark-green) !important;
 }
 
 .checkbox label {
@@ -25,10 +25,10 @@
 }
 
 .field {
-    color: var(--main-bg-color);
+    color: var(--dark-green);
 }
 
 input[type="text"] {
-    color: #618685 !important;
+    color: var(--dark-green) !important;
     font-weight: 700;
 }
