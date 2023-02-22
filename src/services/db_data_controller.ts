@@ -2,7 +2,7 @@ import { JSONLD } from "ifc-lbd";
 import init, * as oxigraph from "oxigraph/web";
 import * as jsonld from "jsonld";
 import { ModelIdsRepresentation } from "@/types/model_ids_representations";
-import { NewSemanticConnection } from "@/types/new_semantic_connection";
+import { SemanticConnection } from "@/types/new_semantic_connection";
 
 class DBDataController {
     private store: oxigraph.Store;
@@ -34,14 +34,16 @@ class DBDataController {
         });
     }
 
-    public addConnectionsToStore(connections: NewSemanticConnection[]): void {
+    public addConnectionsToStore(connections: SemanticConnection[]): void {
         for (let connection of connections) {
             let quad = DBDataController.getTriple(connection);
             this.store.add(quad);
         }
     }
 
-    public static getModelIdForComparison(modelIDsExpressGeometry: ModelIdsRepresentation): Array<Array<number>> {
+    public static getModelIdForComparison(
+        modelIDsExpressGeometry: ModelIdsRepresentation
+    ): Array<Array<number>> {
         let result = new Array<Array<number>>();
         let set = new Set();
         let modelIDs = Array.from(modelIDsExpressGeometry.keys());
@@ -82,7 +84,7 @@ class DBDataController {
         return result;
     }
 
-    private static getTriple(connection: NewSemanticConnection): oxigraph.Quad {
+    private static getTriple(connection: SemanticConnection): oxigraph.Quad {
         return oxigraph.triple(
             oxigraph.namedNode(connection.subject),
             oxigraph.namedNode(connection.predicate),

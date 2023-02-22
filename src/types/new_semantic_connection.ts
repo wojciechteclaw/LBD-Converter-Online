@@ -1,4 +1,4 @@
-export type NewSemanticConnection = {
+export type SemanticConnection = {
     subject: string;
     object: string;
     predicate: string;

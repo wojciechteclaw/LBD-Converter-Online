@@ -17,10 +17,10 @@ import { GeometricalRepresentation } from "@/types/element_representation/geomet
 import { Representation } from "@enums/representation";
 
 class GeometryService {
-    public static compareTwoGeometryRepresentations(
+    public static async compareTwoGeometryRepresentations(
         element1: GeometricalRepresentation,
         element2: GeometricalRepresentation
-    ): boolean {
+    ): Promise<boolean> {
         let intersectionMesh = CSG.intersect(element1.mesh, element2.mesh);
         let intersectVolume = GeometryService.getVolume(intersectionMesh.geometry);
         return (

@@ -8,7 +8,7 @@ import { GuidUriService } from "./guid_uri_service";
 import { Connection } from "@enums/connection";
 import { getConnectionPredicate } from "@helpers/connection_predicates";
 import { ModelIdsRepresentation } from "@/types/model_ids_representations";
-import { NewSemanticConnection } from "@/types/new_semantic_connection";
+import { SemanticConnection } from "@/types/new_semantic_connection";
 import { ExpressIdToElementRepresentation } from "@/types/element_representation/express_id_to_element_representation";
 import { Representation } from "@enums/representation";
 import { StringRepresentation } from "@/types/element_representation/string_representation";
@@ -19,7 +19,7 @@ class IfcManagerService {
     private ifcModelExpressIdGuidsMap: Map<number, Map<number | string, number | string>> =
         new Map();
     private representationMaps: ModelIdsRepresentation = new Map();
-    private connections: Array<NewSemanticConnection> = new Array();
+    private connections: Array<SemanticConnection> = new Array();
 
     constructor() {
         this.ifcAPI.SetWasmPath("./assets/");
@@ -43,13 +43,13 @@ class IfcManagerService {
         return modelID;
     }
 
-    private compareModelsElements<T>(
+    private async compareModelsElements<T>(
         model1Id: number,
         model2Id: number,
         model1Elements: ExpressIdToElementRepresentation,
         model2Elements: ExpressIdToElementRepresentation,
         representation: Representation,
-        compare: (model1Element: T, model2Element: T) => boolean
+        compare: (model1Element: T, model2Element: T) => Promise<boolean>
     ) {
         let model1ElementsArray = Array.from(model1Elements.entries()).filter(
             (e) => e[1].type === representation
@@ -57,53 +57,56 @@ class IfcManagerService {
         let model2ElementsArray = Array.from(model2Elements.entries()).filter(
             (e) => e[1].type === representation
         );
+        let promises = Array<Promise<void>>();
         for (const [expressID1, model1Element] of model1ElementsArray) {
             for (const [expressID2, model2Element] of model2ElementsArray) {
-                let areTheSame = compare(model1Element as T, model2Element as T);
-                if (areTheSame) {
-                    this.addConnection(
-                        model1Id,
-                        expressID1,
-                        model2Id,
-                        expressID2,
-                        Connection.SAME_AS
-                    );
-                }
+                promises.push(
+                    compare(model1Element as T, model2Element as T).then(async (e) => {
+                        if (e) {
+                            this.addConnection(
+                                model1Id,
+                                expressID1,
+                                model2Id,
+                                expressID2,
+                                Connection.SAME_AS
+                            );
+                        }
+                    })
+                );
             }
         }
+        await Promise.all(promises);
     }
 
-    private static compareLevels(
+    private static async compareLevels(
         level1string: StringRepresentation,
         level2string: StringRepresentation
-    ): boolean {
+    ): Promise<boolean> {
         return level1string.contextString === level2string.contextString;
     }
 
     private async compareModels(model1ID, model2ID) {
-        const model1Elements = this.representationMaps.get(
-            model1ID
-        ) as ExpressIdToElementRepresentation;
-        const model2Elements = this.representationMaps.get(
-            model2ID
-        ) as ExpressIdToElementRepresentation;
+        const model1Elements = this.representationMaps.get(model1ID) as ExpressIdToElementRepresentation;
+        const model2Elements = this.representationMaps.get(model2ID) as ExpressIdToElementRepresentation;
 
-        this.compareModelsElements<GeometricalRepresentation>(
-            model1ID,
-            model2ID,
-            model1Elements,
-            model2Elements,
-            Representation.SPACE,
-            GeometryService.compareTwoGeometryRepresentations
-        );
-        this.compareModelsElements<StringRepresentation>(
-            model1ID,
-            model2ID,
-            model1Elements,
-            model2Elements,
-            Representation.LEVEL,
-            IfcManagerService.compareLevels
-        );
+        await Promise.all([
+            this.compareModelsElements<GeometricalRepresentation>(
+                model1ID,
+                model2ID,
+                model1Elements,
+                model2Elements,
+                Representation.SPACE,
+                GeometryService.compareTwoGeometryRepresentations
+            ),
+            this.compareModelsElements<StringRepresentation>(
+                model1ID,
+                model2ID,
+                model1Elements,
+                model2Elements,
+                Representation.LEVEL,
+                IfcManagerService.compareLevels
+            ),
+        ]);
     }
 
     public getExpressIDGuidMap(modelID: number, expressID: number): string | undefined {
@@ -115,12 +118,14 @@ class IfcManagerService {
 
     public async mergeFiles() {
         let items = filesService.getAllFileObjects();
+        const promises = Array<Promise<void>>();
         for (let parserObject of items) {
             let lbdParser = new LBDParser(parserObject.parserSettings);
-            await lbdParser.parse(this.ifcAPI, parserObject.modelID).then(async (e) => {
-                await dbDataController.addJsonLdToStore(e as JSONLD);
+            lbdParser.parse(this.ifcAPI, parserObject.modelID).then(async (e) => {
+                promises.push(dbDataController.addJsonLdToStore(e as JSONLD));
             });
         }
+        await Promise.all(promises);
         await this.joinModels();
     }
 
