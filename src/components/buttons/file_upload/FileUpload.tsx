@@ -6,12 +6,11 @@ interface FileUploadProps {
 }
 
 const FileUpload: FC<FileUploadProps> = ({ onFileUpload }) => {
-
     const inputElement = useRef<HTMLInputElement>(null);
 
     const onClick = () => {
         inputElement.current!.click();
-    }
+    };
 
     return (
         <div className="file-upload-container" onClick={onClick}>

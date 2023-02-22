@@ -42,9 +42,12 @@ module.exports = {
         alias: {
             "@assets": path.resolve(process.cwd(), "./src/assets/"),
             "@components": path.resolve(process.cwd(), "./src/components/"),
+            "@contexts": path.resolve(process.cwd(), "./src/contexts/"),
             "@enums": path.resolve(process.cwd(), "./src/enums/"),
+            "@interfaces": path.resolve(process.cwd(), "./src/interfaces/"),
             "@helpers": path.resolve(process.cwd(), "./src/helpers/"),
             "@hooks": path.resolve(process.cwd(), "./src/hooks/"),
+            "@reducers": path.resolve(process.cwd(), "./src/reducers/"),
             "@services": path.resolve(process.cwd(), "./src/services/"),
         },
         extensions: [".tsx", ".ts", ".jsx", ".js"],

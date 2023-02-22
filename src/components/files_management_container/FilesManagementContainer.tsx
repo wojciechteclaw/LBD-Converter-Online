@@ -1,17 +1,20 @@
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { FileUpload } from "@components/buttons/file_upload/FileUpload";
-import { LoadedFile } from "@components/loaded_file/LoadedFile";
 import { MergeFilesButton } from "@components/buttons/merge_files/MergeFilesButton";
+import { LoadedFile } from "@components/loaded_file/LoadedFile";
+import { EditModal } from "@components/edit_modal/EditModal";
+import RemoveModal from "@components/remove_modal/RemoveModal";
+import { LoadingIndicatorContext } from "@contexts/LoadingIndicatorContext";
+import { LoadingIndicationVisibility } from "@enums/loadingIndicationVisibility";
+import { useModal } from "@hooks/useModal";
+import { ParsingObject } from "@/types/parsing_object";
 import { dbDataController, filesService, ifcManagerService } from "@services/dependency_injection";
 import "./FilesManagementContainer.css";
-import { ParsingObject } from "@/types/parsing_object";
-import RemoveModal from "../remove_modal/RemoveModal";
-import { EditModal } from "../edit_modal/EditModal";
-import { useModal } from "@hooks/useModal";
 
 const FilesManagementContainer: FC = () => {
     const [loadedFileComponents, setLoadedFileComponents] = useState<ParsingObject[]>([]);
     const [activeFile, setActiveFile] = useState<ParsingObject | null>(null);
+    const { state, dispatch } = useContext(LoadingIndicatorContext);
     const editModal = useModal(false);
     const removeModal = useModal(false);
 
@@ -36,8 +39,16 @@ const FilesManagementContainer: FC = () => {
     };
 
     const mergeFiles = async () => {
+        dispatch({
+            type: LoadingIndicationVisibility.SHOW_LOADING_INDICATOR,
+            payload: { message: "Merging files..." },
+        });
         dbDataController.clearStore();
         ifcManagerService.mergeFiles();
+        dispatch({
+            type: LoadingIndicationVisibility.HIDE_LOADING_INDICATOR,
+            payload: { message: "" },
+        });
     };
 
     return (
@@ -62,7 +73,11 @@ const FilesManagementContainer: FC = () => {
                 })}
             </div>
             <MergeFilesButton onClick={mergeFiles} />
-            <EditModal activeFile={activeFile} isOpen={editModal.isOpen} toggle={editModal.toggle} />
+            <EditModal
+                activeFile={activeFile}
+                isOpen={editModal.isOpen}
+                toggle={editModal.toggle}
+            />
             <RemoveModal
                 activeFile={activeFile}
                 isOpen={removeModal.isOpen}

@@ -11,14 +11,23 @@
             "@components/*": [
                 "src/components/*"
             ],
+            "@contexts/*": [
+                "src/contexts/*"
+            ],
             "@enums/*": [
                 "src/enums/*"
             ],
             "@helpers/*": [
                 "src/helpers/*"
             ],
+            "@interfaces/*": [
+                "src/interfaces/*"
+            ],
             "@hooks/*": [
                 "src/hooks/*"
+            ],
+            "@reducers/*": [
+                "src/reducers/*"
             ],
             "@services/*": [
                 "src/services/*"
