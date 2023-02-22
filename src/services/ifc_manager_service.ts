@@ -1,5 +1,5 @@
 import { JSONLD, LBDParser } from "ifc-lbd";
-import { IfcAPI, IFCSPACE } from "web-ifc";
+import { IfcAPI } from "web-ifc";
 import { DBDataController } from "./db_data_controller";
 import { dbDataController, filesService } from "./dependency_injection";
 import { FilesService } from "./files_service";
@@ -11,13 +11,13 @@ import { ModelIdsRepresentation } from "@/types/model_ids_representations";
 import { NewSemanticConnection } from "@/types/new_semantic_connection";
 import { ExpressIdToElementRepresentation } from "@/types/element_representation/express_id_to_element_representation";
 import { Representation } from "@enums/representation";
-import { ElementRepresentation } from "@/types/element_representation/element_representation";
 import { StringRepresentation } from "@/types/element_representation/string_representation";
 import { GeometricalRepresentation } from "@/types/element_representation/geometrical_representation";
 
 class IfcManagerService {
     private ifcAPI: IfcAPI = new IfcAPI();
-    private ifcModelExpressIdGuidsMap: Map<number, Map<number | string, number | string>> = new Map();
+    private ifcModelExpressIdGuidsMap: Map<number, Map<number | string, number | string>> =
+        new Map();
     private representationMaps: ModelIdsRepresentation = new Map();
     private connections: Array<NewSemanticConnection> = new Array();
 
@@ -35,7 +35,10 @@ class IfcManagerService {
         promises.push(GeometryService.getSpacesContextGuidMap(modelID, this.ifcAPI));
         promises.push(GeometryService.getLevelsContextGuidMap(modelID, this.ifcAPI));
         let [spaces, levels] = await Promise.all(promises);
-        const mergedMaps: ExpressIdToElementRepresentation = new Map([...spaces.entries(), ...levels.entries()]);
+        const mergedMaps: ExpressIdToElementRepresentation = new Map([
+            ...spaces.entries(),
+            ...levels.entries(),
+        ]);
         this.representationMaps.set(modelID, mergedMaps);
         return modelID;
     }
@@ -48,26 +51,42 @@ class IfcManagerService {
         representation: Representation,
         compare: (model1Element: T, model2Element: T) => boolean
     ) {
-        let model1ElementsArray = Array.from(model1Elements.entries()).filter((e) => e[1].type === representation);
-        let model2ElementsArray = Array.from(model2Elements.entries()).filter((e) => e[1].type === representation);
+        let model1ElementsArray = Array.from(model1Elements.entries()).filter(
+            (e) => e[1].type === representation
+        );
+        let model2ElementsArray = Array.from(model2Elements.entries()).filter(
+            (e) => e[1].type === representation
+        );
         for (const [expressID1, model1Element] of model1ElementsArray) {
             for (const [expressID2, model2Element] of model2ElementsArray) {
                 let areTheSame = compare(model1Element as T, model2Element as T);
-                console.log(areTheSame, expressID1, expressID2)
                 if (areTheSame) {
-                    this.addConnection(model1Id, expressID1, model2Id, expressID2, Connection.SAME_AS);
+                    this.addConnection(
+                        model1Id,
+                        expressID1,
+                        model2Id,
+                        expressID2,
+                        Connection.SAME_AS
+                    );
                 }
             }
         }
     }
 
-    private static compareLevels(level1string: StringRepresentation, level2string: StringRepresentation): boolean {
+    private static compareLevels(
+        level1string: StringRepresentation,
+        level2string: StringRepresentation
+    ): boolean {
         return level1string.contextString === level2string.contextString;
     }
 
     private async compareModels(model1ID, model2ID) {
-        const model1Elements = this.representationMaps.get(model1ID) as ExpressIdToElementRepresentation;
-        const model2Elements = this.representationMaps.get(model2ID) as ExpressIdToElementRepresentation;
+        const model1Elements = this.representationMaps.get(
+            model1ID
+        ) as ExpressIdToElementRepresentation;
+        const model2Elements = this.representationMaps.get(
+            model2ID
+        ) as ExpressIdToElementRepresentation;
 
         this.compareModelsElements<GeometricalRepresentation>(
             model1ID,

@@ -1,8 +1,8 @@
-import { Representation } from "@enums/representation";
 import { Mesh } from "three";
+import { Representation } from "@enums/representation";
 
 export type GeometricalRepresentation = {
-    geometry: Mesh;
+    mesh: Mesh;
     type: Representation;
     volume: number;
 };
