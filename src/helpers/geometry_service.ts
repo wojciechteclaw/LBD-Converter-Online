@@ -9,61 +9,9 @@ import {
     DoubleSide,
     Material,
 } from "three";
-import { IfcAPI, IFCSPACE, PlacedGeometry, Color, FlatMesh, IFCBUILDINGSTOREY } from "web-ifc";
-import { GuidUriService } from "./guid_uri_service";
-import { ExpressIdToElementRepresentation } from "@/types/element_representation/express_id_to_element_representation";
-import { CSG } from "three-csg-ts";
-import { GeometricalRepresentation } from "@/types/element_representation/geometrical_representation";
-import { Representation } from "@enums/representation";
+import { IfcAPI, PlacedGeometry, Color, FlatMesh } from "web-ifc";
 
-class GeometryService {
-    public static async compareTwoGeometryRepresentations(
-        element1: GeometricalRepresentation,
-        element2: GeometricalRepresentation
-    ): Promise<boolean> {
-        let intersectionMesh = CSG.intersect(element1.mesh, element2.mesh);
-        let intersectVolume = GeometryService.getVolume(intersectionMesh.geometry);
-        return (
-            intersectVolume > 0.95 * element1.volume &&
-            intersectVolume > 0.95 * element2.volume &&
-            element1.volume > 0.95 * element2.volume &&
-            element1.volume < 1.05 * element2.volume
-        );
-    }
-
-    public static async getLevelsContextGuidMap(
-        modelID: number,
-        ifcAPI: IfcAPI
-    ): Promise<ExpressIdToElementRepresentation> {
-        let levels = ifcAPI.GetLineIDsWithType(modelID, IFCBUILDINGSTOREY);
-        let result: ExpressIdToElementRepresentation = new Map();
-        for (let i = 0; i < levels.size(); i++) {
-            let expressID = levels.get(i);
-            let level = ifcAPI.GetLine(modelID, expressID);
-            let guid = await GuidUriService.getLevelContextBasedGuid(level);
-            result.set(expressID, { contextString: guid, type: Representation.LEVEL });
-        }
-        return result;
-    }
-
-    public static async getSpacesContextGuidMap(
-        modelID: number,
-        ifcAPI: IfcAPI
-    ): Promise<ExpressIdToElementRepresentation> {
-        const result = new Map<number, GeometricalRepresentation>();
-        ifcAPI.StreamAllMeshesWithTypes(modelID, [IFCSPACE], async (flatMesh: FlatMesh) => {
-            const placedGeometry: PlacedGeometry = flatMesh.geometries.get(0);
-            const mesh = this.getPlacedGeometry(modelID, ifcAPI, placedGeometry);
-            const volume = await GeometryService.getVolume(mesh.geometry);
-            result.set(flatMesh.expressID, {
-                mesh: mesh,
-                volume: volume,
-                type: Representation.SPACE,
-            });
-        });
-        return result;
-    }
-
+class GeometryOperations {
     public static getVolume(geometry: BufferGeometry): number {
         var isIndexed = geometry.index !== null;
         let position = geometry.attributes.position;
@@ -77,7 +25,7 @@ class GeometryService {
                 p1.fromBufferAttribute(position, i * 3 + 0);
                 p2.fromBufferAttribute(position, i * 3 + 1);
                 p3.fromBufferAttribute(position, i * 3 + 2);
-                sum += GeometryService.signedVolumeOfTriangle(p1, p2, p3);
+                sum += this.signedVolumeOfTriangle(p1, p2, p3);
             }
         } else {
             let index = geometry.index;
@@ -86,17 +34,13 @@ class GeometryService {
                 p1.fromBufferAttribute(position, index!.array[i * 3 + 0]);
                 p2.fromBufferAttribute(position, index!.array[i * 3 + 1]);
                 p3.fromBufferAttribute(position, index!.array[i * 3 + 2]);
-                sum += GeometryService.signedVolumeOfTriangle(p1, p2, p3);
+                sum += this.signedVolumeOfTriangle(p1, p2, p3);
             }
         }
         return sum;
     }
 
-    private static getBufferGeometry(
-        modelID: number,
-        ifcApi: IfcAPI,
-        placedGeometry: PlacedGeometry
-    ): BufferGeometry {
+    private static getBufferGeometry(modelID: number, ifcApi: IfcAPI, placedGeometry: PlacedGeometry): BufferGeometry {
         const geometry = ifcApi.GetGeometry(modelID, placedGeometry.geometryExpressID);
         const verts = ifcApi.GetVertexArray(geometry.GetVertexData(), geometry.GetVertexDataSize());
         const indices = ifcApi.GetIndexArray(geometry.GetIndexData(), geometry.GetIndexDataSize());
@@ -114,11 +58,8 @@ class GeometryService {
         return new MeshPhongMaterial({ color: col, side: DoubleSide });
     }
 
-    private static getPlacedGeometry(
-        modelID: number,
-        ifcApi: IfcAPI,
-        placedGeometry: PlacedGeometry
-    ): Mesh {
+    public static getMesh(modelID: number, ifcApi: IfcAPI, flatMesh: FlatMesh): Mesh {
+        const placedGeometry = flatMesh.geometries.get(0);
         const geometry = this.getBufferGeometry(modelID, ifcApi, placedGeometry);
         const material = this.getMeshMaterial(placedGeometry.color);
         const mesh = new Mesh(geometry, material);
@@ -127,11 +68,7 @@ class GeometryService {
         return mesh;
     }
 
-    private static ifcGeometryToBuffer(
-        color: Color,
-        vertexData: Float32Array,
-        indexData: Uint32Array
-    ): BufferGeometry {
+    private static ifcGeometryToBuffer(color: Color, vertexData: Float32Array, indexData: Uint32Array): BufferGeometry {
         const geometry = new BufferGeometry();
         let posFloats = new Float32Array(vertexData.length / 2);
         let normFloats = new Float32Array(vertexData.length / 2);
@@ -162,4 +99,4 @@ class GeometryService {
     }
 }
 
-export { GeometryService };
+export { GeometryOperations };

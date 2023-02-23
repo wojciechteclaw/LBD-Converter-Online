@@ -10,7 +10,7 @@ interface ParserSettingsProps {
 }
 
 const ParserSettingsForm: FC<ParserSettingsProps> = ({ visibilityToggle, modelID }) => {
-    let defaultParserSettings = filesService.getParserSettings(modelID);
+    let defaultParserSettings = filesService.getModelParserSettings(modelID);
 
     const [bot, setBot] = useState<boolean>(defaultParserSettings.subsets.BOT);
     const [fso, setFso] = useState<boolean>(defaultParserSettings.subsets.FSO);

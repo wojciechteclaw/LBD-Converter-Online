@@ -1,4 +1,4 @@
-import { Representation } from "@/enums/representation";
+import { Representation } from "@enums/representation";
 
 export type StringRepresentation = {
     contextString: string;
