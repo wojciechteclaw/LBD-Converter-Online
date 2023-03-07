@@ -1,7 +1,7 @@
 import { Quad, Literal, NamedNode } from "oxigraph/web";
 import { v4 as uuidv4 } from "uuid";
-import { colorsManager } from "./dependency_injection";
-import { GuidUriService } from "./guid_uri_service";
+import { colorsManager } from "@services/dependency_injection";
+import { GuidOperations } from "@helpers/guid_operations";
 import { CustomElementData } from "@/types/graph/custom_element_data";
 import { EdgeElement } from "@/types/graph/edge_element";
 import { EdgeElementData } from "@/types/graph/edge_element_data";
@@ -43,7 +43,7 @@ class SparQlGraphParserService {
             result = SparQlGraphParserService.getElementBody(node.value);
         } else {
             result = {
-                id: node.value !== "" ? GuidUriService.encodeURI(node.value) : uuidv4(),
+                id: node.value !== "" ? GuidOperations.encodeURI(node.value) : uuidv4(),
                 namespace: "OWL",
                 body: node.value,
                 label: node.value,
@@ -63,8 +63,8 @@ class SparQlGraphParserService {
             return {
                 id: uuidv4(),
                 namespace: "Literal",
-                body: GuidUriService.decodeURI(str),
-                label: GuidUriService.decodeURI(str),
+                body: GuidOperations.decodeURI(str),
+                label: GuidOperations.decodeURI(str),
                 prefix: "",
             };
         }
@@ -77,11 +77,11 @@ class SparQlGraphParserService {
         var firstPart = splitString.slice(0, splitString.length - 1).join(character) + character;
         var lastPart = splitString[splitString.length - 1];
         let prefix = SparQlGraphParserService.getPrefix(firstPart);
-        let body = GuidUriService.decodeURI(lastPart);
+        let body = GuidOperations.decodeURI(lastPart);
         return {
             id: str,
             namespace: firstPart,
-            body: GuidUriService.decodeURI(lastPart),
+            body: GuidOperations.decodeURI(lastPart),
             prefix: prefix,
             label: prefix + body,
         };

@@ -1,8 +1,6 @@
-import { JSONLD } from "ifc-lbd";
 import init, * as oxigraph from "oxigraph/web";
-import * as jsonld from "jsonld";
 import { ModelIdsRepresentation } from "@/types/model_ids_representations";
-import { SemanticConnection } from "@/types/new_semantic_connection";
+import { ConnectedElements } from "@/types/connected_elements";
 
 class DBDataController {
     private store: oxigraph.Store;
@@ -26,24 +24,13 @@ class DBDataController {
         return result;
     }
 
-    public async addJsonLdToStore(jsonLd: JSONLD): Promise<void> {
-        await DBDataController.getQuadsFromTriples(jsonLd).then((quads: oxigraph.Quad[]) => {
-            quads.forEach((triple: oxigraph.Quad) => {
-                this.store.add(triple);
-            });
-        });
-    }
-
-    public addConnectionsToStore(connections: SemanticConnection[]): void {
-        for (let connection of connections) {
-            let quad = DBDataController.getTriple(connection);
+    public addQuadsToStore(quads: oxigraph.Quad[]): void {
+        for (let quad of quads) {
             this.store.add(quad);
         }
     }
 
-    public static getModelIdForComparison(
-        modelIDsExpressGeometry: ModelIdsRepresentation
-    ): Array<Array<number>> {
+    public static getModelIdForComparison(modelIDsExpressGeometry: ModelIdsRepresentation): Array<Array<number>> {
         let result = new Array<Array<number>>();
         let set = new Set();
         let modelIDs = Array.from(modelIDsExpressGeometry.keys());
@@ -63,6 +50,8 @@ class DBDataController {
         DBDataController.dumpData(data);
     }
 
+    public convertConnectedElementsToTriples(connections: ConnectedElements[]) {}
+
     private static dumpData(triples: string, fileName: string = "mergedFiles.ttl"): void {
         const fileType = "text/turtle";
         const blob = new Blob([triples], { type: fileType });
@@ -72,24 +61,6 @@ class DBDataController {
         a.dataset.downloadurl = [fileType, a.download, a.href].join(":");
         a.style.display = "none";
         a.click();
-    }
-
-    private static getQuadFromTriple(triple: any) {
-        return oxigraph.quad(triple.subject, triple.predicate, triple.object, triple.graph);
-    }
-
-    private static async getQuadsFromTriples(triples: any): Promise<oxigraph.Quad[]> {
-        const jsonLd = await jsonld.toRDF(triples as jsonld.JsonLdDocument).then((e) => e);
-        let result = Object.values(jsonLd).map((e) => DBDataController.getQuadFromTriple(e));
-        return result;
-    }
-
-    private static getTriple(connection: SemanticConnection): oxigraph.Quad {
-        return oxigraph.triple(
-            oxigraph.namedNode(connection.subject),
-            oxigraph.namedNode(connection.predicate),
-            oxigraph.namedNode(connection.object)
-        );
     }
 }
 
