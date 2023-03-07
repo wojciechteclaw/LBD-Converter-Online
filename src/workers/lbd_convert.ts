@@ -21,12 +21,17 @@ self.addEventListener("message", async (event) => {
     const model = data.model as IfcModel;
     const ifcAPI = new IfcAPI();
     ifcAPI.SetWasmPath("./assets/");
+    fetch("/assets/").then((e) => {
+        console.log(e.body);
+    });
+    console.log("in worker");
     ifcAPI.Init();
-    console.log("test");
     let parsedFile = await getFileBuffer(model.file).then((e) => e);
-    await ifcAPI.OpenModel(parsedFile);
-    const lbdParser = new LBDParser(model.parserSettings);
-    const result = await lbdParser.parse(ifcAPI, model.id).then((e) => e as JSONLD);
-    console.log(result);
-    self.postMessage(result);
+    console.log(parsedFile);
+    console.log(ifcAPI);
+    const modelID = ifcAPI.OpenModel(parsedFile);
 });
+    // const lbdParser = new LBDParser(model.parserSettings);
+    // const result = await lbdParser.parse(ifcAPI, modelID).then((e) => e as JSONLD);
+    // console.log(result);
+    // self.postMessage(result);

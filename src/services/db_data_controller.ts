@@ -21,7 +21,6 @@ class DBDataController {
         try {
             result = this.store.query(query) as oxigraph.Quad[];
         } catch (e) {}
-        console.log(result);
         return result;
     }
 

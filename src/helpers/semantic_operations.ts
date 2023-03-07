@@ -3,6 +3,7 @@ import { ConnectedElements } from "@/types/connected_elements";
 import * as oxigraph from "oxigraph/web";
 import { filesService } from "@services/dependency_injection";
 import * as jsonld from "jsonld";
+import { GuidOperations } from "./guid_operations";
 
 class SemanticOperations {
     private static getTripleFromConnectedElements(
@@ -21,8 +22,12 @@ class SemanticOperations {
     }
 
     private static getObjectSubjectURIs(connection: ConnectedElements): string[] {
-        let objectURI = filesService.getModelNamespace(connection.object.modelID) + connection.object.guid;
-        let subjectURI = filesService.getModelNamespace(connection.subject.modelID) + connection.subject.guid;
+        let objectURI =
+            filesService.getModelNamespace(connection.object.modelID) +
+            GuidOperations.encodeURI(connection.object.guid);
+        let subjectURI =
+            filesService.getModelNamespace(connection.subject.modelID) +
+            GuidOperations.encodeURI(connection.subject.guid);
         return [objectURI, subjectURI];
     }
 
