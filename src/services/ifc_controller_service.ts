@@ -8,17 +8,22 @@ import { GeometryOperations } from "@helpers/geometry_service";
 import { GuidOperations } from "@helpers/guid_operations";
 import { ConnectedElements } from "@/types/connected_elements";
 import { IfcElement } from "@/types/ifc_element";
+import { ConnectorsManager } from "@services/connectors_manager";
 
 class IfcControllerService {
     private ifcAPI: IfcAPI = new IfcAPI();
+    private connectorsManager: ConnectorsManager;
     constructor() {
         this.ifcAPI.SetWasmPath("./assets/");
         this.ifcAPI.Init();
+        this.connectorsManager = new ConnectorsManager(this.ifcAPI);
     }
 
-    public async addFile(file: File) {
-        let parsedBuffer = await FileOperations.getFileBuffer(file);
-        return this.ifcAPI.OpenModel(parsedBuffer);
+    public async addFile(file: File): Promise<number> {
+        const parsedBuffer = await FileOperations.getFileBuffer(file);
+        const modelID = await this.ifcAPI.OpenModel(parsedBuffer);
+        await this.connectorsManager.addUnconnectedConnectors(modelID);
+        return modelID;
     }
 
     public async convertModelToLBD(parserSettings: ParserSettings, modelID: number = 0): Promise<JSONLD> {

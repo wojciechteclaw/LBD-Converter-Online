@@ -22,7 +22,7 @@ class GeometryConverterService {
         return meshes;
     }
 
-    private static getMesh(modelID: number, ifcApi: IfcAPI, flatMesh: FlatMesh): Mesh {
+    public static getMesh(modelID: number, ifcApi: IfcAPI, flatMesh: FlatMesh): Mesh {
         const placedGeometry = flatMesh.geometries.get(0);
         const geometry = this.getBufferGeometry(modelID, ifcApi, placedGeometry);
         const material = this.getMeshMaterial(placedGeometry.color);
