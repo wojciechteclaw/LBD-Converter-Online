@@ -4,26 +4,30 @@ import { Representation } from "@enums/representation";
 import { Connection } from "@enums/connection";
 import { ElementsComparison } from "@helpers/elements_comparison";
 import { FileOperations } from "@helpers/file_operations";
-import { GeometryOperations } from "@helpers/geometry_service";
+import { GeometryOperations } from "@/helpers/geometry_operations";
 import { GuidOperations } from "@helpers/guid_operations";
 import { ConnectedElements } from "@/types/connected_elements";
 import { IfcElement } from "@/types/ifc_element";
 import { ConnectorsManager } from "@services/connectors_manager";
+import { Connector } from "@/types/connectors/connector";
 
 class IfcControllerService {
     private ifcAPI: IfcAPI = new IfcAPI();
-    private connectorsManager: ConnectorsManager;
     constructor() {
         this.ifcAPI.SetWasmPath("./assets/");
         this.ifcAPI.Init();
-        this.connectorsManager = new ConnectorsManager(this.ifcAPI);
     }
 
     public async addFile(file: File): Promise<number> {
         const parsedBuffer = await FileOperations.getFileBuffer(file);
         const modelID = await this.ifcAPI.OpenModel(parsedBuffer);
-        await this.connectorsManager.addUnconnectedConnectors(modelID);
         return modelID;
+    }
+
+    public async getAllUnconnectedConnectors(modelID: number): Promise<IfcElement[]> {
+        const connectorManager = new ConnectorsManager(this.ifcAPI);
+        await connectorManager.addUnconnectedConnectors(modelID);
+        return connectorManager.getAllUnconnectedElements();
     }
 
     public async convertModelToLBD(parserSettings: ParserSettings, modelID: number = 0): Promise<JSONLD> {

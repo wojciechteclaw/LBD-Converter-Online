@@ -6,6 +6,7 @@ import { IfcElement } from "@/types/ifc_element";
 import { IfcModel } from "@/types/ifc_model";
 import { ModelElements } from "@/types/model_elements";
 import { SemanticOperations } from "@helpers/semantic_operations";
+import { Connector } from "@/types/connectors/connector";
 
 class FilesService {
     private models: Array<IfcModel> = [];
@@ -31,7 +32,10 @@ class FilesService {
             name: file.name,
             parserSettings: parserSettings,
         });
-        await ifcControllerService.getConnectionElements(modelID).then((e) => (this.elements[modelID] = e));
+        const modelElements = await ifcControllerService.getConnectionElements(modelID);
+        const modelConnectors = await ifcControllerService.getAllUnconnectedConnectors(modelID);
+        this.elements[modelID] = [...modelElements, ...modelConnectors];
+        console.log("test");
     }
 
     public getAllModels(): IfcModel[] {
@@ -53,41 +57,6 @@ class FilesService {
     public getModelNamespace(modelID: number): string {
         return this.getModelParserSettings(modelID).namespace;
     }
-
-    // public async parseSingleModel(modelID: number): Promise<JSONLD> {
-    //     let model = await this.getModel(modelID);
-    //     return ifcControllerService.convertModelToLBD(model.parserSettings, model.id);
-    // }
-
-    // public async parseFiles(): Promise<void> {
-    //     const modelIDs = this.models.keys();
-    //     const results: Map<number, JSONLD> = new Map();
-    //     const promises: Array<Promise<void>> = [];
-    //     for (const modelID of modelIDs) {
-    //         promises.push(
-    //             this.parseSingleModel(modelID).then((result) => {
-    //                 results.set(modelID, result);
-    //             })
-    //         );
-    //     }
-    //     await Promise.all(promises);
-    //     console.log(results);
-    //     for (const [modelID, result] of results.entries()) {
-    //         console.log(`modelID: ${modelID}, result: ${result}`);
-    //         await dbDataController.addJsonLdToStore(result);
-    //     }
-    // }
-
-    // private async parseFile(modelID: number): Promise<void> {
-    // const worker = new Worker(new URL("../workers/lbd_convert.ts", import.meta.url), {
-    //     type: "module",
-    //     name: "lbd-converter-worker",
-    // });
-    // worker.postMessage({ model: this.getModel(0) });
-    // worker.onmessage = (e) => {
-    //     console.log(e);
-    // };
-    // }
 
     public async parseFiles(): Promise<void> {
         const modelIDs = this.models.keys();

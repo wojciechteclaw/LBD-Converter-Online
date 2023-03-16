@@ -12,9 +12,11 @@ import {
     IFCAXIS2PLACEMENT3D,
 } from "web-ifc";
 import { ConnectorGeometry } from "@/types/connectors/connector_geometry";
+import { IfcElement } from "@/types/ifc_element";
+import { Representation } from "@enums/representation";
 
 class ConnectorsManager {
-    private connectors: { [modelID: number]: Connector[] } = {};
+    private connectors: IfcElement[] = [];
     private queryCache: { [modelID: number]: { [expressId: number]: Matrix4 } } = {};
     private ifcAPI: IfcAPI;
 
@@ -24,44 +26,48 @@ class ConnectorsManager {
 
     public async addUnconnectedConnectors(modelID: number) {
         console.time("connectors");
-        const connectedPortIds = await this.getAllConnectedPortIds(modelID);
-        const portIdParent = await this.getPortIdParent(modelID);
+        const connectedportIDs = await this.getAllConnectedportIDs(modelID);
+        const portIDParent = await this.getportIDParent(modelID);
         const allPorts = await this.ifcAPI.GetLineIDsWithType(modelID, IFCDISTRIBUTIONPORT);
         this.queryCache[modelID] = {};
-        const unconnectedConnectors: Connector[] = [];
         for (let i = 0; i < allPorts.size(); i++) {
             const port = allPorts.get(i);
-            if (!connectedPortIds.has(port)) {
-                let con = await this.getConnector(modelID, port, portIdParent[port]);
-                console.log(con);
-                unconnectedConnectors.push(con);
+            if (!connectedportIDs.has(port)) {
+                let element = await this.getConnector(modelID, port, portIDParent[port]);
+                this.connectors.push(element);
             }
         }
-        this.connectors[modelID] = unconnectedConnectors;
         console.timeEnd("connectors");
     }
 
-    public getAllConnectors(modelID: number) {
-        return this.connectors[modelID];
+    public getAllUnconnectedElements(): IfcElement[] {
+        return this.connectors;
     }
 
-    private async getConnector(modelID: number, portId: number, parentExpressId: number) {
-        const portElement = this.ifcAPI.GetLine(modelID, portId);
+    private async getConnector(modelID: number, portID: number, parentExpressId: number) {
+        const portElement = this.ifcAPI.GetLine(modelID, portID);
         const parent = this.ifcAPI.GetLine(modelID, parentExpressId);
         const { normal, location } = await this.getPlacementCharacteristic(
             modelID,
             portElement,
             parent.constructor.name
         );
-        const flowDirection = ConnectorsManager.getFlowType(portElement.FlowDirection.value);
-        const connector: Connector = {
-            id: portElement.GlobalId.value,
+        const connector = {
             location: location,
             flowNormal: normal,
             parentId: parent.GlobalId.value,
-            flowDirection: flowDirection,
+            flowDirection: ConnectorsManager.getFlowType(portElement.FlowDirection.value),
         };
-        return connector;
+        const element: IfcElement = {
+            id: portID,
+            guid: portElement.GlobalId.value,
+            modelID: modelID,
+            representation: {
+                connector: connector,
+                type: Representation.PORT,
+            },
+        };
+        return element;
     }
 
     private getPortLocalPlacementCharacteristics(modelID: number, placement) {
@@ -163,45 +169,33 @@ class ConnectorsManager {
         }
     }
 
-    private async getAllConnectedPortIds(modelID: number): Promise<Set<number>> {
-        const connectedPortIds = new Set<number>();
+    private async getAllConnectedportIDs(modelID: number): Promise<Set<number>> {
+        const connectedportIDs = new Set<number>();
         let allRelations = this.ifcAPI.GetLineIDsWithType(modelID, IFCRELCONNECTSPORTS);
         for (let i = 0; i < allRelations.size(); i++) {
             const connectorsRelationId = allRelations.get(i);
             const relation = this.ifcAPI.GetLine(modelID, connectorsRelationId);
-            connectedPortIds.add(relation.RelatedPort.value);
-            connectedPortIds.add(relation.RelatingPort.value);
+            connectedportIDs.add(relation.RelatedPort.value);
+            connectedportIDs.add(relation.RelatingPort.value);
         }
-        return connectedPortIds;
+        return connectedportIDs;
     }
 
-    private async getPortIdParent(modelID: number): Promise<{ [key: number]: number }> {
-        const connectedPortIds: { [key: number]: number } = {};
+    private async getportIDParent(modelID: number): Promise<{ [key: number]: number }> {
+        const connectedportIDs: { [key: number]: number } = {};
         let allRelationsIFC4 = this.ifcAPI.GetLineIDsWithType(modelID, IFCRELNESTS);
         for (let i = 0; i < allRelationsIFC4.size(); i++) {
             const relation = this.ifcAPI.GetLine(modelID, allRelationsIFC4.get(i));
             for (let item of relation.RelatedObjects) {
-                connectedPortIds[item.value] = relation.RelatingObject.value;
+                connectedportIDs[item.value] = relation.RelatingObject.value;
             }
         }
         let allRelationsIFC2 = this.ifcAPI.GetLineIDsWithType(modelID, IFCRELCONNECTSPORTTOELEMENT);
         for (let i = 0; i < allRelationsIFC2.size(); i++) {
             const relation = this.ifcAPI.GetLine(modelID, allRelationsIFC2.get(i));
-            connectedPortIds[relation.RelatingPort.value] = relation.RelatedElement.value;
+            connectedportIDs[relation.RelatingPort.value] = relation.RelatedElement.value;
         }
-        return connectedPortIds;
-    }
-
-    public static async areConnectorsConnected(connector1: Connector, connector2: Connector): Promise<boolean> {
-        const connector1Location = connector1.location;
-        const connector2Location = connector2.location;
-        const distance = connector1Location.distanceTo(connector2Location);
-        return distance < 0.025 && this.areVectorsParallel(connector1.flowNormal, connector2.flowNormal);
-    }
-
-    private static areVectorsParallel(vector1: Vector3, vector2: Vector3, angel_tolerance: number = 1): boolean {
-        const angle = vector1.angleTo(vector2) * RAD2DEG;
-        return angle < angel_tolerance || angle > 180 - angel_tolerance;
+        return connectedportIDs;
     }
 }
 

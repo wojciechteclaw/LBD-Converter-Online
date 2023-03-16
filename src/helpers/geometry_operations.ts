@@ -9,6 +9,7 @@ import {
     DoubleSide,
     Material,
 } from "three";
+import { RAD2DEG } from "three/src/math/MathUtils";
 import { IfcAPI, PlacedGeometry, Color, FlatMesh } from "web-ifc";
 
 class GeometryOperations {
@@ -96,6 +97,11 @@ class GeometryOperations {
 
     private static signedVolumeOfTriangle(p1: Vector3, p2: Vector3, p3: Vector3): number {
         return p1.dot(p2.cross(p3)) / 6.0;
+    }
+
+    public static areVectorsParallel(vector1: Vector3, vector2: Vector3, angel_tolerance: number = 1): boolean {
+        const angle = vector1.angleTo(vector2) * RAD2DEG;
+        return angle < angel_tolerance || angle > 180 - angel_tolerance;
     }
 }
 
