@@ -1,7 +1,5 @@
 import { ConnectorFlowDirection } from "@enums/connector_flow_direction";
-import { Connector } from "@/types/connectors/connector";
 import { Vector3, Matrix4, Quaternion } from "three";
-import { RAD2DEG } from "three/src/math/MathUtils";
 import {
     IfcAPI,
     IFCDISTRIBUTIONPORT,
@@ -34,6 +32,7 @@ class ConnectorsManager {
             const port = allPorts.get(i);
             if (!connectedportIDs.has(port)) {
                 let element = await this.getConnector(modelID, port, portIDParent[port]);
+                console.log(element);
                 this.connectors.push(element);
             }
         }
@@ -64,7 +63,7 @@ class ConnectorsManager {
             modelID: modelID,
             representation: {
                 connector: connector,
-                type: Representation.PORT,
+                type: Representation.CONNECTOR,
             },
         };
         return element;
@@ -86,20 +85,22 @@ class ConnectorsManager {
         return { normal: connectorNormal, location: vectorStartingPoint };
     }
 
-    private async placementMatrix(modelID: number, placement: any): Promise<Matrix4> {
+    private placementMatrix(modelID: number, placement: any, is_local_top_level = false): Matrix4 {
         if (placement !== null) {
-            if (this.queryCache[modelID][placement.value]) return this.queryCache[modelID][placement.value];
+            if (this.queryCache[modelID][placement.value]) {
+                return new Matrix4().copy(this.queryCache[modelID][placement.value]);
+            }
             const localItem = placement.value;
-            const result = await this.getTransformationMatrixRecursively(modelID, localItem);
-            this.queryCache[modelID][localItem] = result;
+            const result = this.getTransformationMatrixRecursively(modelID, localItem, is_local_top_level);
+            this.queryCache[modelID][localItem] = new Matrix4().copy(result);
             return result;
         }
         return new Matrix4().identity();
     }
 
-    private async getElementGlobalPlacement(modelID: number, placement: any) {
-        const global = await this.placementMatrix(modelID, placement.PlacementRelTo);
-        const local = await this.placementMatrix(modelID, placement.RelativePlacement);
+    private getElementGlobalPlacement(modelID: number, placement: any, is_local_top_level = false) {
+        const global = this.placementMatrix(modelID, placement.PlacementRelTo);
+        const local = this.placementMatrix(modelID, placement.RelativePlacement, is_local_top_level);
         const result = local.multiply(global);
         return result;
     }
@@ -112,16 +113,23 @@ class ConnectorsManager {
         return vector;
     }
 
-    private async getTransformationMatrixRecursively(modelID: number, expressID: number): Promise<Matrix4> {
+    private getTransformationMatrixRecursively(
+        modelID: number,
+        expressID: number,
+        is_local_top_level = false
+    ): Matrix4 {
         const line = this.ifcAPI.GetLine(modelID, expressID);
         switch (line.type) {
             case IFCLOCALPLACEMENT:
-                return await this.getElementGlobalPlacement(modelID, line);
+                return this.getElementGlobalPlacement(modelID, line);
             case IFCAXIS2PLACEMENT3D:
-                const xAxis = this.getVector(line, modelID, "RefDirection", "DirectionRatios", new Vector3(0, 0, 1));
-                const zAxis = this.getVector(line, modelID, "Axis", "DirectionRatios", new Vector3(1, 0, 0));
+                const xAxis = this.getVector(line, modelID, "Axis", "DirectionRatios", new Vector3(1, 0, 0));
+                const zAxis = this.getVector(line, modelID, "RefDirection", "DirectionRatios", new Vector3(0, 0, 1));
                 const point = this.getVector(line, modelID, "Location", "Coordinates", new Vector3(0, 0, 0));
-                return ConnectorsManager.buildTransformationMatrix(point, xAxis, zAxis);
+                return is_local_top_level
+                    ? ConnectorsManager.buildTransformationMatrix(point, zAxis, xAxis)
+                    : ConnectorsManager.buildTransformationMatrix(point, xAxis, zAxis);
+
             default:
                 return new Matrix4().identity();
         }
@@ -140,32 +148,31 @@ class ConnectorsManager {
         return transform;
     }
 
-    private async getPlacementCharacteristic(modelID, port: any, elementClass: string): Promise<ConnectorGeometry> {
+    private async getPlacementCharacteristic(modelID, port: any, ifcClass: string): Promise<ConnectorGeometry> {
         const portPlacement = this.ifcAPI.GetLine(modelID, port.ObjectPlacement.value);
         let transformationMatrix = new Matrix4().identity();
-        if (elementClass.toLowerCase().includes("fitting")) {
-            transformationMatrix = await this.getElementGlobalPlacement(
-                modelID,
-                this.ifcAPI.GetLine(modelID, portPlacement.PlacementRelTo.value)
-            );
+        if (ifcClass.toLowerCase().includes("fitting")) {
+            const placement = this.ifcAPI.GetLine(modelID, portPlacement.PlacementRelTo.value);
+            transformationMatrix = await this.getElementGlobalPlacement(modelID, placement, true);
         }
         const translation = new Matrix4().copyPosition(transformationMatrix);
         transformationMatrix.setPosition(new Vector3(0, 0, 0));
         const { normal, location } = this.getPortLocalPlacementCharacteristics(modelID, portPlacement);
         normal.applyMatrix4(transformationMatrix);
-        return { normal: normal, location: location.applyMatrix4(transformationMatrix).applyMatrix4(translation) };
+        location.applyMatrix4(transformationMatrix).applyMatrix4(translation);
+        return { normal, location };
     }
 
     private static getFlowType(flowDirection: string): ConnectorFlowDirection {
         switch (flowDirection) {
             case "SOURCE":
-                return ConnectorFlowDirection.Source;
+                return ConnectorFlowDirection.SOURCE;
             case "SINK":
-                return ConnectorFlowDirection.Sink;
+                return ConnectorFlowDirection.SINK;
             case "SOURCEANDSINK":
-                return ConnectorFlowDirection.Bidirectional;
+                return ConnectorFlowDirection.BIDIRECTIONAL;
             default:
-                return ConnectorFlowDirection.Bidirectional;
+                return ConnectorFlowDirection.BIDIRECTIONAL;
         }
     }
 

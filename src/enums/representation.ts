@@ -1,7 +1,7 @@
 enum Representation {
     SPACE,
     LEVEL,
-    PORT,
+    CONNECTOR,
 }
 
 export { Representation };

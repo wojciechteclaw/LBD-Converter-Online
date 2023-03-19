@@ -35,7 +35,6 @@ class FilesService {
         const modelElements = await ifcControllerService.getConnectionElements(modelID);
         const modelConnectors = await ifcControllerService.getAllUnconnectedConnectors(modelID);
         this.elements[modelID] = [...modelElements, ...modelConnectors];
-        console.log("test");
     }
 
     public getAllModels(): IfcModel[] {

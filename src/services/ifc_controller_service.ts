@@ -4,7 +4,7 @@ import { Representation } from "@enums/representation";
 import { Connection } from "@enums/connection";
 import { ElementsComparison } from "@helpers/elements_comparison";
 import { FileOperations } from "@helpers/file_operations";
-import { GeometryOperations } from "@/helpers/geometry_operations";
+import { GeometryOperations } from "@helpers/geometry_operations";
 import { GuidOperations } from "@helpers/guid_operations";
 import { ConnectedElements } from "@/types/connected_elements";
 import { IfcElement } from "@/types/ifc_element";
@@ -89,6 +89,14 @@ class IfcControllerService {
                 Representation.SPACE,
                 ElementsComparison.compareGeometryRepresentations,
                 Connection.SAME_AS
+            ),
+            ElementsComparison.compareElements(
+                model1Elements,
+                model2Elements,
+                connections,
+                Representation.CONNECTOR,
+                ElementsComparison.compareConnectors,
+                Connection.MEP_CONNECTION
             ),
         ]);
     }

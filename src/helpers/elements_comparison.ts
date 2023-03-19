@@ -1,14 +1,14 @@
 import { Connection } from "@enums/connection";
 import { ConnectedElements } from "@/types/connected_elements";
 import { StringRepresentation } from "@/types/element_representation/string_representation";
-import { GeometryOperations } from "@/helpers/geometry_operations";
+import { GeometryOperations } from "@helpers/geometry_operations";
 import { GeometricalRepresentation } from "@/types/element_representation/geometrical_representation";
 import { CSG } from "three-csg-ts";
 import { Representation } from "@enums/representation";
 import { IfcElement } from "@/types/ifc_element";
 import { ElementRepresentation } from "@/types/element_representation/element_representation";
 import { ConnectorRepresentation } from "@/types/element_representation/connector_representation";
-import { ConnectorFlowDirection } from "@/enums/connector_flow_direction";
+import { ConnectorFlowDirection } from "@enums/connector_flow_direction";
 
 class ElementsComparison {
     ANGLE_TOLERANCE = 1;
@@ -61,7 +61,7 @@ class ElementsComparison {
     public static compareConnectors(element1: ConnectorRepresentation, element2: ConnectorRepresentation): boolean {
         const distance = element1.connector.location.distanceTo(element2.connector.location);
         if (distance > 0.0025 || !GeometryOperations.areVectorsParallel) return false;
-        if (element1.connector.flowDirection === ConnectorFlowDirection.Bidirectional) return true;
+        if (element1.connector.flowDirection === ConnectorFlowDirection.BIDIRECTIONAL) return true;
         return element1.connector.flowDirection !== element2.connector.flowDirection;
     }
 }

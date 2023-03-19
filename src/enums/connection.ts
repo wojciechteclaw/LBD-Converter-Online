@@ -1,7 +1,6 @@
 enum Connection {
     SAME_AS,
-    SINK,
-    SOURCE,
+    MEP_CONNECTION
 }
 
 export { Connection };
