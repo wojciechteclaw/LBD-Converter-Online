@@ -17,14 +17,12 @@ class ConnectorsManager {
     private connectors: IfcElement[] = [];
     private queryCache: { [modelID: number]: { [expressId: number]: Matrix4 } } = {};
     private ifcAPI: IfcAPI;
-    public counter = 0;
 
     constructor(ifcAPI: IfcAPI) {
         this.ifcAPI = ifcAPI;
     }
 
     public async addUnconnectedConnectors(modelID: number) {
-        console.time("connectors");
         const connectedportIDs = await this.getAllConnectedportIDs(modelID);
         const portIDParent = await this.getportIDParent(modelID);
         const allPorts = await this.ifcAPI.GetLineIDsWithType(modelID, IFCDISTRIBUTIONPORT);
@@ -38,8 +36,6 @@ class ConnectorsManager {
                 this.counter++;
             }
         }
-        console.timeEnd("connectors");
-        console.log(this.counter);
     }
 
     public getAllUnconnectedElements(): IfcElement[] {
@@ -68,7 +64,7 @@ class ConnectorsManager {
         return element;
     }
 
-    private getPortLocalPlacementCharacteristics(modelID: number, placement) {
+    private getPortNormalAndLocation(modelID: number, placement) {
         const localPlacement = this.ifcAPI.GetLine(modelID, placement.RelativePlacement.value);
         const location = this.ifcAPI.GetLine(modelID, localPlacement.Location.value)["Coordinates"];
         const vectorStartingPoint = new Vector3(location[0].value, location[1].value, location[2].value);
@@ -151,7 +147,7 @@ class ConnectorsManager {
         );
         const translation = new Matrix4().copyPosition(globalTransformation);
         globalTransformation.setPosition(new Vector3(0, 0, 0));
-        const { normal, location } = this.getPortLocalPlacementCharacteristics(modelID, portPlacement);
+        const { normal, location } = this.getPortNormalAndLocation(modelID, portPlacement);
         normal.applyMatrix4(globalTransformation);
         location.applyMatrix4(globalTransformation).applyMatrix4(translation);
         return { normal, location };
