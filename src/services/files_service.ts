@@ -6,7 +6,6 @@ import { IfcElement } from "@/types/ifc_element";
 import { IfcModel } from "@/types/ifc_model";
 import { ModelElements } from "@/types/model_elements";
 import { SemanticOperations } from "@helpers/semantic_operations";
-import { Connector } from "@/types/connectors/connector";
 
 class FilesService {
     private models: Array<IfcModel> = [];

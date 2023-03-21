@@ -11,8 +11,9 @@ import { ConnectorRepresentation } from "@/types/element_representation/connecto
 import { ConnectorFlowDirection } from "@enums/connector_flow_direction";
 
 class ElementsComparison {
-    ANGLE_TOLERANCE = 1;
-    DISTANCE_TOLERANCE = 0.0025;
+    private static ANGLE_TOLERANCE = 1;
+    // milimeters
+    private static DISTANCE_TOLERANCE = 25;
 
     public static async compareElements(
         elements1: IfcElement[],
@@ -32,6 +33,28 @@ class ElementsComparison {
                         subject: element2,
                         relation: successRelation,
                     });
+                }
+            }
+        }
+    }
+
+    public static async compareConnectors(
+        elements1: IfcElement[],
+        elements2: IfcElement[],
+        connections: ConnectedElements[],
+        filter: Representation
+    ): Promise<void> {
+        let model1Elements = elements1.filter((e) => e.representation.type === filter);
+        let model2Elements = elements2.filter((e) => e.representation.type === filter);
+        for (let element1 of model1Elements) {
+            for (let element2 of model2Elements) {
+                if (
+                    this.compareConnectorsRepresentation(
+                        element1.representation as ConnectorRepresentation,
+                        element2.representation as ConnectorRepresentation
+                    )
+                ) {
+                    return this.buildNewConnectorsConnection(element1, element2, connections);
                 }
             }
         }
@@ -58,11 +81,70 @@ class ElementsComparison {
         );
     }
 
-    public static compareConnectors(element1: ConnectorRepresentation, element2: ConnectorRepresentation): boolean {
+    private static compareConnectorsRepresentation(
+        element1: ConnectorRepresentation,
+        element2: ConnectorRepresentation
+    ): boolean {
         const distance = element1.connector.location.distanceTo(element2.connector.location);
-        if (distance > 0.0025 || !GeometryOperations.areVectorsParallel) return false;
+        if (
+            distance > this.DISTANCE_TOLERANCE ||
+            !GeometryOperations.areVectorsParallel(
+                element1.connector.flowNormal,
+                element2.connector.flowNormal,
+                this.ANGLE_TOLERANCE
+            )
+        ) {
+            return false;
+        }
         if (element1.connector.flowDirection === ConnectorFlowDirection.BIDIRECTIONAL) return true;
         return element1.connector.flowDirection !== element2.connector.flowDirection;
+    }
+
+    private static buildNewConnectorsConnection(
+        element1: IfcElement,
+        element2: IfcElement,
+        connections: ConnectedElements[]
+    ): void {
+        switch ((element1.representation as ConnectorRepresentation).connector.flowDirection) {
+            case ConnectorFlowDirection.SINK:
+                connections.push({
+                    object: element1,
+                    subject: element2,
+                    relation: Connection.CONNECTED_PORT,
+                });
+                break;
+            case ConnectorFlowDirection.SOURCE:
+                connections.push({
+                    object: element2,
+                    subject: element1,
+                    relation: Connection.CONNECTED_PORT,
+                });
+                break;
+            case ConnectorFlowDirection.BIDIRECTIONAL:
+                switch ((element2.representation as ConnectorRepresentation).connector.flowDirection) {
+                    case ConnectorFlowDirection.SINK:
+                        connections.push({
+                            object: element2,
+                            subject: element1,
+                            relation: Connection.CONNECTED_PORT,
+                        });
+                        break;
+                    case ConnectorFlowDirection.SOURCE:
+                        connections.push({
+                            object: element1,
+                            subject: element2,
+                            relation: Connection.CONNECTED_PORT,
+                        });
+                        break;
+                    case ConnectorFlowDirection.BIDIRECTIONAL:
+                        connections.push({
+                            object: element1,
+                            subject: element2,
+                            relation: Connection.CONNECTED_PORT,
+                        });
+                        break;
+                }
+        }
     }
 }
 

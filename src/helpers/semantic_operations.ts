@@ -4,6 +4,7 @@ import * as oxigraph from "oxigraph/web";
 import { filesService } from "@services/dependency_injection";
 import * as jsonld from "jsonld";
 import { GuidOperations } from "./guid_operations";
+import { ConnectorRepresentation } from "@/types/element_representation/connector_representation";
 
 class SemanticOperations {
     private static getTripleFromConnectedElements(
@@ -14,6 +15,9 @@ class SemanticOperations {
         switch (connection.relation) {
             case Connection.SAME_AS:
                 connectionSpecificTriples = this.generateTriplesForSameAsConnection(connection);
+                break;
+            case Connection.CONNECTED_PORT:
+                connectionSpecificTriples = this.generateTriplesForMepElements(connection);
                 break;
             default:
                 break;
@@ -31,17 +35,55 @@ class SemanticOperations {
         return [objectURI, subjectURI];
     }
 
+    private static getMepObjectSubjectParentsURIs(connection: ConnectedElements): string[] {
+        let objectURI =
+            filesService.getModelNamespace(connection.object.modelID) +
+            GuidOperations.encodeURI((connection.object.representation as ConnectorRepresentation).connector.parentId);
+        let subjectURI =
+            filesService.getModelNamespace(connection.subject.modelID) +
+            GuidOperations.encodeURI((connection.subject.representation as ConnectorRepresentation).connector.parentId);
+        return [objectURI, subjectURI];
+    }
+
+    private static generateTriplesForMepElements(connection: ConnectedElements): oxigraph.Quad[] {
+        const [objectURI, subjectURI] = this.getObjectSubjectURIs(connection);
+        const [objectParentURI, subjectParentURI] = this.getMepObjectSubjectParentsURIs(connection);
+        const relation = connection.relation;
+        return [
+            oxigraph.triple(
+                oxigraph.namedNode(objectURI),
+                this.getPredicateFromConnection(relation),
+                oxigraph.namedNode(subjectURI)
+            ),
+            oxigraph.triple(
+                oxigraph.namedNode(subjectURI),
+                this.getPredicateFromConnection(relation),
+                oxigraph.namedNode(objectURI)
+            ),
+            oxigraph.triple(
+                oxigraph.namedNode(subjectParentURI),
+                this.getPredicateFromConnection(Connection.CONNECTED_WITH),
+                oxigraph.namedNode(objectParentURI)
+            ),
+            oxigraph.triple(
+                oxigraph.namedNode(objectParentURI),
+                this.getPredicateFromConnection(Connection.HAS_FLUID_SUPPLIED_BY),
+                oxigraph.namedNode(subjectParentURI)
+            ),
+        ];
+    }
+
     private static generateTriplesForSameAsConnection(connection: ConnectedElements): oxigraph.Quad[] {
         let [objectURI, subjectURI] = this.getObjectSubjectURIs(connection);
         return [
             oxigraph.triple(
                 oxigraph.namedNode(objectURI),
-                this.getPredicateFromConnection(connection),
+                this.getPredicateFromConnection(connection.relation),
                 oxigraph.namedNode(subjectURI)
             ),
             oxigraph.triple(
                 oxigraph.namedNode(subjectURI),
-                this.getPredicateFromConnection(connection),
+                this.getPredicateFromConnection(connection.relation),
                 oxigraph.namedNode(objectURI)
             ),
         ];
@@ -56,10 +98,18 @@ class SemanticOperations {
         }
     }
 
-    private static getPredicateFromConnection(connection: ConnectedElements): oxigraph.NamedNode {
-        switch (connection.relation) {
+    private static getPredicateFromConnection(connection: Connection): oxigraph.NamedNode {
+        switch (connection) {
             case Connection.SAME_AS:
                 return oxigraph.namedNode("http://www.w3.org/2002/07/owl#sameAs");
+            case Connection.CONNECTED_PORT:
+                return oxigraph.namedNode("https://w3id.org/fso#connectedPort");
+            case Connection.CONNECTED_WITH:
+                return oxigraph.namedNode("https://w3id.org/fso#connectedWith");
+            case Connection.HAS_FLUID_SUPPLIED_BY:
+                return oxigraph.namedNode("https://w3id.org/fso#hasFluidSuppliedBy");
+            case Connection.SUPPLIES_FLUID_TO:
+                return oxigraph.namedNode("https://w3id.org/fso#suppliesFluidTo");
             default:
                 return oxigraph.namedNode("");
         }

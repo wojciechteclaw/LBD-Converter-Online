@@ -9,7 +9,6 @@ import { GuidOperations } from "@helpers/guid_operations";
 import { ConnectedElements } from "@/types/connected_elements";
 import { IfcElement } from "@/types/ifc_element";
 import { ConnectorsManager } from "@services/connectors_manager";
-import { Connector } from "@/types/connectors/connector";
 
 class IfcControllerService {
     private ifcAPI: IfcAPI = new IfcAPI();
@@ -90,14 +89,7 @@ class IfcControllerService {
                 ElementsComparison.compareGeometryRepresentations,
                 Connection.SAME_AS
             ),
-            ElementsComparison.compareElements(
-                model1Elements,
-                model2Elements,
-                connections,
-                Representation.CONNECTOR,
-                ElementsComparison.compareConnectors,
-                Connection.MEP_CONNECTION
-            ),
+            ElementsComparison.compareConnectors(model1Elements, model2Elements, connections, Representation.CONNECTOR),
         ]);
     }
 

@@ -16,6 +16,8 @@ import { Representation } from "@enums/representation";
 class ConnectorsManager {
     private connectors: IfcElement[] = [];
     private queryCache: { [modelID: number]: { [expressId: number]: Matrix4 } } = {};
+    private allPortsParent: { [key: number]: number } = {};
+    private allConnectedPorts: Set<number> = new Set();
     private ifcAPI: IfcAPI;
 
     constructor(ifcAPI: IfcAPI) {
@@ -23,19 +25,20 @@ class ConnectorsManager {
     }
 
     public async addUnconnectedConnectors(modelID: number) {
-        const connectedportIDs = await this.getAllConnectedportIDs(modelID);
-        const portIDParent = await this.getportIDParent(modelID);
+        await this.getAllConnectedportIDs(modelID);
+        await this.getPortIDParent(modelID);
         const allPorts = await this.ifcAPI.GetLineIDsWithType(modelID, IFCDISTRIBUTIONPORT);
+        const promises = Array<Promise<IfcElement>>();
         this.queryCache[modelID] = {};
         for (let i = 0; i < allPorts.size(); i++) {
             const port = allPorts.get(i);
-            if (!connectedportIDs.has(port)) {
-                let element = await this.getConnector(modelID, port, portIDParent[port]);
-                console.log(element);
-                this.connectors.push(element);
-                this.counter++;
+            if (!this.allConnectedPorts.has(port)) {
+                promises.push(this.getConnector(modelID, port, this.allPortsParent[port]));
             }
         }
+        await Promise.all(promises).then((elements) => {
+            this.connectors.push(...elements);
+        });
     }
 
     public getAllUnconnectedElements(): IfcElement[] {
@@ -46,11 +49,12 @@ class ConnectorsManager {
         const portElement = this.ifcAPI.GetLine(modelID, portID);
         const parent = this.ifcAPI.GetLine(modelID, parentExpressId);
         const { normal, location } = await this.getPlacementCharacteristic(modelID, portElement);
+        const { valid_normal, valid_direction } = this.validateFlowDirection(modelID, portElement, parent, normal);
         const connector = {
             location: location,
-            flowNormal: normal,
+            flowNormal: valid_normal,
             parentId: parent.GlobalId.value,
-            flowDirection: ConnectorsManager.getFlowType(portElement.FlowDirection.value),
+            flowDirection: valid_direction,
         };
         const element: IfcElement = {
             id: portID,
@@ -62,6 +66,47 @@ class ConnectorsManager {
             },
         };
         return element;
+    }
+
+    private validateFlowDirection(
+        modelID: number,
+        portElement: any,
+        parent: any,
+        normal: Vector3
+    ): { valid_normal: Vector3; valid_direction: ConnectorFlowDirection } {
+        const connectedElementsOfParent = Array<number>();
+        Object.entries(this.allPortsParent).map(([key, value]) => {
+            if (value === parent.expressID && key != portElement.expressID) {
+                let parsedKey = parseInt(key);
+                connectedElementsOfParent.push(parsedKey);
+            }
+        });
+        let flowDirection = ConnectorsManager.getFlowType(portElement.FlowDirection.value);
+        if (
+            connectedElementsOfParent.length == 1 &&
+            flowDirection !== ConnectorFlowDirection.BIDIRECTIONAL &&
+            parent.constructor.name.toLowerCase().includes("segment")
+        ) {
+            const anotherConnector = this.ifcAPI.GetLine(modelID, connectedElementsOfParent[0]);
+            const anotherFlowDirection = ConnectorsManager.getFlowType(anotherConnector.FlowDirection.value);
+            if (anotherFlowDirection === ConnectorFlowDirection.BIDIRECTIONAL) {
+                return {
+                    valid_normal: normal,
+                    valid_direction: flowDirection,
+                };
+            }
+            if (flowDirection === anotherFlowDirection) {
+                normal.negate();
+                flowDirection =
+                    flowDirection === ConnectorFlowDirection.SINK
+                        ? ConnectorFlowDirection.SOURCE
+                        : ConnectorFlowDirection.SINK;
+            }
+        }
+        return {
+            valid_normal: normal,
+            valid_direction: flowDirection,
+        };
     }
 
     private getPortNormalAndLocation(modelID: number, placement) {
@@ -82,18 +127,11 @@ class ConnectorsManager {
                 return new Matrix4().copy(this.queryCache[modelID][placement.value]);
             }
             const localItem = placement.value;
-            const result = this.getTransformationMatrixRecursively(modelID, localItem);
+            const result = this.getTransformationMatrix(modelID, localItem);
             this.queryCache[modelID][localItem] = new Matrix4().copy(result);
             return result;
         }
         return new Matrix4().identity();
-    }
-
-    private getElementGlobalPlacement(modelID: number, placement: any) {
-        const global = this.placementMatrix(modelID, placement.PlacementRelTo);
-        const local = this.placementMatrix(modelID, placement.RelativePlacement);
-        const result = local.multiply(global);
-        return result;
     }
 
     private getVector(
@@ -110,17 +148,19 @@ class ConnectorsManager {
         return defaultVector;
     }
 
-    private getTransformationMatrixRecursively(modelID: number, expressID: number): Matrix4 {
+    private getTransformationMatrix(modelID: number, expressID: number): Matrix4 {
         const line = this.ifcAPI.GetLine(modelID, expressID);
         switch (line.type) {
             case IFCLOCALPLACEMENT:
-                return this.getElementGlobalPlacement(modelID, line);
+                const global = this.placementMatrix(modelID, line.PlacementRelTo);
+                const local = this.placementMatrix(modelID, line.RelativePlacement);
+                const result = local.multiply(global);
+                return result;
             case IFCAXIS2PLACEMENT3D:
                 const xAxis = this.getVector(line, modelID, "RefDirection", "DirectionRatios", new Vector3(1, 0, 0));
                 const zAxis = this.getVector(line, modelID, "Axis", "DirectionRatios", new Vector3(0, 0, 1));
                 const point = this.getVector(line, modelID, "Location", "Coordinates", new Vector3(0, 0, 0));
                 return ConnectorsManager.buildTransformationMatrix(point, xAxis, zAxis);
-
             default:
                 return new Matrix4().identity();
         }
@@ -131,20 +171,17 @@ class ConnectorsManager {
         xAxis: Vector3 = new Vector3(1, 0, 0),
         zAxis: Vector3 = new Vector3(0, 0, 1)
     ) {
-        const R = new Matrix4();
+        const rotation = new Matrix4();
         const yAxis = new Vector3().crossVectors(zAxis, xAxis).normalize();
-        R.makeBasis(xAxis.normalize(), yAxis, zAxis.normalize());
+        rotation.makeBasis(xAxis.normalize(), yAxis, zAxis.normalize());
         const transformation = new Matrix4();
-        transformation.compose(point, new Quaternion().setFromRotationMatrix(R), new Vector3(1, 1, 1));
+        transformation.compose(point, new Quaternion().setFromRotationMatrix(rotation), new Vector3(1, 1, 1));
         return transformation;
     }
 
     private async getPlacementCharacteristic(modelID, port: any): Promise<ConnectorGeometry> {
         const portPlacement = this.ifcAPI.GetLine(modelID, port.ObjectPlacement.value);
-        const globalTransformation = await this.getTransformationMatrixRecursively(
-            modelID,
-            portPlacement.PlacementRelTo.value
-        );
+        const globalTransformation = await this.getTransformationMatrix(modelID, portPlacement.PlacementRelTo.value);
         const translation = new Matrix4().copyPosition(globalTransformation);
         globalTransformation.setPosition(new Vector3(0, 0, 0));
         const { normal, location } = this.getPortNormalAndLocation(modelID, portPlacement);
@@ -166,7 +203,7 @@ class ConnectorsManager {
         }
     }
 
-    private async getAllConnectedportIDs(modelID: number): Promise<Set<number>> {
+    private async getAllConnectedportIDs(modelID: number): Promise<void> {
         const connectedportIDs = new Set<number>();
         let allRelations = this.ifcAPI.GetLineIDsWithType(modelID, IFCRELCONNECTSPORTS);
         for (let i = 0; i < allRelations.size(); i++) {
@@ -175,10 +212,10 @@ class ConnectorsManager {
             connectedportIDs.add(relation.RelatedPort.value);
             connectedportIDs.add(relation.RelatingPort.value);
         }
-        return connectedportIDs;
+        this.allConnectedPorts = connectedportIDs;
     }
 
-    private async getportIDParent(modelID: number): Promise<{ [key: number]: number }> {
+    private async getPortIDParent(modelID: number): Promise<void> {
         const connectedportIDs: { [key: number]: number } = {};
         let allRelationsIFC4 = this.ifcAPI.GetLineIDsWithType(modelID, IFCRELNESTS);
         for (let i = 0; i < allRelationsIFC4.size(); i++) {
@@ -192,7 +229,7 @@ class ConnectorsManager {
             const relation = this.ifcAPI.GetLine(modelID, allRelationsIFC2.get(i));
             connectedportIDs[relation.RelatingPort.value] = relation.RelatedElement.value;
         }
-        return connectedportIDs;
+        this.allPortsParent = connectedportIDs;
     }
 }
 
