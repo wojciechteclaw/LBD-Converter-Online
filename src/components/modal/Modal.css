@@ -20,5 +20,20 @@
     border-radius: 1rem;
     max-width: 600px;
     max-height: 700px;
-    color: #618685;
+    color: var(--dark-green);
+}
+
+.modal-title {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 5% !important;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.modal-message {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 5% !important;
+    color: var(--dark-green);
 }

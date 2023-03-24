@@ -2,7 +2,7 @@
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     width: 100%;
-    background-color: #618685;
+    background-color: var(--dark-green);
     color: white;
     vertical-align: middle;
     color: white;
@@ -11,7 +11,7 @@
 }
 
 .file-upload-container:hover {
-    background-color: #5ea8a6;
+    background-color: var(--medium-green);
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     cursor: pointer;
@@ -24,4 +24,3 @@
     width: 100%;
     font-size: 20px;
 }
-

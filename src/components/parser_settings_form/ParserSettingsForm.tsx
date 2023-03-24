@@ -6,11 +6,11 @@ import "./ParserSettingsForm.css";
 
 interface ParserSettingsProps {
     visibilityToggle: () => void;
-    index: number;
+    modelID: number;
 }
 
-const ParserSettingsForm: FC<ParserSettingsProps> = ({ visibilityToggle, index }) => {
-    let defaultParserSettings = filesService.getParserSettings(index);
+const ParserSettingsForm: FC<ParserSettingsProps> = ({ visibilityToggle, modelID }) => {
+    let defaultParserSettings = filesService.getModelParserSettings(modelID);
 
     const [bot, setBot] = useState<boolean>(defaultParserSettings.subsets.BOT);
     const [fso, setFso] = useState<boolean>(defaultParserSettings.subsets.FSO);
@@ -40,7 +40,7 @@ const ParserSettingsForm: FC<ParserSettingsProps> = ({ visibilityToggle, index }
         e.preventDefault();
         let newSettings: ParserSettings = getParserSettings();
         defaultParserSettings = newSettings;
-        filesService.overrideParserSettings(index, newSettings);
+        filesService.overrideParserSettings(modelID, newSettings);
         visibilityToggle();
     };
 

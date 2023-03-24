@@ -2,37 +2,33 @@
     margin-top: 2% !important;
     margin-bottom: 4% !important;
     width: 100%;
-    border-bottom: 1px solid #618685;
+    border-bottom: var(--dark-green-border);
     text-align: center;
     letter-spacing: 1px;
     font-size: 18px;
     text-transform: uppercase;
-    color: #618685;
+    color: var(--dark-green);
     font-weight: 700;
-}
-
-.ifc-file-parser-section-title:first-of-type {
-    margin-top: 8% !important;
 }
 
 .ui.toggle.checkbox input[type="checkbox"]:checked ~ label::before,
 .ui.toggle.checkbox input[type="checkbox"]:checked:focus ~ label::before {
-    background: #618685 !important;
+    background: var(--dark-green) !important;
 }
 
 .checkbox label {
     text-transform: uppercase;
 }
 
-.parse-settings-form-buttons{
+.parse-settings-form-buttons {
     margin-top: 15%;
 }
 
-.field{
-    color: #618685;
+.field {
+    color: var(--dark-green);
 }
 
-input[type="text"]{
-    color: #618685 !important;
+input[type="text"] {
+    color: var(--dark-green) !important;
     font-weight: 700;
 }

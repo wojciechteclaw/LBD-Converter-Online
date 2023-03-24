@@ -26,6 +26,7 @@ const GraphContainer: FC = () => {
         if (result) {
             let parser = new SparQlGraphParserService(result);
             let results = parser.convertQueryResultToGraphInput();
+            console.log(results)
             setGraphElements(results);
         }
     };
@@ -46,7 +47,7 @@ const GraphContainer: FC = () => {
     };
 
     return (
-        <div id="graph-container-center">
+        <section id="graph-container-center">
             <div id="graph-container-container">
                 <div id="graph-container-title">
                     <p id="graph-container-title-content">graph visualization</p>
@@ -59,7 +60,7 @@ const GraphContainer: FC = () => {
                 </div>
                 <GraphMenu onGraphPngDownload={onGraphPngDownload} />
             </div>
-        </div>
+        </section>
     );
 };
 

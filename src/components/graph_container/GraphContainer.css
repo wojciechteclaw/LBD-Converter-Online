@@ -9,13 +9,13 @@
     height: 90%;
     width: 75%;
     float: left;
-    border-left: 1px solid #618685;
+    border-left: var(--dark-green-border);
 }
 #graph-container-sparql-wrapper {
     height: 90%;
     width: 25%;
     float: left;
-    border-left: 1px solid #618685;
+    border-left: var(--dark-green-border);
 }
 
 #graph-container-title {
@@ -35,7 +35,7 @@
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     width: 100%;
-    background-color: #618685;
+    background-color: var(--dark-green);
     color: white;
     vertical-align: middle;
     color: white;

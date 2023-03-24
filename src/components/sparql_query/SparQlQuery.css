@@ -4,5 +4,5 @@
     height: "100%";
     border: "none";
     float: "left";
-    border-right: 1px solid #618685 !important
+    border-right: --dark-green-border !important;
 }
