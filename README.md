@@ -5,6 +5,7 @@
 
 * <a href="https://www.linkedin.com/in/wojciech-teclaw/" target="_blank">Wojciech Tecław</a>
 * <a href="https://www.linkedin.com/in/mads-holten-rasmussen-061b7414/" target="_blank">Mads Holten Rasmussen</a>
+* <a href="https://www.linkedin.com/in/jyrki-oraskari-0668b/" target="_blank">Jyrki Oraskari</a>
 
 
 
