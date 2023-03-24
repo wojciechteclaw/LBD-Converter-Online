@@ -11,6 +11,7 @@ import { IfcElement } from "@/types/ifc_element";
 import { ConnectorsManager } from "@services/connectors_manager";
 
 class IfcControllerService {
+    
     private ifcAPI: IfcAPI = new IfcAPI();
     constructor() {
         this.ifcAPI.SetWasmPath("./assets/");
