@@ -1,11 +1,15 @@
+# on:
+#   pull_request:
+#     types: [closed]
+#     branches:
+#       - main
+#     # Only run on merge
+#     conditions: >
+#       github.event.pull_request.merged == true
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
-      - main
-    # Only run on merge
-    conditions: >
-      github.event.pull_request.merged == true
+      - master
 
 jobs:
   deploy:
