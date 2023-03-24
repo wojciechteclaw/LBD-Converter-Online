@@ -86,6 +86,7 @@ class ElementsComparison {
         element2: ConnectorRepresentation
     ): boolean {
         const distance = element1.connector.location.distanceTo(element2.connector.location);
+        console.log(distance);
         if (
             distance > this.DISTANCE_TOLERANCE ||
             !GeometryOperations.areVectorsParallel(
