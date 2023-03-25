@@ -1,4 +1,5 @@
 import { FC } from "react";
+import logo from "@assets/logo.png"
 import "./TopBar.css";
 
 export const TopBar: FC = () => {
