@@ -6,8 +6,6 @@ on:
     # Only run on merge
     conditions: >
       github.event.pull_request.merged == true
-  push:
-    branches: [ "master" ]
 jobs:
   build:
 
