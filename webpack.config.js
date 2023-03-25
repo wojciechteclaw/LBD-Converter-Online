@@ -36,6 +36,13 @@ module.exports = {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"],
             },
+            {
+                test: /\.(png|wasm|json)$/,
+                loader: 'file-loader',
+                options: {
+                    name: 'src/assets/[name].[ext]'
+                }
+            }
         ],
     },
     resolve: {
