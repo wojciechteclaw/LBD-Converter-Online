@@ -32,7 +32,6 @@ Build the application: `npm run build`
 
 Run application using some server:
 * Install server `npm i http-server`
-
 * Run server `npm http-server ./`
 
 ### Using docker
