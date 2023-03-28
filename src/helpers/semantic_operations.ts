@@ -62,7 +62,7 @@ class SemanticOperations {
             ),
             oxigraph.triple(
                 oxigraph.namedNode(subjectParentURI),
-                this.getPredicateFromConnection(Connection.CONNECTED_WITH),
+                this.getPredicateFromConnection(Connection.SUPPLIES_FLUID_TO),
                 oxigraph.namedNode(objectParentURI)
             ),
             oxigraph.triple(
