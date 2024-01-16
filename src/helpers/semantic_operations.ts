@@ -18,6 +18,7 @@ class SemanticOperations {
                 break;
             case Connection.CONNECTED_PORT:
                 connectionSpecificTriples = this.generateTriplesForMepElements(connection);
+                console.log(connectionSpecificTriples)
                 break;
             default:
                 break;

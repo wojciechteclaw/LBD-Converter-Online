@@ -13,7 +13,7 @@ import { ConnectorFlowDirection } from "@enums/connector_flow_direction";
 class ElementsComparison {
     private static ANGLE_TOLERANCE = 1;
     // milimeters
-    private static DISTANCE_TOLERANCE = 25;
+    private static DISTANCE_TOLERANCE = 0.025;
 
     public static async compareElements(
         elements1: IfcElement[],
@@ -54,7 +54,7 @@ class ElementsComparison {
                         element2.representation as ConnectorRepresentation
                     )
                 ) {
-                    return this.buildNewConnectorsConnection(element1, element2, connections);
+                    this.buildNewConnectorsConnection(element1, element2, connections);
                 }
             }
         }
@@ -86,7 +86,6 @@ class ElementsComparison {
         element2: ConnectorRepresentation
     ): boolean {
         const distance = element1.connector.location.distanceTo(element2.connector.location);
-        console.log(distance);
         if (
             distance > this.DISTANCE_TOLERANCE ||
             !GeometryOperations.areVectorsParallel(

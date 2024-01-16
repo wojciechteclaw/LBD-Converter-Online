@@ -203,4 +203,4 @@ class ConnectorsManager {
     }
 }
 
-export { ConnectorsManager }
+export { ConnectorsManager };

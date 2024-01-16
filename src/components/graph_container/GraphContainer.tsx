@@ -26,7 +26,6 @@ const GraphContainer: FC = () => {
         if (result) {
             let parser = new SparQlGraphParserService(result);
             let results = parser.convertQueryResultToGraphInput();
-            console.log(results)
             setGraphElements(results);
         }
     };

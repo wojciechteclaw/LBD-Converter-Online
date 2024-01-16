@@ -1,5 +1,6 @@
 class FileOperations {
     public static async getFileBuffer(file: File): Promise<Uint8Array> {
+        
         let fileBuffer = await this.readInputFile(file);
         return new Uint8Array(fileBuffer);
     }
