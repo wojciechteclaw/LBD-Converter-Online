@@ -9,6 +9,7 @@ import { GuidOperations } from "@helpers/guid_operations";
 import { ConnectedElements } from "@/types/connected_elements";
 import { IfcElement } from "@/types/ifc_element";
 import { ConnectorsManager } from "@services/connectors_manager";
+import { ElementPlacementService } from "@services/element-placement.service";
 
 class IfcControllerService {
     
@@ -27,6 +28,8 @@ class IfcControllerService {
     public async getAllUnconnectedConnectors(modelID: number): Promise<IfcElement[]> {
         const connectorManager = new ConnectorsManager(this.ifcAPI);
         await connectorManager.addUnconnectedConnectors(modelID);
+        const elementPlacementService = new ElementPlacementService(this.ifcAPI);
+        await elementPlacementService.getElementsCoordinates(modelID)
         return connectorManager.getAllUnconnectedElements();
     }
 

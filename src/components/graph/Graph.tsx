@@ -30,7 +30,7 @@ const Graph: FC<GraphProps> = ({ graphElements, setCyReference }) => {
             cyRef.current.elements().remove();
             cyRef.current.add(graphElements);
             cyRef.current.layout(graphLayoutConfiguration).run();
-            cyRef.current.fit();
+            // cyRef.current.fit();
         }
     }, [graphElements]);
 

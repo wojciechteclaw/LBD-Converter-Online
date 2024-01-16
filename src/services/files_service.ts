@@ -11,12 +11,12 @@ class FilesService {
     private models: Array<IfcModel> = [];
     private elements: ModelElements = {};
     private readonly DEFAULT_PARSER_SETTINGS: ParserSettings = {
-        namespace: "http://www.theproject.org/",
+        namespace: "http://www.sample.org/",
         subsets: {
             BOT: true,
             FSO: true,
-            PRODUCTS: false,
-            PROPERTIES: false,
+            PRODUCTS: true,
+            PROPERTIES: true,
         },
         outputFormat: SerializationFormat.JSONLD,
         normalizeToSIUnits: false,
