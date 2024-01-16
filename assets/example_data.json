@@ -38,7 +38,8 @@
                 "body": "Site",
                 "prefix": "bot:",
                 "label": "bot:Site"
-            }
+            },
+            "position": { "x": 100, "y": 100 }
         },
         {
             "data": {
