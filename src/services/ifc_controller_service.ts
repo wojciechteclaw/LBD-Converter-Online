@@ -12,7 +12,6 @@ import { ConnectorsManager } from "@services/connectors_manager";
 import { ElementPlacementService } from "@services/element-placement.service";
 
 class IfcControllerService {
-    
     private ifcAPI: IfcAPI = new IfcAPI();
     constructor() {
         this.ifcAPI.SetWasmPath("./assets/");
@@ -29,7 +28,7 @@ class IfcControllerService {
         const connectorManager = new ConnectorsManager(this.ifcAPI);
         await connectorManager.addUnconnectedConnectors(modelID);
         const elementPlacementService = new ElementPlacementService(this.ifcAPI);
-        await elementPlacementService.getElementsCoordinates(modelID)
+        await elementPlacementService.getElementsCoordinates(modelID);
         return connectorManager.getAllUnconnectedElements();
     }
 
@@ -83,7 +82,7 @@ class IfcControllerService {
                 connections,
                 Representation.LEVEL,
                 ElementsComparison.compareStringRepresentations,
-                Connection.SAME_AS
+                Connection.GEOMETRICALLY_EQUIVALENT
             ),
             ElementsComparison.compareElements(
                 model1Elements,
@@ -91,7 +90,7 @@ class IfcControllerService {
                 connections,
                 Representation.SPACE,
                 ElementsComparison.compareGeometryRepresentations,
-                Connection.SAME_AS
+                Connection.GEOMETRICALLY_EQUIVALENT
             ),
             ElementsComparison.compareConnectors(model1Elements, model2Elements, connections, Representation.CONNECTOR),
         ]);

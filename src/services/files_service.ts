@@ -95,6 +95,7 @@ class FilesService {
     }
 
     private async discoverModelsConnections(): Promise<void> {
+        console.time("Model federation took:");
         const modelIDs = Array.from(this.models.keys());
         const modelIDpairs = FilesService.getModelIdForComparison(modelIDs);
         const connectedElements: ConnectedElements[] = [];
@@ -110,6 +111,7 @@ class FilesService {
         let connectionTriples = [];
         SemanticOperations.getTriplesFromConnectedElements(connectedElements, connectionTriples);
         await dbDataController.addQuadsToStore(connectionTriples);
+        console.timeEnd("Model federation took:");
     }
 
     private static getModelIdForComparison(modelIDs: number[]): Array<Array<number>> {

@@ -37,6 +37,7 @@ class ConnectorsManager {
         await Promise.all(promises).then((elements) => {
             this.connectors.push(...elements);
         });
+        console.log(this.connectors);
     }
 
     public getAllUnconnectedElements(): IfcElement[] {

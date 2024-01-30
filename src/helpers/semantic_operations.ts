@@ -13,12 +13,12 @@ class SemanticOperations {
     ): void {
         let connectionSpecificTriples: oxigraph.Quad[] = [];
         switch (connection.relation) {
-            case Connection.SAME_AS:
+            case Connection.GEOMETRICALLY_EQUIVALENT:
                 connectionSpecificTriples = this.generateTriplesForSameAsConnection(connection);
                 break;
             case Connection.CONNECTED_PORT:
                 connectionSpecificTriples = this.generateTriplesForMepElements(connection);
-                console.log(connectionSpecificTriples)
+                console.log(connectionSpecificTriples);
                 break;
             default:
                 break;
@@ -101,8 +101,8 @@ class SemanticOperations {
 
     private static getPredicateFromConnection(connection: Connection): oxigraph.NamedNode {
         switch (connection) {
-            case Connection.SAME_AS:
-                return oxigraph.namedNode("http://www.w3.org/2002/07/owl#sameAs");
+            case Connection.GEOMETRICALLY_EQUIVALENT:
+                return oxigraph.namedNode("https://example.com/ex#geometricallyEquivalent");
             case Connection.CONNECTED_PORT:
                 return oxigraph.namedNode("https://w3id.org/fso#connectedPort");
             case Connection.CONNECTED_WITH:
