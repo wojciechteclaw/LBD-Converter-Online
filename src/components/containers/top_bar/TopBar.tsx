@@ -19,7 +19,9 @@ export const TopBar: FC = () => {
                     </a>
                 </div>
                 <div className="top-bar-menu-wrappers">
-                    <div id="top-bar-contact-container">Contact</div>
+                    <a href="https://www.linkedin.com/in/wojciech-teclaw/">
+                        <div id="top-bar-contact-container">Contact</div>
+                    </a>
                 </div>
             </div>
         </div>

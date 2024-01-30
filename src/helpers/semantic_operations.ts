@@ -102,7 +102,7 @@ class SemanticOperations {
     private static getPredicateFromConnection(connection: Connection): oxigraph.NamedNode {
         switch (connection) {
             case Connection.GEOMETRICALLY_EQUIVALENT:
-                return oxigraph.namedNode("https://example.com/ex#geometricallyEquivalent");
+                return oxigraph.namedNode("http://example.com/ex#geometricallyEquivalent");
             case Connection.CONNECTED_PORT:
                 return oxigraph.namedNode("https://w3id.org/fso#connectedPort");
             case Connection.CONNECTED_WITH:

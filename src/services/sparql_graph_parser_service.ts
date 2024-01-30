@@ -96,6 +96,7 @@ class SparQlGraphParserService {
     }
 
     private static readonly MOST_POPULAR_PREFIXES = {
+        "http://example.com/ex#": "ex",
         "https://w3id.org/bot#": "bot",
         "https://w3id.org/fog#": "fog",
         "https://w3id.org/fso#": "fso",
